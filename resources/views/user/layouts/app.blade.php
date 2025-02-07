@@ -41,13 +41,13 @@
         <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active bg-gradient-dark text-white" href="../pages/dashboard.html">
-                        <i class="material-symbols-rounded opacity-5">dashboard</i>
-                        <span class="nav-link-text ms-1">Dashboard</span>
+                    <a class="nav-link active bg-gradient-dark text-white" href="{{ route('user.dashboard') }}">
+                        <i class="material-symbols-rounded opacity-5">home</i>
+                        <span class="nav-link-text ms-1">Home</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/tables.html">
+                {{-- <li class="nav-item">
+                    <a class="nav-link text-dark" href="{{ route('action-users') }}">
                         <i class="material-symbols-rounded opacity-5">table_view</i>
                         <span class="nav-link-text ms-1">Tables</span>
                     </a>
@@ -75,28 +75,25 @@
                         <i class="material-symbols-rounded opacity-5">notifications</i>
                         <span class="nav-link-text ms-1">Notifications</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item mt-3">
-                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Account pages
-                    </h6>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="ps-4 text-uppercase mb-0 text-xs text-dark font-weight-bolder opacity-5">Add Project
+                        </h6>
+                        @include('user.modal.create-project')
+                        <a href="" class="text-decoration-none" data-bs-toggle="modal"
+                            data-bs-target="#createProject">
+                            <i class="material-symbols-rounded opacity-5 mx-3">add</i>
+                        </a>
+                    </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/profile.html">
-                        <i class="material-symbols-rounded opacity-5">person</i>
-                        <span class="nav-link-text ms-1">Profile</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/sign-in.html">
-                        <i class="material-symbols-rounded opacity-5">login</i>
-                        <span class="nav-link-text ms-1">Sign In</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/sign-up.html">
-                        <i class="material-symbols-rounded opacity-5">assignment</i>
-                        <span class="nav-link-text ms-1">Sign Up</span>
-                    </a>
+                    @foreach ($projects as $project)
+                        <a class="nav-link text-dark" href="{{ route('projects.show', $project->id) }}">
+                            <i class="material-symbols-rounded opacity-5">folder</i>
+                            <span class="nav-link-text ms-1">{{ $project->name }}</span>
+                        </a>
+                    @endforeach
                 </li>
             </ul>
         </div>
@@ -292,9 +289,14 @@
         </div>
     </main>
     <div class="fixed-plugin">
-        <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
-            <i class="material-symbols-rounded py-2">settings</i>
-        </a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="fixed-plugin-button text-dark position-fixed px-3 py-2"
+                style="background: none; border: none; cursor: pointer;">
+                <i class="material-symbols-rounded py-2">logout</i>
+            </button>
+        </form>
+
         <div class="card shadow-lg">
             <div class="card-header pb-0 pt-3">
                 <div class="float-start">
@@ -637,6 +639,10 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('js/material-dashboard.min.js?v=3.2.0') }}"></script>
+
+    <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
 </body>
 
 </html>

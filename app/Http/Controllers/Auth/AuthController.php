@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -17,11 +20,17 @@ class AuthController extends Controller
 
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');
-
-        if (auth()->attempt($credentials)) {
-            return redirect()->intended('/');
+    
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+    
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } else {
+                return redirect()->route('user.dashboard');
+            }
         }
-
+    
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);
@@ -30,23 +39,25 @@ class AuthController extends Controller
     public function register(Request $request) {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'email' => 'required|email|unique:users|max:255',
+            'password' => 'required|min:5|confirmed',
         ]);
 
-        $user = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
         ]);
 
-        auth()->login($user);
-
-        return redirect()->route('home');
+        return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
     }
 
-    public function logout() {
-        auth()->logout();
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 }
+

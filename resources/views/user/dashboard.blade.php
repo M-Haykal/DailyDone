@@ -1,7 +1,6 @@
-@extends('layouts.index')
+@extends('user.layouts.app')
 
 @section('title', 'Dashboard')
-
 @section('content')
     <div class="row">
         <div class="ms-3">

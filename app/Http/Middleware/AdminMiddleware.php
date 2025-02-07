@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class AdminMiddleware
 {
@@ -17,12 +18,8 @@ class AdminMiddleware
     {
         $user = Auth::user();
 
-        if ($user) {
-            if (str_contains($user->email, '@admin')) {
-                return redirect('/admin/dashboard');
-            } elseif (str_contains($user->email, '@gmail')) {
-                return redirect('/user/dashboard');
-            }
+        if (!$user || $user->role !== 'admin') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
 
         return $next($request);

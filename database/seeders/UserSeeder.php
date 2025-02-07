@@ -18,8 +18,8 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Admin',
             'email' => 'haykal@admin.com',
-            'password' => Hash::make('haykal2302'), // Gantilah password ini
-            'role' => 'admin', // Pastikan ada kolom role di tabel users
+            'password' => Hash::make('haykal2302'),
+            'role' => 'admin',
         ]);
     }
 }
