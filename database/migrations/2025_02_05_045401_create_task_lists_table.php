@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('tag');
             $table->string('note');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

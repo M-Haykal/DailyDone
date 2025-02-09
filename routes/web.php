@@ -4,7 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\User\ProjectController;
-use App\Http\Controllers\User\ListController;
+use App\Http\Controllers\User\TaskController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -25,9 +25,11 @@ Route::middleware('auth')->post('logout', [AuthController::class, 'logout'])->na
 
 Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user', [UsersController::class, 'index'])->name('user.dashboard');
-    Route::post('create-project', [ProjectController::class, 'create'])->name('user.project.create');
+    Route::post('user/create-project', [ProjectController::class, 'store'])->name('user.project.store');
     Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
-    Route::post('create-list', [ListController::class, 'create'])->name('user.tasklist.create');
+    Route::get('user/tasklist', [TaskController::class, 'index'])->name('user.tasklist.index');
+    Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
+    Route::post('user/tasklist/{id}/update-status', [TaskListController::class, 'updateStatus'])->name('tasklist.updateStatus');
 });
 
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {

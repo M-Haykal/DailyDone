@@ -90,7 +90,7 @@
                                     </div>
                                     <p class="mt-4 text-sm text-center">
                                         Don't have an account?
-                                        <a href="../pages/sign-up.html"
+                                        <a href="{{ route('register') }}"
                                             class="text-primary text-gradient font-weight-bold">Sign up</a>
                                     </p>
                                 </form>

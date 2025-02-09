@@ -4,24 +4,29 @@
 
 @section('content')
     <div class="container mt-4">
-        <h1>{{ $project->name }}</h1>
-        <h2>{{ $project->description }}</h2>
-        @include('user.modal.list.create-list')
-        <a href="" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#createList">
-            <i class="material-symbols-rounded opacity-5 mx-3">add</i>
-        </a>
-
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">{{ $project->name }}</h1>
+            <div class="d-grid gap-2 d-md-block">
+                <a class="btn btn-primary" href="#" role="button"><i class="material-symbols-rounded">share</i>Share</a>
+                <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
+                    class="btn btn-success text-decoration-none">
+                    <i class="material-symbols-rounded">add</i>
+                    Add Task
+                </a>
+            </div>
+        </div>
+        <h2 class="text-muted">{{ $project->description }}</h2>
 
         <div class="row my-5">
             <!-- List Kiri (Sumber) -->
             <div class="col-md-4">
                 <h4>Belum Dikerjakan</h4>
                 <ul id="exampleLeft" class="list-group">
-                    <li class="list-group-item">Item 1</li>
-                    <li class="list-group-item">Item 2</li>
-                    <li class="list-group-item">Item 3</li>
-                    <li class="list-group-item">Item 4</li>
-                    <li class="list-group-item">Item 5</li>
+                    @forelse ($project->taskLists->where('status', 'pending') as $taskList)
+                        <li class="list-group-item" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
+                    @empty
+                        <li class="list-group-item text-muted">Belum ada tugas.</li>
+                    @endforelse
                 </ul>
             </div>
 
@@ -29,7 +34,11 @@
             <div class="col-md-4">
                 <h4>Sedang Dikerjakan</h4>
                 <ul id="exampleMiddle" class="list-group">
-                    <!-- Kosong awalnya -->
+                    @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
+                        <li class="list-group-item" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
+                    @empty
+                        <li class="list-group-item text-muted">Belum ada tugas.</li>
+                    @endforelse
                 </ul>
             </div>
 
@@ -37,7 +46,11 @@
             <div class="col-md-4">
                 <h4>Selesai Dikerjakan</h4>
                 <ul id="exampleRight" class="list-group">
-                    <!-- Kosong awalnya -->
+                    @forelse ($project->taskLists->where('status', 'completed') as $taskList)
+                        <li class="list-group-item" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
+                    @empty
+                        <li class="list-group-item text-muted">Belum ada tugas.</li>
+                    @endforelse
                 </ul>
             </div>
         </div>
@@ -74,4 +87,45 @@
         });
     </script>
 
+@endsection
+
+
+@section('script')
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function updateTaskStatus(taskId, status) {
+                fetch(`user/tasklist/${taskId}/update-status`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                "content")
+                        },
+                        body: JSON.stringify({
+                            status: status
+                        })
+                    }).then(response => response.json())
+                    .then(data => console.log(data))
+                    .catch(error => console.error("Error:", error));
+            }
+
+            function initializeSortable(containerId, status) {
+                new Sortable(document.getElementById(containerId), {
+                    group: "shared",
+                    animation: 150,
+                    onEnd: function(evt) {
+                        let taskId = evt.item.getAttribute("data-id");
+                        updateTaskStatus(taskId, status);
+                    }
+                });
+            }
+
+            initializeSortable("exampleLeft", "pending");
+            initializeSortable("exampleMiddle", "in_progress");
+            initializeSortable("exampleRight", "completed");
+        });
+    </script>
 @endsection

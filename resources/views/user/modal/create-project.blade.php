@@ -1,12 +1,12 @@
-<div class="modal" tabindex="-1" id="createProject">
+<div class="modal fade" id="createProject" tabindex="-1" aria-labelledby="createProjectLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Create New Project</h5>
+                <h5 class="modal-title" id="createProjectLabel">Create New Project</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('user.project.create') }}" method="post">
+                <form action="{{ route('user.project.store') }}" method="post">
                     @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label">Name Project</label>
@@ -24,10 +24,11 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-success">Create</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Create</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

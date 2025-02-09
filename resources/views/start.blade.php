@@ -76,9 +76,9 @@
             @endif
         @else
             @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="btn btn-custom">Daftar Sekarang</a>
-            @else
                 <a href="{{ route('login') }}" class="btn btn-custom">Masuk Sekarang</a>
+            @else
+                <a href="{{ route('register') }}" class="btn btn-custom">Daftar Sekarang</a>
             @endif
         @endauth
     </div>
@@ -87,5 +87,3 @@
 </body>
 
 </html>
-
-
