@@ -11,6 +11,13 @@ class SharedProject extends Model
         'project_id',
         'user_id',
         'permissions',
+        'token',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'permissions' => 'string',
+        'expires_at' => 'datetime',
     ];
 
     public function project()
@@ -23,3 +30,4 @@ class SharedProject extends Model
         return $this->belongsTo(User::class);
     }
 }
+

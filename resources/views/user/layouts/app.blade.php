@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('img/apple-icon.png') }}">
-    <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
+    <link rel="icon" type="image/jpg" href="{{ asset('img/logo_hayproject.jpeg') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>
         @yield('title')
@@ -33,9 +33,9 @@
                 aria-hidden="true" id="iconSidenav"></i>
             <a class="navbar-brand px-4 py-3 m-0"
                 href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
-                <img src="../assets/img/logo-ct-dark.png" class="navbar-brand-img" width="26" height="26"
-                    alt="main_logo">
-                <span class="ms-1 text-sm text-dark">Creative Tim</span>
+                <img src="{{ asset('img/logo_hayproject.jpeg') }}" class="navbar-brand-img rounded-circle"
+                    width="30" height="30" alt="main_logo">
+                <span class="ms-1 text-sm text-dark">Daily Done</span>
             </a>
         </div>
         <hr class="horizontal dark mt-0 mb-2">
@@ -60,8 +60,8 @@
                 </li>
                 <li class="nav-item">
                     @foreach ($projects as $project)
-                        @if ($project->user_id == auth()->user()->id)
-                            <a class="active nav-link text-dark" href="{{ route('projects.show', $project->id) }}">
+                        @if ($project->user_id == auth()->id() || $project->sharedUsers->contains(auth()->id()))
+                            <a class="nav-link text-dark" href="{{ route('projects.show', $project->id) }}">
                                 <i class="material-symbols-rounded opacity-5">folder</i>
                                 <span class="nav-link-text ms-1">{{ $project->name }}</span>
                             </a>
@@ -98,30 +98,6 @@
                         </div>
                     </div>
                     <ul class="navbar-nav d-flex align-items-center  justify-content-end">
-                        <li class="nav-item d-flex align-items-center">
-                            <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank"
-                                href="https://www.creative-tim.com/builder?ref=navbar-material-dashboard">Online
-                                Builder</a>
-                        </li>
-                        <li class="mt-1">
-                            <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard"
-                                data-icon="octicon-star" data-size="large" data-show-count="true"
-                                aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
-                        </li>
-                        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                                <div class="sidenav-toggler-inner">
-                                    <i class="sidenav-toggler-line"></i>
-                                    <i class="sidenav-toggler-line"></i>
-                                    <i class="sidenav-toggler-line"></i>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item px-3 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0">
-                                <i class="material-symbols-rounded fixed-plugin-button-nav">settings</i>
-                            </a>
-                        </li>
                         <li class="nav-item dropdown pe-3 d-flex align-items-center">
                             <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -209,6 +185,15 @@
                         <li class="nav-item d-flex align-items-center">
                             <a href="../pages/sign-in.html" class="nav-link text-body font-weight-bold px-0">
                                 <i class="material-symbols-rounded">account_circle</i>
+                            </a>
+                        </li>
+                        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                                <div class="sidenav-toggler-inner">
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                </div>
                             </a>
                         </li>
                     </ul>

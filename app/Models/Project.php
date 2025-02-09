@@ -24,5 +24,16 @@ class Project extends Model
         return $this->hasMany(TaskList::class, 'project_id');
     }
 
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function sharedUsers()
+    {
+        return $this->belongsToMany(User::class, 'shared_projects')
+                    ->withPivot('permissions', 'token', 'expires_at')
+                    ->withTimestamps();
+    }
 
 }

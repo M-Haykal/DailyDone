@@ -27,15 +27,15 @@
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
     <!-- Nucleo Icons -->
-    <link href="{{ asset('css/nucleo-icons.css') }}" rel="stylesheet" />
-    <link href="{{ asset('css/nucleo-svg.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/material-css/nucleo-icons.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/material-css/nucleo-svg.css') }}" rel="stylesheet" />
     <!-- Font Awesome Icons -->
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <!-- Material Icons -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <!-- CSS Files -->
-    <link id="pagestyle" href="{{ asset('css/material-dashboard.css?v=3.2.0') }}" rel="stylesheet" />
+    <link id="pagestyle" href="{{ asset('css/material-css/material-dashboard.css?v=3.2.0') }}" rel="stylesheet" />
 </head>
 
 <body class="bg-gray-200">
@@ -102,10 +102,10 @@
         </div>
     </main>
     <!--   Core JS Files   -->
-    <script src="{{ asset('js/core/popper.min.js') }}"></script>
-    <script src="{{ asset('js/core/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/smooth-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/material-js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('js/material-js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/material-js/plugins/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/material-js/plugins/smooth-scrollbar.min.js') }}"></script>
     <script>
         var win = navigator.platform.indexOf('Win') > -1;
         if (win && document.querySelector('#sidenav-scrollbar')) {
@@ -118,7 +118,7 @@
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-    <script src="{{ asset('js/material-dashboard.min.js?v=3.2.0') }}"></script>
+    <script src="{{ asset('js/material-js/material-dashboard.min.js?v=3.2.0') }}"></script>
 </body>
 
 </html>

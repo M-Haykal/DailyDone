@@ -4,18 +4,31 @@
 
 @section('content')
     <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h3 mb-0">{{ $project->name }}</h1>
-            <div class="d-grid gap-2 d-md-block">
-                <a class="btn btn-primary" href="#" role="button"><i class="material-symbols-rounded">share</i>Share</a>
-                <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
-                    class="btn btn-success text-decoration-none">
-                    <i class="material-symbols-rounded">add</i>
-                    Add Task
-                </a>
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+            style="background-image: url('https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;ixlib=rb-1.2.1&amp;auto=format&amp;fit=crop&amp;w=1920&amp;q=80');">
+            <span class="mask  bg-gradient-dark  opacity-6"></span>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <h1 class="mb-0 text-white">{{ $project->name }}</h1>
+                        <p class="text-white">{{ $project->description }}</p>
+                        <div class="d-grid gap-2 d-md-block">
+                            <a class="btn btn-primary" href="#" role="button" data-bs-toggle="modal"
+                                data-bs-target="#shareProject"><i class="material-symbols-rounded">share</i>Share</a>
+                            @if (auth()->id() == $project->user_id ||
+                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
+                                    class="btn btn-success text-decoration-none">
+                                    <i class="material-symbols-rounded">add</i>
+                                    Add Task
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <h2 class="text-muted">{{ $project->description }}</h2>
+        @include('user.modal.share-project')
 
         <div class="row my-5">
             <!-- List Kiri (Sumber) -->
@@ -91,13 +104,12 @@
 
 
 @section('script')
-    <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             function updateTaskStatus(taskId, status) {
-                fetch(`user/tasklist/${taskId}/update-status`, {
+                fetch(`{{ url('/user/tasklist') }}/${taskId}/update-status`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -107,19 +119,31 @@
                         body: JSON.stringify({
                             status: status
                         })
-                    }).then(response => response.json())
-                    .then(data => console.log(data))
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Response:", data);
+                    })
                     .catch(error => console.error("Error:", error));
             }
+
 
             function initializeSortable(containerId, status) {
                 new Sortable(document.getElementById(containerId), {
                     group: "shared",
                     animation: 150,
-                    onEnd: function(evt) {
+                    onAdd: function(evt) {
                         let taskId = evt.item.getAttribute("data-id");
+                        console.log("Task ID yang dipindahkan:", taskId);
+
+                        if (!taskId) {
+                            console.error("Task ID tidak ditemukan!");
+                            return;
+                        }
+
                         updateTaskStatus(taskId, status);
                     }
+
                 });
             }
 
@@ -128,4 +152,5 @@
             initializeSortable("exampleRight", "completed");
         });
     </script>
+
 @endsection

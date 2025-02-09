@@ -9,6 +9,8 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEmail;
 
 Route::get('/', function () {
     return view('start');
@@ -26,10 +28,24 @@ Route::middleware('auth')->post('logout', [AuthController::class, 'logout'])->na
 Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user', [UsersController::class, 'index'])->name('user.dashboard');
     Route::post('user/create-project', [ProjectController::class, 'store'])->name('user.project.store');
-    Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('user/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::post('/projects/{id}/share', [ProjectController::class, 'share'])->middleware('auth');
+    Route::get('/projects/join/{token}', [ProjectController::class, 'joinProject'])->name('projects.join');
+    Route::get('/projects/access/{token}', [ProjectController::class, 'accessProject'])->name('projects.access');
     Route::get('user/tasklist', [TaskController::class, 'index'])->name('user.tasklist.index');
     Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
-    Route::post('user/tasklist/{id}/update-status', [TaskListController::class, 'updateStatus'])->name('tasklist.updateStatus');
+    Route::post('user/tasklist/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasklist.updateStatus');
+});
+
+Route::get('/mail/send', function () {
+    $data = [
+        'subject' => 'Testing Kirim Email',
+        'title' => 'Testing Kirim Email',
+        'body' => 'Ini adalah email uji coba dari Tutorial Laravel: Send Email Via SMTP GMAIL @ qadrLabs.com'
+    ];
+
+    Mail::to('haykalmuhammad456@gmail.com')->send(new SendEmail($data));
+
 });
 
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {

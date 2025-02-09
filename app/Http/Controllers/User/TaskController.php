@@ -55,11 +55,20 @@ class TaskController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $taskList = TaskList::findOrFail($id);
-        $taskList->status = $request->status;
-        $taskList->save();
-
-        return response()->json(['message' => 'Status updated successfully']);
+        $task = TaskList::find($id);
+        if (!$task) {
+            return response()->json(['message' => 'Task tidak ditemukan'], 404);
+        }
+    
+        $task->status = $request->status;
+        $task->save();
+    
+        return response()->json([
+            'message' => 'Status berhasil diperbarui',
+            'task_id' => $task->id,
+            'new_status' => $task->status
+        ]);
     }
+    
 }
 

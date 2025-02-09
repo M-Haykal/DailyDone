@@ -60,5 +60,17 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function ownedProjects()
+    {
+        return $this->hasMany(Project::class, 'user_id');
+    }
+
+    public function sharedProjects()
+    {
+        return $this->belongsToMany(Project::class, 'project_user')
+            ->withPivot('permissions')
+            ->withTimestamps();
+    }
 }
 
