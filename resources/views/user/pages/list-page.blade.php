@@ -29,42 +29,80 @@
             </div>
         </div>
         @include('user.modal.share-project')
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>Users in this Project</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <strong>Project Owner:</strong> {{ $project->owner->name }} (Owner)
+                    </li>
+                    @foreach ($project->sharedUsers as $user)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ $user->name }} ({{ $user->pivot->permissions }})
+                            {{-- @if (auth()->id() == $project->user_id)
+                                <form
+                                    action="{{ route('user.remove-user', ['project_id' => $project->id, 'user_id' => $user->id]) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            @endif --}}
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
 
         <div class="row my-5">
             <!-- List Kiri (Sumber) -->
             <div class="col-md-4">
-                <h4>Belum Dikerjakan</h4>
-                <ul id="exampleLeft" class="list-group">
-                    @forelse ($project->taskLists->where('status', 'pending') as $taskList)
-                        <li class="list-group-item" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
-                    @empty
-                        <li class="list-group-item text-muted">Belum ada tugas.</li>
-                    @endforelse
-                </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Belum Dikerjakan</h4>
+                    </div>
+                    <ul id="exampleLeft" class="list-group list-group-flush">
+                        @forelse ($project->taskLists->where('status', 'pending') as $taskList)
+                            <li class="list-group-item list-items" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
+                        @empty
+                            <li class="list-group-item text-muted list-items">Belum ada tugas.</li>
+                        @endforelse
+                    </ul>
+                </div>
             </div>
 
             <!-- List Tengah -->
             <div class="col-md-4">
-                <h4>Sedang Dikerjakan</h4>
-                <ul id="exampleMiddle" class="list-group">
-                    @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
-                        <li class="list-group-item" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
-                    @empty
-                        <li class="list-group-item text-muted">Belum ada tugas.</li>
-                    @endforelse
-                </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Sedang Dikerjakan</h4>
+                    </div>
+                    <ul id="exampleMiddle" class="list-group list-group-flush">
+                        @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
+                            <li class="list-group-item list-items" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
+                        @empty
+                            <li class="list-group-item text-muted list-items">Belum ada tugas.</li>
+                        @endforelse
+                    </ul>
+                </div>
             </div>
 
             <!-- List Kanan -->
             <div class="col-md-4">
-                <h4>Selesai Dikerjakan</h4>
-                <ul id="exampleRight" class="list-group">
-                    @forelse ($project->taskLists->where('status', 'completed') as $taskList)
-                        <li class="list-group-item" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
-                    @empty
-                        <li class="list-group-item text-muted">Belum ada tugas.</li>
-                    @endforelse
-                </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Selesai Dikerjakan</h4>
+                    </div>
+                    <ul id="exampleRight" class="list-group list-group-flush">
+                        @forelse ($project->taskLists->where('status', 'completed') as $taskList)
+                            <li class="list-group-item list-items" data-id="{{ $taskList->id }}">{{ $taskList->list_items }}</li>
+                        @empty
+                            <li class="list-group-item text-muted list-items">Belum ada tugas.</li>
+                        @endforelse
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -127,14 +165,25 @@
                     .catch(error => console.error("Error:", error));
             }
 
+            function updateTaskColor(taskItem, status) {
+                taskItem.classList.remove("bg-danger", "bg-warning", "bg-success");
+
+                if (status === "pending") {
+                    taskItem.classList.add("bg-danger", "text-white");
+                } else if (status === "in_progress") {
+                    taskItem.classList.add("bg-warning", "text-dark");
+                } else if (status === "completed") {
+                    taskItem.classList.add("bg-success", "text-white");
+                }
+            }
 
             function initializeSortable(containerId, status) {
                 new Sortable(document.getElementById(containerId), {
                     group: "shared",
                     animation: 150,
                     onAdd: function(evt) {
-                        let taskId = evt.item.getAttribute("data-id");
-                        console.log("Task ID yang dipindahkan:", taskId);
+                        let taskItem = evt.item;
+                        let taskId = taskItem.getAttribute("data-id");
 
                         if (!taskId) {
                             console.error("Task ID tidak ditemukan!");
@@ -142,15 +191,20 @@
                         }
 
                         updateTaskStatus(taskId, status);
+                        updateTaskColor(taskItem, status);
                     }
-
                 });
             }
+
+            document.querySelectorAll(".list-items").forEach(item => {
+                let status = item.closest("ul").id === "exampleLeft" ? "pending" :
+                    item.closest("ul").id === "exampleMiddle" ? "in_progress" : "completed";
+                updateTaskColor(item, status);
+            });
 
             initializeSortable("exampleLeft", "pending");
             initializeSortable("exampleMiddle", "in_progress");
             initializeSortable("exampleRight", "completed");
         });
     </script>
-
 @endsection

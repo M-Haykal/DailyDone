@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\User\ProjectController;
@@ -15,6 +16,9 @@ use App\Mail\SendEmail;
 Route::get('/', function () {
     return view('start');
 })->name('home');
+
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'viewLogin'])->name('login');

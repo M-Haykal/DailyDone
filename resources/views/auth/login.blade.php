@@ -87,6 +87,8 @@
                                     <div class="text-center">
                                         <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Sign
                                             in</button>
+                                        <a href="{{ route('auth.google') }}"
+                                            class="btn btn-outline-primary w-100 mb-2">Sign in with Google</a>
                                     </div>
                                     <p class="mt-4 text-sm text-center">
                                         Don't have an account?

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('shared_projects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->string('email')->nullable();
             $table->enum('permissions', ['view', 'edit'])->default("view");
             $table->string('token')->unique();
             $table->timestamp('expires_at')->nullable();

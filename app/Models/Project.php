@@ -31,9 +31,10 @@ class Project extends Model
 
     public function sharedUsers()
     {
-        return $this->belongsToMany(User::class, 'shared_projects')
-                    ->withPivot('permissions', 'token', 'expires_at')
+        return $this->belongsToMany(User::class, 'shared_projects', 'project_id', 'user_id')
+                    ->withPivot('permissions')
                     ->withTimestamps();
     }
+    
 
 }

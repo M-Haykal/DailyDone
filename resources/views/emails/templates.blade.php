@@ -6,17 +6,20 @@
 @endphp
 
 @component('mail::message')
-    # Anda telah diberikan akses ke proyek: {{ $data['project']->name }}
+    <div style="text-align: center; font-family: Arial, sans-serif; color: #4a4a4a;">
+        <h1 style="color: #5a5a5a;">🎉 Selamat! 🎉</h1>
+        <p style="font-size: 18px;">Anda telah diberikan akses ke proyek:</p>
+        <h2 style="color: #2a9d8f;">{{ $data['project']->name }}</h2>
 
-    Anda mendapatkan akses sebagai
-    **{{ $sharedUser ? $sharedUser->pivot->permissions : 'Tidak diketahui' }}**.
+        <p style="font-size: 16px;">
+            Anda mendapatkan akses sebagai
+            <strong style="color: #e76f51;">{{ $sharedUser ? $sharedUser->pivot->permissions : 'Tidak diketahui' }}</strong>.
+        </p>
 
-    Klik tombol di bawah untuk membuka proyek:
+        @component('mail::button', ['url' => route('projects.access', ['token' => $data['token']])])
+            Akses Proyek
+        @endcomponent
 
-    @component('mail::button', ['url' => route('projects.access', ['token' => $data['token']])])
-        Akses Proyek
-    @endcomponent
-
-    Terima kasih,<br>
-    {{ config('app.name') }}
+        <p style="font-size: 14px;">Terima kasih,<br>{{ config('app.name') }}</p>
+    </div>
 @endcomponent

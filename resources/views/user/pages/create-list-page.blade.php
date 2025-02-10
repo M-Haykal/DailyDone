@@ -90,7 +90,7 @@
                 @endif
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary mx-1" data-bs-dismiss="modal">Close</button>
+                    <a href="{{ url()->previous() }}" class="btn btn-secondary mx-1">Close</a>
                     <button type="submit" class="btn btn-success mx-1">Save changes</button>
                 </div>
             </form>
@@ -108,3 +108,4 @@
             });
     </script>
 @endsection
+

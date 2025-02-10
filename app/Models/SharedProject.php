@@ -10,6 +10,7 @@ class SharedProject extends Model
     protected $fillable = [
         'project_id',
         'user_id',
+        'email',
         'permissions',
         'token',
         'expires_at',

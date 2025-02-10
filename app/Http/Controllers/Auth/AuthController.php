@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SharedProject;
 
 class AuthController extends Controller
 {
@@ -43,11 +44,16 @@ class AuthController extends Controller
             'password' => 'required|min:5|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => bcrypt($request->password),
         ]);
+
+        SharedProject::where('email', $user->email)
+        ->update(['user_id' => $user->id, 'email' => null]);
+
+        auth()->login($user);
 
         return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
     }
@@ -59,5 +65,17 @@ class AuthController extends Controller
 
         return redirect()->route('login');
     }
+
+    public function authenticated(Request $request, $user)
+    {
+        if (session()->has('redirect_to_project')) {
+            $projectId = session('redirect_to_project');
+            session()->forget('redirect_to_project');
+            return redirect()->route('projects.show', ['id' => $projectId]);
+        }
+
+        return redirect()->route('dashboard');
+    }
+
 }
 
