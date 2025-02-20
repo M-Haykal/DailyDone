@@ -61,8 +61,8 @@ class ProjectController extends Controller
     
         SharedProject::create([
             'project_id' => $id,
-            'user_id' => $receiver ? $receiver->id : null, // Bisa NULL jika user belum register
-            'email' => $request->email, // Simpan email untuk user yang belum register
+            'user_id' => $receiver ? $receiver->id : null,
+            'email' => $request->email,
             'permissions' => $request->permissions,
             'token' => $token,
             'expires_at' => now()->addDays(7),
@@ -74,7 +74,7 @@ class ProjectController extends Controller
             'project' => $project
         ]));
     
-        return response()->json(['message' => 'Proyek berhasil dibagikan.'], 200);
+        return redirect()->back()->with('success', 'Proyek berhasil dibagikan.');
     }
     
     public function joinProject($token)
@@ -118,6 +118,20 @@ class ProjectController extends Controller
 
         return redirect()->route('projects.show', ['id' => $sharedProject->project_id])
             ->with('success', 'Anda berhasil mengakses proyek ini.');
+    }
+
+    public function deleteProject($id)
+    {
+        $project = Project::findOrFail($id);
+        if ($project->user_id != auth()->id()) {
+            return abort(403, 'Anda tidak memiliki izin untuk menghapus proyek ini.');
+        }
+        foreach ($project->taskLists as $taskList) {
+            $taskList->tasks()->delete();
+            $taskList->delete();
+        }
+        $project->delete();
+        return redirect()->back()->with('success', 'Proyek berhasil dihapus.');
     }
 
 

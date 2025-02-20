@@ -69,6 +69,28 @@ class TaskController extends Controller
             'new_status' => $task->status
         ]);
     }
-    
+
+    public function bulkDelete(Request $request)
+    {
+        $taskIds = $request->task_ids;
+
+        if (!is_array($taskIds) || empty($taskIds)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada tugas yang dipilih'], 400);
+        }
+
+        $tasks = TaskList::whereIn('id', $taskIds)->get();
+
+        foreach ($tasks as $task) {
+            if (auth()->id() !== $task->project->user_id &&
+                !$task->project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+
+            $task->delete();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Tugas berhasil dihapus']);
+    }
+
 }
 

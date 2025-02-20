@@ -3,6 +3,10 @@
 @section('title', 'Create List Page')
 
 @section('content')
+    <div class="my-3 d-flex align-items-center">
+        <a href="{{ url()->previous() }}"><i class="material-symbols-rounded">arrow_back</i></a>
+        <h3 class="mb-0 h4 font-weight-bolder">Create List</h3>
+    </div>
     <div class="card">
         <div class="m-3">
             @if (session('success'))
@@ -20,7 +24,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('user.tasklist.store') }}" method="POST">
+            <form action="{{ route('user.tasklist.store') }}" method="POST" id="form-store">
                 @csrf
                 <div class="mb-3 input-group input-group-outline">
                     <label for="list-items" class="form-label">List Items</label>
@@ -91,7 +95,7 @@
 
                 <div class="modal-footer">
                     <a href="{{ url()->previous() }}" class="btn btn-secondary mx-1">Close</a>
-                    <button type="submit" class="btn btn-success mx-1">Save changes</button>
+                    <button type="submit" class="btn btn-success mx-1" id="btn-submit">Save changes</button>
                 </div>
             </form>
         </div>
@@ -106,6 +110,23 @@
             .catch(error => {
                 console.error(error);
             });
+
+        document.getElementById('btn-submit').addEventListener('click', event => {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Anda yakin?',
+                text: "Anda tidak dapat membatalkan ini!",
+                icon: 'peringatan',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, simpan!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-store').submit();
+                }
+            });
+        });
     </script>
 @endsection
 

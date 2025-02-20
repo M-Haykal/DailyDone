@@ -26,7 +26,7 @@
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
-    <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white my-2"
+    <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white my-2"
         id="sidenav-main">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
@@ -39,7 +39,7 @@
             </a>
         </div>
         <hr class="horizontal dark mt-0 mb-2">
-        <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+        <div class="collapse navbar-collapse w-auto " id="sidenav-collapse-main">
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link active bg-gradient-dark text-white" href="{{ route('user.dashboard') }}">
@@ -61,9 +61,16 @@
                 <li class="nav-item">
                     @foreach ($projects as $project)
                         @if ($project->user_id == auth()->id() || $project->sharedUsers->contains(auth()->id()))
-                            <a class="nav-link text-dark" href="{{ route('projects.show', $project->id) }}">
-                                <i class="material-symbols-rounded opacity-5">folder</i>
-                                <span class="nav-link-text ms-1">{{ $project->name }}</span>
+                            <a class="nav-link text-dark d-flex justify-content-between" href="{{ route('projects.show', $project->id) }}">
+                                <div class="folder d-flex">
+                                    <i class="material-symbols-rounded opacity-5">folder</i>
+                                    <span class="nav-link-text ms-1">{{ $project->name }}</span>
+                                </div>
+                                @if ($project->user_id == auth()->id())
+                                    <span class="delete-project ms-1" style="cursor: pointer;" data-id="{{ $project->id }}">
+                                        <i class="material-symbols-rounded opacity-5">delete</i>
+                                    </span>
+                                @endif
                             </a>
                         @endif
                     @endforeach
@@ -78,9 +85,9 @@
             </div>
         </div>
     </aside>
-    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg my-2">
         <!-- Navbar -->
-        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl" id="navbarBlur"
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl bg-white" id="navbarBlur"
             data-scroll="true">
             <div class="container-fluid py-1 px-3">
                 <nav aria-label="breadcrumb">
@@ -183,12 +190,13 @@
                             </ul>
                         </li>
                         <li class="nav-item d-flex align-items-center">
-                            <a href="../pages/sign-in.html" class="nav-link text-body font-weight-bold px-0">
-                                <i class="material-symbols-rounded">account_circle</i>
+                            <a href="{{ route('user.profile') }}" class="nav-link text-body font-weight-bold px-0">
+                                <img src="{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}" alt="" srcset="" class="avatar avatar-sm rounded-circle me-2">
                             </a>
                         </li>
                         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav"
+                                data-bs-target="#sidenav-main" aria-controls="sidenav-main">
                                 <div class="sidenav-toggler-inner">
                                     <i class="sidenav-toggler-line"></i>
                                     <i class="sidenav-toggler-line"></i>
@@ -218,26 +226,6 @@
                                 for a better web.
                             </div>
                         </div>
-                        {{-- <div class="col-lg-6">
-                            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com" class="nav-link text-muted"
-                                        target="_blank">Creative Tim</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted"
-                                        target="_blank">About Us</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/blog" class="nav-link text-muted"
-                                        target="_blank">Blog</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted"
-                                        target="_blank">License</a>
-                                </li>
-                            </ul>
-                        </div> --}}
                     </div>
                 </div>
             </footer>
@@ -258,6 +246,7 @@
     <script src="{{ asset('js/material-js/plugins/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ asset('js/material-js/plugins/smooth-scrollbar.min.js') }}"></script>
     <script src="{{ asset('js/material-js/plugins/chartjs.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         var ctx = document.getElementById("chart-bars").getContext("2d");
 

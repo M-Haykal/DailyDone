@@ -31,6 +31,7 @@ Route::middleware('auth')->post('logout', [AuthController::class, 'logout'])->na
 
 Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user', [UsersController::class, 'index'])->name('user.dashboard');
+    Route::get('user/profile', [UsersController::class, 'profile'])->name('user.profile');
     Route::post('user/create-project', [ProjectController::class, 'store'])->name('user.project.store');
     Route::get('user/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
     Route::post('/projects/{id}/share', [ProjectController::class, 'share'])->middleware('auth');
@@ -39,6 +40,9 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user/tasklist', [TaskController::class, 'index'])->name('user.tasklist.index');
     Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
     Route::post('user/tasklist/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasklist.updateStatus');
+    Route::delete('/user/tasklist/{id}', [TaskListController::class, 'destroy'])->name('user.tasklist.destroy');
+    Route::post('user/projects/{id}/delete', [ProjectController::class, 'deleteProject'])->name('projects.delete');
+    Route::post('user/tasklist/bulk-delete', [TaskController::class, 'bulkDelete'])->name('taskLists.bulkDelete'); 
 });
 
 Route::get('/mail/send', function () {
