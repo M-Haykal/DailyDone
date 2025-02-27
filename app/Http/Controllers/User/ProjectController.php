@@ -127,12 +127,10 @@ class ProjectController extends Controller
             return abort(403, 'Anda tidak memiliki izin untuk menghapus proyek ini.');
         }
         foreach ($project->taskLists as $taskList) {
-            $taskList->tasks()->delete();
             $taskList->delete();
         }
         $project->delete();
-        return redirect()->back()->with('success', 'Proyek berhasil dihapus.');
+        return redirect()->route('user.dashboard')->with('success', 'Proyek berhasil dihapus.');
     }
-
 
 }

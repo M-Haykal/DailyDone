@@ -18,6 +18,8 @@ class TaskList extends Model
         'priority',
         'tag',
         'note',
+        'start_date',
+        'end_date',
         'project_id',
         'user_id',
     ];

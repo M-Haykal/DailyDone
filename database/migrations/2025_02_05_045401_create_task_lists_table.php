@@ -19,6 +19,8 @@ return new class extends Migration
             $table->enum('priority', ['low', 'medium', 'high']);
             $table->string('tag');
             $table->string('note');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();

@@ -5,15 +5,15 @@
 @section('content')
     <div class="my-3 d-flex align-items-center">
         <a href="{{ url()->previous() }}"><i class="material-symbols-rounded">arrow_back</i></a>
-        <h3 class="mb-0 h4 font-weight-bolder">Create List</h3>
+        <h3 class="mb-0 h4 font-weight-bolder mx-2">Create List</h3>
     </div>
     <div class="card">
         <div class="m-3">
-            @if (session('success'))
+            {{-- @if (session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
                 </div>
-            @endif
+            @endif --}}
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
@@ -86,6 +86,28 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="start-date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control @error('start_date') is-invalid @enderror"
+                                id="start-date" name="start_date" value="{{ old('start_date') }}" required>
+                            @error('start_date')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="end-date" class="form-label">End Date</label>
+                            <input type="date" class="form-control @error('end_date') is-invalid @enderror"
+                                id="end-date" name="end_date" value="{{ old('end_date') }}" required>
+                            @error('end_date')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
                 @if (isset($project))
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <input type="hidden" name="user_id" value="{{ auth()->id() }}">
@@ -127,6 +149,16 @@
                 }
             });
         });
+
+        @if (session('success'))
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: '#3085d6'
+                });
+            });
+        @endif
     </script>
 @endsection
-

@@ -38,6 +38,8 @@ class TaskController extends Controller
             'priority' => $request->priority,
             'tag' => $request->tag,
             'note' => $request->note,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
             'project_id' => $request->project_id,
             'user_id' => auth()->id(),
         ]);
@@ -91,6 +93,19 @@ class TaskController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Tugas berhasil dihapus']);
     }
+
+    public function detailList($id)
+    {
+        $task = TaskList::find($id);
+        if (!$task) {
+            return response()->json(['message' => 'Task tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'html' => view('user.modal.detail-list', compact('task'))->render()
+        ]);
+    }
+
 
 }
 

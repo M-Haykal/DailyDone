@@ -3,10 +3,8 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\User\UsersController;
-use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\User\ProjectController;
 use App\Http\Controllers\User\TaskController;
-use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -41,6 +39,7 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
     Route::post('user/tasklist/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasklist.updateStatus');
     Route::delete('/user/tasklist/{id}', [TaskListController::class, 'destroy'])->name('user.tasklist.destroy');
+    Route::get('user/detailList/{id}', [TaskController::class, 'detailList'])->name('user.detailList');
     Route::post('user/projects/{id}/delete', [ProjectController::class, 'deleteProject'])->name('projects.delete');
     Route::post('user/tasklist/bulk-delete', [TaskController::class, 'bulkDelete'])->name('taskLists.bulkDelete'); 
 });
@@ -54,8 +53,4 @@ Route::get('/mail/send', function () {
 
     Mail::to('haykalmuhammad456@gmail.com')->send(new SendEmail($data));
 
-});
-
-Route::middleware(['auth', AdminMiddleware::class])->group(function () {
-    Route::get('admin', [AdminController::class, 'index'])->name('admin.dashboard');
 });

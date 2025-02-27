@@ -46,11 +46,10 @@
         @include('user.modal.share-project')
 
         <div class="row my-5">
-            <!-- List Kiri (Sumber) -->
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4>Belum Dikerjakan</h4>
+                        <h4>To Do</h4>
                         @if (auth()->id() == $project->user_id ||
                                 $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
                             <a href="javascript:void(0);" id="delete-selected">
@@ -58,7 +57,7 @@
                             </a>
                         @endif
                     </div>
-                    <ul id="exampleLeft" class="list-group list-group-flush">
+                    <ul id="exampleLeft" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'pending') as $taskList)
                             <li class="list-group-item list-items d-flex justify-content-between"
                                 data-id="{{ $taskList->id }}">
@@ -69,17 +68,16 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item text-muted list-items">Belum ada tugas.</li>
+                            <li class="list-group-item">Belum ada tugas.</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
 
-            <!-- List Tengah -->
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4>Sedang Dikerjakan</h4>
+                        <h4>In Progress</h4>
                         @if (auth()->id() == $project->user_id ||
                                 $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
                             <a href="javascript:void(0);" id="delete-selected">
@@ -87,7 +85,7 @@
                             </a>
                         @endif
                     </div>
-                    <ul id="exampleMiddle" class="list-group list-group-flush">
+                    <ul id="exampleMiddle" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
                             <li class="list-group-item list-items d-flex justify-content-between"
                                 data-id="{{ $taskList->id }}">
@@ -98,17 +96,16 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item text-muted list-items">Belum ada tugas.</li>
+                            <li class="list-group-item">Belum ada tugas.</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
 
-            <!-- List Kanan -->
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4>Selesai Dikerjakan</h4>
+                        <h4>Completed</h4>
                         @if (auth()->id() == $project->user_id ||
                                 $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
                             <a href="javascript:void(0);" id="delete-selected">
@@ -116,7 +113,7 @@
                             </a>
                         @endif
                     </div>
-                    <ul id="exampleRight" class="list-group list-group-flush">
+                    <ul id="exampleRight" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'completed') as $taskList)
                             <li class="list-group-item list-items d-flex justify-content-between"
                                 data-id="{{ $taskList->id }}">
@@ -127,15 +124,14 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item text-muted list-items">Belum ada tugas.</li>
+                            <li class="list-group-item">Belum ada tugas.</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
+            @include('user.modal.detail-list')
         </div>
     </div>
-
-
 @endsection
 
 
@@ -241,74 +237,79 @@
             initializeSortable("exampleRight", "completed");
         });
 
-        document.getElementById("delete-selected").addEventListener("click", function() {
-            let selectedTasks = [];
+        document.querySelectorAll("#delete-selected").forEach(button => {
+            button.addEventListener("click", function() {
+                let selectedTasks = [];
+                let parentCard = this.closest(".card");
 
-            document.querySelectorAll(".task-checkbox:checked").forEach((checkbox) => {
-                selectedTasks.push(checkbox.value);
-            });
-
-            if (selectedTasks.length === 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Pilih tugas yang ingin dihapus!'
+                parentCard.querySelectorAll(".task-checkbox:checked").forEach((checkbox) => {
+                    selectedTasks.push(checkbox.value);
                 });
-                return;
-            }
 
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda tidak dapat mengembalikan ini!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
+                if (selectedTasks.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Pilih tugas yang ingin dihapus!'
+                    });
+                    return;
+                }
 
-                fetch("{{ route('taskLists.bulkDelete') }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute("content"),
-                        },
-                        body: JSON.stringify({
-                            task_ids: selectedTasks
-                        }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            selectedTasks.forEach((id) => {
-                                let listItem = document.querySelector(`[data-id='${id}']`);
-                                if (listItem) listItem.remove();
-                            });
-                            Swal.fire(
-                                'Deleted!',
-                                'Tugas berhasil dihapus!',
-                                'success'
-                            );
-                        } else {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Anda tidak dapat mengembalikan ini!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!'
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    fetch("{{ route('taskLists.bulkDelete') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector(
+                                        'meta[name="csrf-token"]')
+                                    .getAttribute("content"),
+                            },
+                            body: JSON.stringify({
+                                task_ids: selectedTasks
+                            }),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                selectedTasks.forEach((id) => {
+                                    let listItem = parentCard.querySelector(
+                                        `[data-id='${id}']`);
+                                    if (listItem) listItem.remove();
+                                });
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Tugas berhasil dihapus!',
+                                    'success'
+                                );
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Gagal menghapus tugas: ' + (data.message ||
+                                        'Terjadi kesalahan tidak diketahui')
+                                });
+                                console.error("Error:", data);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
-                                text: 'Gagal menghapus tugas: ' + (data.message ||
-                                    'Terjadi kesalahan tidak diketahui')
+                                text: 'Terjadi kesalahan tidak diketahui!'
                             });
-                            console.error("Error:", data);
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Terjadi kesalahan tidak diketahui!'
                         });
-                    });
+                });
             });
         });
     </script>
