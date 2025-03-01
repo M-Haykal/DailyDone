@@ -42,7 +42,7 @@
                 <li class="nav-item">
                     <a class="nav-link active bg-gradient-dark text-white" href="{{ route('user.dashboard') }}">
                         <i class="material-symbols-rounded opacity-5">home</i>
-                        <span class="nav-link-text ms-1">Home</span>
+                        <span class="nav-link-text ms-1">Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item mt-3">
@@ -84,9 +84,11 @@
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
             <div class="mx-3">
-                <a class="btn btn-outline-dark mt-4 w-100"
-                    href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard?ref=sidebarfree"
-                    type="button">Documentation</a>
+                <form action="{{ route('logout') }}" method="post">
+                    @csrf
+                    <button class="btn btn-outline-primary mt-4 w-100 align-items-center" type="submit"><i
+                            class="material-symbols-rounded py-2">logout</i>Logout</button>
+                </form>
             </div>
         </div>
     </aside>
@@ -112,7 +114,7 @@
                         </div>
                     </div>
                     <ul class="navbar-nav d-flex align-items-center  justify-content-end">
-                        <li class="nav-item dropdown pe-3 d-flex align-items-center">
+                        {{-- <li class="nav-item dropdown pe-3 d-flex align-items-center">
                             <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="material-symbols-rounded">notifications</i>
@@ -195,7 +197,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
                         <li class="nav-item d-flex align-items-center">
                             <a href="{{ route('user.profile') }}" class="nav-link text-body font-weight-bold px-0">
                                 <img src="{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}"
@@ -239,16 +241,6 @@
             </footer>
         </div>
     </main>
-    <div class="fixed-plugin">
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="fixed-plugin-button text-dark position-fixed px-3 py-2"
-                style="background: none; border: none; cursor: pointer;">
-                <i class="material-symbols-rounded py-2">logout</i>
-            </button>
-        </form>
-    </div>
-    <!--   Core JS Files   -->
     <script src="{{ asset('js/material-js/core/popper.min.js') }}"></script>
     <script src="{{ asset('js/material-js/core/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/material-js/plugins/perfect-scrollbar.min.js') }}"></script>
@@ -258,6 +250,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         AOS.init();
+        document.getElementById('iconNavbarSidenav').addEventListener('click', function() {
+            var sidenav = document.getElementById('sidenav-main');
+            sidenav.classList.toggle('d-none');
+        });
+
         function confirmDelete(event, projectId) {
             event.preventDefault();
 
@@ -286,17 +283,13 @@
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
     </script>
-    <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('js/materila-js/material-dashboard.min.js?v=3.2.0') }}"></script>
-
     <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
     @yield('script')
 </body>
 
 </html>
+

@@ -2,93 +2,43 @@
 
 @section('title', 'Dashboard')
 @section('content')
-    <div class="row">
-        <div class="ms-3">
-            <h3 class="mb-0 h4 font-weight-bolder">Dashboard</h3>
-            <p class="mb-4">
-                Dailydone: Rencanakan, Lakukan, Selesaikan
+    <div class="row overflow-x-hidden">
+        <div class="d-flex align-items-center my-3">
+            <h3 class="mb-0 h4 font-weight-bolder me-auto">Dashboard</h3>
+            <p class="mb-0 ms-auto text-secondary">
+                Plan, Do, Done.
             </p>
         </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-4">
             <div class="card">
-                <div class="card-header p-2 ps-3">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <p class="text-sm mb-0 text-capitalize">Today's Date</p>
-                            <h4 class="mb-0">{{ date('d-m-Y') }}</h4>
+                <div class="card-body">
+                    <h5 class="card-title">Project List</h5>
+                    <ul class="list-group list-group-flush">
+                        @foreach ($projects as $project)
+                            <li class="list-group-item">
+                                @if ($project->user_id == auth()->id() || $project->sharedUsers()->where('user_id', auth()->id())->exists())
+                                    <a class="nav-link text-dark d-flex justify-content-between align-items-center"
+                                        href="{{ route('projects.show', $project->id) }}">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold">{{ $project->name }}</div>
+                                            {{ Str::limit($project->description, 20) }}
+                                        </div>
+                                        <div class="d-flex">
+                                            <span class="badge text-bg-danger me-2" title="Pending">
+                                                {{ $project->taskLists->where('status', 'pending')->count() }}</span>
+                                            <span class="badge text-bg-warning me-2"
+                                                title="In Progress">{{ $project->taskLists->where('status', 'in_progress')->count() }}</span>
+                                            <span class="badge text-bg-success" title="Completed">
+                                                {{ $project->taskLists->where('status', 'completed')->count() }}</span>
+                                        </div>
+                                    </a>
+                                @endif
+                            </li>
+                        @endforeach
+                        <div class="pagination my-3 justify-content-center">
+                            {{ $projects->links('pagination::bootstrap-4') }}
                         </div>
-                        <div
-                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">calendar_month</i>
-                        </div>
-                    </div>
-                </div>
-                <hr class="dark horizontal my-0">
-                <div class="card-footer p-2 ps-3">
-                    <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">{{ date('l') }}</span></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <div class="card">
-                <div class="card-header p-2 ps-3">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <p class="text-sm mb-0 text-capitalize">Today's Users</p>
-                            <h4 class="mb-0">2300</h4>
-                        </div>
-                        <div
-                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">person</i>
-                        </div>
-                    </div>
-                </div>
-                <hr class="dark horizontal my-0">
-                <div class="card-footer p-2 ps-3">
-                    <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+3% </span>than last
-                        month</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <div class="card">
-                <div class="card-header p-2 ps-3">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <p class="text-sm mb-0 text-capitalize">Ads Views</p>
-                            <h4 class="mb-0">3,462</h4>
-                        </div>
-                        <div
-                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">leaderboard</i>
-                        </div>
-                    </div>
-                </div>
-                <hr class="dark horizontal my-0">
-                <div class="card-footer p-2 ps-3">
-                    <p class="mb-0 text-sm"><span class="text-danger font-weight-bolder">-2% </span>than
-                        yesterday</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6">
-            <div class="card">
-                <div class="card-header p-2 ps-3">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <p class="text-sm mb-0 text-capitalize">Sales</p>
-                            <h4 class="mb-0">$103,430</h4>
-                        </div>
-                        <div
-                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">weekend</i>
-                        </div>
-                    </div>
-                </div>
-                <hr class="dark horizontal my-0">
-                <div class="card-footer p-2 ps-3">
-                    <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+5% </span>than
-                        yesterday</p>
+                    </ul>
                 </div>
             </div>
         </div>

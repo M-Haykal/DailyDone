@@ -1,17 +1,3 @@
-<!--
-=========================================================
-* Material Dashboard 3 - v3.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard
-* Copyright 2024 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,9 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('img/apple-icon.png') }}">
-    <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
+    <link rel="icon" type="image/jpg" href="{{ asset('img/logo_hayproject.jpeg') }}">
     <title>
-        Material Dashboard 3 by Creative Tim
+        Sign in - DailyDone
     </title>
     <!--     Fonts and icons     -->
     <link rel="stylesheet" type="text/css"
@@ -50,7 +36,7 @@
                             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                                 <div class="bg-gradient-dark shadow-dark border-radius-lg py-3 pe-1">
                                     <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">Sign in</h4>
-                                    <div class="row mt-3">
+                                    {{-- <div class="row mt-3">
                                         <div class="col-2 text-center ms-auto">
                                             <a class="btn btn-link px-3" href="javascript:;">
                                                 <i class="fa fa-facebook text-white text-lg"></i>
@@ -66,7 +52,7 @@
                                                 <i class="fa fa-google text-white text-lg"></i>
                                             </a>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             <div class="card-body">
@@ -88,7 +74,8 @@
                                         <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Sign
                                             in</button>
                                         <a href="{{ route('auth.google') }}"
-                                            class="btn btn-outline-primary w-100 mb-2">Sign in with Google</a>
+                                            class="btn btn-outline-primary w-100 mb-2"><i
+                                                class="fa fa-google text-md"></i>Sign in with Google</a>
                                     </div>
                                     <p class="mt-4 text-sm text-center">
                                         Don't have an account?

@@ -94,18 +94,56 @@ class TaskController extends Controller
         return response()->json(['success' => true, 'message' => 'Tugas berhasil dihapus']);
     }
 
-    public function detailList($id)
+    public function detailList($idProject, $idTaskList)
     {
-        $task = TaskList::find($id);
-        if (!$task) {
-            return response()->json(['message' => 'Task tidak ditemukan'], 404);
-        }
+        $taskList = TaskList::where('project_id', $idProject)
+            ->whereHas('project', function ($query) {
+                $query->where('user_id', auth()->id());
+            })->findOrFail($idTaskList);
 
-        return response()->json([
-            'html' => view('user.modal.detail-list', compact('task'))->render()
-        ]);
+        return view('user.pages.detail-list-page', compact('taskList'));
     }
 
+    public function viewEdit($idProject, $idTaskList)
+    {
+        $tasklist = TaskList::where('project_id', $idProject)
+            ->whereHas('project', function ($query) {
+                $query->where('user_id', auth()->id());
+            })->findOrFail($idTaskList);
+
+        return view('user.pages.edit-list-page', compact('tasklist'));
+    }
+
+    public function edit(Request $request, $idProject, $idTaskList)
+    {
+        $task = TaskList::where('project_id', $idProject)
+            ->whereHas('project', function ($query) {
+                $query->where('user_id', auth()->id());
+            })->findOrFail($idTaskList);
+
+        if (!$task) {
+            return back()->with('error', 'Task tidak ditemukan');
+        }
+
+        if (auth()->id() !== $task->project->user_id &&
+            !$task->project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists()) {
+            return back()->with('error', 'Unauthorized');
+        }
+
+        $validatedData = $request->validate([
+            'list_items' => 'required|string',
+            'detail_list' => 'nullable|string',
+            'priority' => 'nullable|string',
+            'tag' => 'nullable|string',
+            'note' => 'nullable|string',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date'
+        ]);
+
+        $task->update($validatedData);
+
+        return back()->with('success', 'Task berhasil diupdate');
+    }
 
 }
 

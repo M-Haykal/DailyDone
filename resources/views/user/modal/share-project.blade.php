@@ -17,8 +17,8 @@
                     <div class="mb-3">
                         <label>Izin:</label>
                         <select name="permissions" class="form-control">
-                            <option value="view">Just Look</option>
                             <option value="edit">Can Edit</option>
+                            <option value="view">Can View</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Share</button>

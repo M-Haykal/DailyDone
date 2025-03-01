@@ -45,8 +45,8 @@
         </div>
         @include('user.modal.share-project')
 
-        <div class="row my-5">
-            <div class="col-md-4">
+        <div class="row my-3">
+            <div class="col-md-4 my-2">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>To Do</h4>
@@ -59,22 +59,42 @@
                     </div>
                     <ul id="exampleLeft" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'pending') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between"
+                            <li class="list-group-item list-items d-flex justify-content-between align-items-center"
                                 data-id="{{ $taskList->id }}">
                                 {{ $taskList->list_items }}
-                                <div class="form-check">
-                                    <input class="form-check-input task-checkbox" type="checkbox"
-                                        value="{{ $taskList->id }}" id="flexCheckDefault">
+                                <div class="action d-flex align-items-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input task-checkbox" type="checkbox"
+                                            value="{{ $taskList->id }}" id="flexCheckDefault">
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="material-symbols-rounded text-white">more_vert</i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item"
+                                                    href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
+                                            </li>
+                                            @if (auth()->id() == $project->user_id ||
+                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </div>
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item">Belum ada tugas.</li>
+                            <li class="list-group-item">No tasks</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 my-2">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>In Progress</h4>
@@ -87,22 +107,42 @@
                     </div>
                     <ul id="exampleMiddle" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between"
+                            <li class="list-group-item list-items d-flex justify-content-between align-items-center"
                                 data-id="{{ $taskList->id }}">
                                 {{ $taskList->list_items }}
-                                <div class="form-check">
-                                    <input class="form-check-input task-checkbox" type="checkbox"
-                                        value="{{ $taskList->id }}" id="flexCheckDefault">
+                                <div class="action d-flex align-items-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input task-checkbox" type="checkbox"
+                                            value="{{ $taskList->id }}" id="flexCheckDefault">
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="material-symbols-rounded text-white">more_vert</i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item"
+                                                    href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
+                                            </li>
+                                            @if (auth()->id() == $project->user_id ||
+                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </div>
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item">Belum ada tugas.</li>
+                            <li class="list-group-item">No tasks</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 my-2">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>Completed</h4>
@@ -115,21 +155,42 @@
                     </div>
                     <ul id="exampleRight" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'completed') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between"
+                            <li class="list-group-item list-items d-flex justify-content-between align-items-center"
                                 data-id="{{ $taskList->id }}">
                                 {{ $taskList->list_items }}
-                                <div class="form-check">
-                                    <input class="form-check-input task-checkbox" type="checkbox"
-                                        value="{{ $taskList->id }}" id="flexCheckDefault">
+                                <div class="action d-flex align-items-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input task-checkbox" type="checkbox"
+                                            value="{{ $taskList->id }}" id="flexCheckDefault">
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="material-symbols-rounded text-white">more_vert</i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item"
+                                                    href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
+                                            </li>
+
+                                            @if (auth()->id() == $project->user_id ||
+                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </div>
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item">Belum ada tugas.</li>
+                            <li class="list-group-item">No tasks</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
-            @include('user.modal.detail-list')
+            {{-- @include('user.modal.detail-list') --}}
         </div>
     </div>
 @endsection
