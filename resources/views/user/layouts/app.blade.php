@@ -20,6 +20,8 @@
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('css/material-css/material-dashboard.css?v=3.2.0') }}" rel="stylesheet" />
 
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css" rel="stylesheet" />
+
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
@@ -288,8 +290,8 @@
     <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
     @yield('script')
 </body>
 
 </html>
-

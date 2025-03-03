@@ -70,14 +70,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="mb-3 input-group input-group-outline">
-                    <label for="tag" class="form-label">Tag</label>
-                    <input type="text" class="form-control @error('tag') is-invalid @enderror" id="tag"
-                        name="tag" value="{{ old('tag') }}" required>
-                    @error('tag')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+                <input type="hidden" name="tag" value="{{ auth()->user()->name }}">
                 <div class="mb-3 input-group input-group-outline">
                     <label for="note" class="form-label">Note</label>
                     <input type="text" class="form-control @error('note') is-invalid @enderror" id="note"

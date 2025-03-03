@@ -5,14 +5,41 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+use App\Models\TaskList;
 use App\Models\Project;
 use App\Models\User;
 
 class UsersController extends Controller
 {
     public function index() {
-        $projects = Project::where('user_id', auth()->id())->simplePaginate(5);
-        return view('user.dashboard', compact('projects'));
+        $projects = Project::where('user_id', auth()->id())
+            ->with('taskLists')
+            ->simplePaginate(5);
+
+        $taskList = TaskList::where('user_id', auth()->id())
+            ->orderBy('start_date')
+            ->orderBy('end_date')
+            ->get();
+        
+        $tasks = $taskList->map(function ($task) {
+            return [
+                'id' => $task->id,
+                'title' => $task->list_items,
+                'start' => $task->start_date,
+                'end' => $task->end_date,
+                'body' => $task->detail_list,
+            ];
+        })->toArray();
+
+        $quote = Cache::remember('daily_quote', now()->endOfDay(), function () {
+            $response = Http::get('https://dummyjson.com/quotes');
+            $quotes = $response->json()['quotes'];
+            return $quotes[array_rand($quotes)];
+        });
+
+        return view('user.dashboard', compact('projects', 'tasks', 'quote'));
     }
 
     public function profile() {
