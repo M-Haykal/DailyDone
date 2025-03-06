@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use App\Models\TaskList;
 use App\Models\Project;
 use App\Models\User;
@@ -39,7 +40,22 @@ class UsersController extends Controller
             return $quotes[array_rand($quotes)];
         });
 
-        return view('user.dashboard', compact('projects', 'tasks', 'quote'));
+        $userId = Auth::id();
+
+        $statusCounts = TaskList::whereHas('project', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, status, COUNT(*) as total')
+            ->groupBy('month', 'status')
+            ->orderBy('month')
+            ->get();
+
+        $formattedData = [];
+        foreach ($statusCounts as $row) {
+            $formattedData[$row->month][$row->status] = $row->total;
+        }
+
+        return view('user.dashboard', compact('projects', 'tasks', 'quote', 'formattedData'));
     }
 
     public function profile() {

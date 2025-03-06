@@ -48,7 +48,7 @@
         <div class="row my-3">
             <div class="col-md-4 my-2">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center m-3 p-0">
                         <h4>To Do</h4>
                         @if (auth()->id() == $project->user_id ||
                                 $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
@@ -59,7 +59,7 @@
                     </div>
                     <ul id="exampleLeft" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'pending') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between align-items-center"
+                            <li class="list-group-item list-items d-flex justify-content-between align-items-center m-1 rounded"
                                 data-id="{{ $taskList->id }}">
                                 {{ $taskList->list_items }}
                                 <div class="action d-flex align-items-center">
@@ -88,7 +88,7 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item">No tasks</li>
+                            <li class="list-group-item m-1 rounded">No tasks</li>
                         @endforelse
                     </ul>
                 </div>
@@ -96,7 +96,7 @@
 
             <div class="col-md-4 my-2">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center m-3 p-0">
                         <h4>In Progress</h4>
                         @if (auth()->id() == $project->user_id ||
                                 $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
@@ -107,7 +107,7 @@
                     </div>
                     <ul id="exampleMiddle" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between align-items-center"
+                            <li class="list-group-item list-items d-flex justify-content-between align-items-center m-1 rounded"
                                 data-id="{{ $taskList->id }}">
                                 {{ $taskList->list_items }}
                                 <div class="action d-flex align-items-center">
@@ -136,7 +136,7 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item">No tasks</li>
+                            <li class="list-group-item m-1 rounded">No tasks</li>
                         @endforelse
                     </ul>
                 </div>
@@ -144,7 +144,7 @@
 
             <div class="col-md-4 my-2">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center m-3 p-0">
                         <h4>Completed</h4>
                         @if (auth()->id() == $project->user_id ||
                                 $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
@@ -155,7 +155,7 @@
                     </div>
                     <ul id="exampleRight" class="list-group list-group-flush list-group-item-secondary">
                         @forelse ($project->taskLists->where('status', 'completed') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between align-items-center"
+                            <li class="list-group-item list-items d-flex justify-content-between align-items-center m-1 rounded"
                                 data-id="{{ $taskList->id }}">
                                 {{ $taskList->list_items }}
                                 <div class="action d-flex align-items-center">
@@ -180,17 +180,23 @@
                                                         href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
                                                 </li>
                                             @endif
+
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#commentTasklist">
+                                                    Comment
+                                                </a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item">No tasks</li>
+                            <li class="list-group-item m-1 rounded">No tasks</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
-            {{-- @include('user.modal.detail-list') --}}
+            @include('user.modal.comment-tasklist')
         </div>
     </div>
 @endsection

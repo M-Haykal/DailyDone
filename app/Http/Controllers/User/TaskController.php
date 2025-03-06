@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TaskList;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -23,17 +24,19 @@ class TaskController extends Controller
     public function store(Request $request) {
         $request->validate([
             'list_items' => 'required|string|max:255',
-            'detail_list' => 'required|string',
+            'detail_list' => 'required|string|max:5000',
             'status' => 'required|in:pending,in_progress,completed',
             'priority' => 'required|in:low,medium,high',
             'tag' => 'required|string|max:255',
             'note' => 'required|string|max:255',
             'project_id' => 'required|exists:projects,id',
         ]);
+
+        $safeDetailList = htmlspecialchars($request->detail_list, ENT_QUOTES, 'UTF-8');
     
         $taskList = TaskList::create([
             'list_items' => $request->list_items,
-            'detail_list' => $request->detail_list,
+            'detail_list' => $safeDetailList,
             'status' => $request->status,
             'priority' => $request->priority,
             'tag' => $request->tag,

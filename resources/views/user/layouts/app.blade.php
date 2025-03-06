@@ -14,6 +14,9 @@
         href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
     <!-- Font Awesome Icons -->
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Material Icons -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -49,7 +52,8 @@
                 </li>
                 <li class="nav-item mt-3">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="ps-4 text-uppercase mb-0 text-xs text-dark font-weight-bolder opacity-5">Add Project
+                        <h6 class="ps-4 text-uppercase mb-0 text-xs text-dark font-weight-bolder opacity-5">Add
+                            Project
                         </h6>
                         @include('user.modal.create-project')
                         <a href="" class="text-decoration-none" data-bs-toggle="modal"
@@ -99,7 +103,7 @@
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl bg-white" id="navbarBlur"
             data-scroll="true">
             <div class="container-fluid py-1 px-3">
-                <nav aria-label="breadcrumb">
+                {{-- <nav aria-label="breadcrumb">
                     <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                         <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a>
                         </li>
@@ -107,7 +111,7 @@
                             {{ preg_replace('/\?.*/', '', Request::routeIs('user.dashboard') ? 'Dashboard' : (Request::routeIs('projects.show') ? 'Project' : '')) }}
                         </li>
                     </ol>
-                </nav>
+                </nav> --}}
                 <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                     <div class="ms-md-auto pe-md-3 d-flex align-items-center">
                         <div class="input-group input-group-outline">
@@ -115,7 +119,7 @@
                             <input type="text" class="form-control">
                         </div>
                     </div>
-                    <ul class="navbar-nav d-flex align-items-center  justify-content-end">
+                    <ul class="navbar-nav d-flex align-items-center justify-content-end">
                         {{-- <li class="nav-item dropdown pe-3 d-flex align-items-center">
                             <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -202,6 +206,7 @@
                         </li> --}}
                         <li class="nav-item d-flex align-items-center">
                             <a href="{{ route('user.profile') }}" class="nav-link text-body font-weight-bold px-0">
+                                <span>{{ auth()->user()->name }}</span>
                                 <img src="{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}"
                                     alt="" srcset="" class="avatar avatar-sm rounded-circle me-2">
                             </a>
@@ -225,7 +230,7 @@
             @yield('content')
             <footer class="footer py-4  ">
                 <div class="container-fluid">
-                    <div class="row">
+                    <div class="row justify-content-lg-between">
                         <div class="col-lg-6 mb-lg-0 mb-4">
                             <div class="copyright text-center text-sm text-muted text-lg-start">
                                 ©
@@ -234,9 +239,12 @@
                                 </script>,
                                 made with <i class="fa fa-heart"></i> by
                                 <a href="https://m-haykal.github.io/hayporto" class="font-weight-bold"
-                                    target="_blank">HayProject</a>
+                                    target="_blank">Creative Tim</a>
                                 for a better web.
                             </div>
+                        </div>
+                        <div class="col-lg-6 text-lg-end text-center text-muted text-sm">
+                            <p>Developer by <a href="https://m-haykal.github.io/hayporto">HayProject</a></p>
                         </div>
                     </div>
                 </div>
@@ -286,11 +294,12 @@
         }
     </script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script src="{{ asset('js/materila-js/material-dashboard.min.js?v=3.2.0') }}"></script>
+    <script src="{{ asset('js/material-js/material-dashboard.min.js?v=3.2.0') }}"></script>
     <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @yield('script')
 </body>
 

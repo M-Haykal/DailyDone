@@ -67,6 +67,14 @@
                 <div id="calendar"></div>
             </div>
         </div>
+        <div class="col-xl-6 my-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Task Status</h5>
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -92,5 +100,40 @@
 
             calendar.render();
         });
+        var data = {!! json_encode($formattedData) !!};
+
+        var months = Object.keys(data);
+        var statuses = ["pending", "in_progress", "completed"];
+        var colors = {
+            "pending": "red",
+            "in_progress": "yellow",
+            "completed": "green"
+        };
+
+        var datasets = statuses.map(status => ({
+            label: status,
+            data: months.map(month => data[month][status] || 0),
+            backgroundColor: colors[status],
+            borderColor: colors[status],
+            borderWidth: 1
+        }));
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     </script>
+
 @endsection

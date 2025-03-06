@@ -19,9 +19,10 @@
                                         alt="profile_image" class="rounded-circle border border-3 border-primary"
                                         id="preview-image" style="width: 150px; height: 150px; object-fit: cover;">
                                     <p class="text-muted mt-2">Drag & Drop or Click to Upload</p>
+                                    <p class="text-muted">Max dimension 400px x 400px</p>
                                 </div>
                                 <input type="file" class="form-control d-none" name="image_profile" id="image_profile"
-                                    accept="image/*">
+                                    accept="image/*" onchange="handleInputFile(this)">
                             </div>
 
                             <div class="row g-3">
@@ -105,9 +106,27 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     previewImage.src = event.target.result;
+                    checkImageDimension(event.target.result);
                 }
                 reader.readAsDataURL(files[0]);
             }
+        }
+
+        function checkImageDimension(dataURL) {
+            let img = new Image();
+            img.onload = function() {
+                if (this.width !== 400 || this.height !== 400) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Image must be 400x400',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    imageInput.value = "";
+                    previewImage.src = "{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}";
+                }
+            };
+            img.src = dataURL;
         }
 
         @if (session('success'))
@@ -122,3 +141,4 @@
         @endif
     </script>
 @endsection
+

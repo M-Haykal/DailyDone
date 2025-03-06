@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\User\ProjectController;
 use App\Http\Controllers\User\TaskController;
+use App\Http\Controllers\User\CommentController;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -47,5 +48,9 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::put('user/project/{idProject}/tasklist/{idTaskList}/edit', [TaskController::class, 'edit'])->name('user.tasklist.edit');
     Route::get('user/project/{idProject}/tasklist/{idTaskList}/edit', [TaskController::class, 'viewEdit'])->name('user.tasklist.viewEdit');
     Route::get('user/project/{idProject}/tasklist/{idTaskList}', [TaskController::class, 'detailList'])->name('user.detailList');
-
+    Route::get('user/comments', [CommentController::class, 'index'])->name('user.comments.index');
+    Route::post('user/comments/store', [CommentController::class, 'store'])->name('user.comments.store');
+    Route::get('user/comments/{comment}', [CommentController::class, 'show'])->name('user.comments.show');
+    Route::put('user/comments/{comment}/edit', [CommentController::class, 'update'])->name('user.comments.update');
+    Route::delete('user/comments/{comment}', [CommentController::class, 'destroy'])->name('user.comments.destroy');
 });
