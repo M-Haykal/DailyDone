@@ -42,11 +42,23 @@ class ProjectController extends Controller
         $project->user_id = auth()->id();
         $project->name = $request->name;
         $project->description = $request->description;
+        $project->start_date = $request->start_date;
+        $project->end_date = $request->end_date;
         $project->save();
         
         return redirect()->back()->with('success', 'Task created successfully');
     }
-    
+
+    public function edit($id)
+    {
+        $project = Project::findOrFail($id);
+        
+        if ($project->user_id != auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit proyek ini.');
+        }
+        
+        return view('user.dashboard', compact('project'));
+    }
 
     public function share(Request $request, $id)
     {
@@ -76,6 +88,7 @@ class ProjectController extends Controller
     
         return redirect()->back()->with('success', 'Proyek berhasil dibagikan.');
     }
+
     
     public function joinProject($token)
     {

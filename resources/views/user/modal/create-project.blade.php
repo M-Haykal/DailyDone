@@ -26,6 +26,28 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="start-date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control @error('start_date') is-invalid @enderror"
+                                    id="start-date" name="start_date" value="{{ old('start_date') }}" required>
+                                @error('start_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="end-date" class="form-label">End Date</label>
+                                <input type="date" class="form-control @error('end_date') is-invalid @enderror"
+                                    id="end-date" name="end_date" value="{{ old('end_date') }}" required>
+                                @error('end_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-success">Create</button>

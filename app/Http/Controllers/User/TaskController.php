@@ -22,6 +22,8 @@ class TaskController extends Controller
     }
     
     public function store(Request $request) {
+        $project = Project::findOrFail($request->project_id);
+
         $request->validate([
             'list_items' => 'required|string|max:255',
             'detail_list' => 'required|string|max:5000',
@@ -29,6 +31,18 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high',
             'tag' => 'required|string|max:255',
             'note' => 'required|string|max:255',
+            'start_date' => [
+                'required',
+                'date',
+                'after_or_equal:' . $project->start_date,
+                'before_or_equal:' . $project->end_date,
+            ],
+            'end_date' => [
+                'required',
+                'date',
+            'after_or_equal:start_date',
+                'before_or_equal:' . $project->end_date,
+            ],
             'project_id' => 'required|exists:projects,id',
         ]);
 

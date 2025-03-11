@@ -1,5 +1,5 @@
-<div class="modal" tabindex="-1" id="commentTasklist">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+<div class="modal" tabindex="-1" id="note-project">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Comment</h5>

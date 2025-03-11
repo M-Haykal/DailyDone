@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
     <link rel="icon" type="image/jpg" href="{{ asset('img/logo_hayproject.jpeg') }}">
     <title>
-        sign up - DailyDone
+        DailyDone | Sign Up
     </title>
     <!--     Fonts and icons     -->
     <link rel="stylesheet" type="text/css"

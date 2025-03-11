@@ -9,11 +9,6 @@
     </div>
     <div class="card">
         <div class="m-3">
-            {{-- @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif --}}
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
@@ -79,25 +74,26 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+                @php
+                    $minStartDate = isset($project) ? $project->start_date : '';
+                    $maxEndDate = isset($project) ? $project->end_date : '';
+                @endphp
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="start-date" class="form-label">Start Date</label>
                             <input type="date" class="form-control @error('start_date') is-invalid @enderror"
-                                id="start-date" name="start_date" value="{{ old('start_date') }}" required>
-                            @error('start_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                                id="start-date" name="start_date" min="{{ $minStartDate }}" max="{{ $maxEndDate }}"
+                                value="{{ old('start_date') }}" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="end-date" class="form-label">End Date</label>
                             <input type="date" class="form-control @error('end_date') is-invalid @enderror"
-                                id="end-date" name="end_date" value="{{ old('end_date') }}" required>
-                            @error('end_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                                id="end-date" name="end_date" min="{{ $minStartDate }}" max="{{ $maxEndDate }}"
+                                value="{{ old('end_date') }}" required>
                         </div>
                     </div>
                 </div>
@@ -153,5 +149,26 @@
                 });
             });
         @endif
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let projectStartDate = "{{ $minStartDate }}";
+            let projectEndDate = "{{ $maxEndDate }}";
+
+            let startDateInput = document.getElementById('start-date');
+            let endDateInput = document.getElementById('end-date');
+
+            startDateInput.setAttribute("min", projectStartDate);
+            startDateInput.setAttribute("max", projectEndDate);
+            endDateInput.setAttribute("min", projectStartDate);
+            endDateInput.setAttribute("max", projectEndDate);
+
+            startDateInput.addEventListener("change", function() {
+                endDateInput.setAttribute("min", this.value);
+            });
+
+            endDateInput.addEventListener("change", function() {
+                startDateInput.setAttribute("max", this.value);
+            });
+        });
     </script>
 @endsection

@@ -71,6 +71,12 @@
                 <div class="card-body overflow-auto">
                     <ul class="list-group list-group-flush" id="comment-list">
                     </ul>
+                    <input type="hidden" id="reply-comment-id">
+                    <div id="reply-container" class="mt-3 d-none">
+                        <strong>Replying to <span id="replying-to"></span></strong>
+                        <button type="button" class="btn btn-sm btn-danger" id="cancel-reply"><i
+                                class="material-symbols-rounded">close</i></button>
+                    </div>
                 </div>
                 <div class="card-footer border-top">
                     <div class="row d-flex align-items-center justify-content-between">
@@ -94,44 +100,72 @@
 @section('script')
     <script>
         $(document).ready(function() {
-            $.ajax({
-                url: "{{ route('user.comments.index') }}",
-                type: "GET",
-                success: function(response) {
-                    $.each(response, function(index, comment) {
-                        $("#comment-list").append(
-                            `<li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>${comment.content}</span>
-                                    <span>${comment.user.name}</span>
-                                </li>`
-                        );
-                    });
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    console.error('Failed to load comments: ' + thrownError);
-                }
-            });
+            loadComments();
+
+            function loadComments() {
+                $.ajax({
+                    url: "{{ route('user.comments.index') }}",
+                    type: "GET",
+                    data: {
+                        task_list_id: "{{ $taskList->id }}"
+                    },
+                    success: function(response) {
+                        let commentList = $("#comment-list");
+                        commentList.empty();
+
+                        response.forEach(comment => {
+                            let repliesHtml = "";
+                            if (comment.replies.length > 0) {
+                                repliesHtml += '<ul class="list-group mt-2">';
+                                comment.replies.forEach(reply => {
+                                    repliesHtml += `
+                                <li class="list-group-item border-0 ps-4">
+                                    <strong>${reply.user.name}:</strong> ${reply.content}
+                                </li>`;
+                                });
+                                repliesHtml += '</ul>';
+                            }
+
+                            commentList.append(`
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${comment.user.name}:</strong> ${comment.content}
+                                </div>
+                                <button class="btn btn-sm btn-link text-primary reply-btn" data-comment-id="${comment.id}" data-user="${comment.user.name}">Reply</button>
+                            </div>
+                            ${repliesHtml}
+                        </li>
+                    `);
+                        });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.error('Failed to load comments: ' + thrownError);
+                    }
+                });
+            }
 
             $("#btn-comment").click(function() {
+                let content = $("#comment-content").val();
+                let parentId = $("#reply-comment-id").val() || null;
+
                 $.ajax({
                     url: "{{ route('user.comments.store') }}",
                     type: "POST",
                     data: JSON.stringify({
                         task_list_id: "{{ $taskList->id }}",
-                        content: $("#comment-content").val()
+                        content: content,
+                        parent_id: parentId
                     }),
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                         'Content-Type': 'application/json'
                     },
                     success: function(response) {
-                        $("#comment-list").append(
-                            `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>${response.content}</span>
-                    <span>${response.user.name}</span>
-                </li>`
-                        );
                         $("#comment-content").val("");
+                        $("#reply-comment-id").val("");
+                        $("#reply-container").addClass("d-none");
+                        loadComments();
                     },
                     error: function(response) {
                         console.error('Failed to post comment:', response);
@@ -139,6 +173,20 @@
                 });
             });
 
+            $(document).on("click", ".reply-btn", function() {
+                let commentId = $(this).data("comment-id");
+                let userName = $(this).data("user");
+
+                $("#reply-comment-id").val(commentId);
+                $("#replying-to").text(userName);
+                $("#reply-container").removeClass("d-none");
+                $("#comment-content").focus();
+            });
+
+            $("#cancel-reply").click(function() {
+                $("#reply-comment-id").val("");
+                $("#reply-container").addClass("d-none");
+            });
         });
     </script>
 @endsection

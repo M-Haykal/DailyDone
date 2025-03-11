@@ -11,17 +11,24 @@
                 <div class="row justify-content-center">
                     <div class="col-md-6 text-center">
                         <h1 class="mb-0 text-white">{{ $project->name }}</h1>
-                        <p class="text-white">{{ $project->description }}</p>
+                        <p class="text-white m-auto">{{ $project->description }}</p>
+                        <span class="text-white">{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }} -
+                            {{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</span>
                         <div class="d-grid gap-2 d-md-block">
-                            <a class="btn btn-primary" href="#" role="button" data-bs-toggle="modal"
-                                data-bs-target="#shareProject"><i class="material-symbols-rounded">share</i>Share</a>
-                            @if (auth()->id() == $project->user_id ||
-                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                                <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
-                                    class="btn btn-success text-decoration-none">
-                                    <i class="material-symbols-rounded">add</i>
-                                    Add Task
-                                </a>
+                            @if (\Carbon\Carbon::parse($project->end_date)->gt(now()))
+                                <a class="btn btn-primary" href="#" role="button" data-bs-toggle="modal"
+                                    data-bs-target="#shareProject"><i class="material-symbols-rounded">share</i>Share</a>
+                                @if (auth()->id() == $project->user_id ||
+                                        $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                    <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
+                                        class="btn btn-success text-decoration-none">
+                                        <i class="material-symbols-rounded">add</i>
+                                        Add Task
+                                    </a>
+                                    <a class="position-absolute bottom-0 end-0 p-3 text-white" href="#" role="button"
+                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop"
+                                        aria-controls="offcanvasTop"><i class="material-symbols-rounded">edit</i></a>
+                                @endif
                             @endif
                         </div>
                         <div class="avatar-group mt-2">
@@ -44,6 +51,7 @@
             </div>
         </div>
         @include('user.modal.share-project')
+        @include('user.modal.edit-background-image')
 
         <div class="row my-3">
             <div class="col-md-4 my-2">
@@ -88,7 +96,7 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item m-1 rounded">No tasks</li>
+                            <p class="m-1 text-center">No tasks</p>
                         @endforelse
                     </ul>
                 </div>
@@ -136,7 +144,7 @@
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item m-1 rounded">No tasks</li>
+                            <p class="m-1 text-center">No tasks</p>
                         @endforelse
                     </ul>
                 </div>
@@ -172,31 +180,17 @@
                                             <li><a class="dropdown-item"
                                                     href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
                                             </li>
-
-                                            @if (auth()->id() == $project->user_id ||
-                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                                                <li>
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
-                                                </li>
-                                            @endif
-
-                                            <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#commentTasklist">
-                                                    Comment
-                                                </a>
-                                            </li>
                                         </ul>
                                     </div>
                                 </div>
                             </li>
                         @empty
-                            <li class="list-group-item m-1 rounded">No tasks</li>
+                            <p class="m-1 text-center">No tasks</p>
                         @endforelse
                     </ul>
                 </div>
             </div>
-            @include('user.modal.comment-tasklist')
+            @include('user.modal.note-project')
         </div>
     </div>
 @endsection
@@ -227,8 +221,8 @@
             new Sortable(document.getElementById("exampleRight"), {
                 group: {
                     name: 'shared',
-                    pull: true,
-                    put: true
+                    pull: false,
+                    put: false
                 },
                 animation: 150
             });
