@@ -10,7 +10,8 @@ class BackgroundProjects extends Model
 
     protected $fillable = [
         'image_project',
-        'project_id'
+        'project_id',
+        'user_id'
     ];
 
     public function project()

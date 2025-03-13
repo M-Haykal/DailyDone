@@ -9,16 +9,15 @@
                 Plan, Do, Done.
             </p>
         </div>
-        <div class="col-xl-6 my-2">
-            <div class="card">
+        <div class="col-xl-8 my-2">
+            {{-- <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Project List</h5>
                     <ul class="list-group list-group-flush">
                         @foreach ($projects as $project)
                             <li class="list-group-item">
-                                @if (
-                                    $project->user_id == auth()->id() ||
-                                        $project->sharedUsers()->where('user_id', auth()->id())->exists())
+                                @if ($project->user_id == auth()->id() ||
+    $project->sharedUsers()->where('user_id', auth()->id())->exists())
                                     <a class="nav-link text-dark d-flex justify-content-between align-items-center"
                                         href="{{ route('projects.show', $project->id) }}">
                                         <div class="ms-2 me-auto">
@@ -49,9 +48,118 @@
                         </div>
                     </ul>
                 </div>
+            </div> --}}
+
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col-lg-6 col-7">
+                            <h5 class="card-title">Projects</h5>
+                        </div>
+                        <div class="col-lg-6 col-5 my-auto text-end">
+                            <div class="dropdown float-lg-end pe-4">
+                                <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v text-secondary"></i>
+                                </a>
+                                <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                    <li><a class="dropdown-item border-radius-md"
+                                            href="{{ route('user.dashboard', ['sort' => 'az']) }}">A - Z</a></li>
+                                    <li><a class="dropdown-item border-radius-md"
+                                            href="{{ route('user.dashboard', ['sort' => 'newest']) }}">New Projects</a></li>
+                                    <li><a class="dropdown-item border-radius-md"
+                                            href="{{ route('user.dashboard', ['sort' => 'deadline']) }}">Closest
+                                            Deadline</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0 pb-2">
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Projects
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Members
+                                    </th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Deadline</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Detail Task</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($projects as $project)
+                                    @if (
+                                        $project->user_id == auth()->id() ||
+                                            $project->sharedUsers()->where('user_id', auth()->id())->exists())
+                                        <tr>
+                                            <a href="{{ route('projects.show', $project->id) }}">
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ $project->name }}</h6>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="avatar-group mt-2">
+                                                        <a href="javascript:;" class="avatar avatar-xs rounded-circle"
+                                                            data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                            title="Project Owner: {{ $project->owner->name }}">
+                                                            <img src="{{ $project->owner->image_profile ? url('storage/images/' . $project->owner->image_profile) : Avatar::create($project->owner->name)->toBase64() }}"
+                                                                alt="{{ $project->owner->name }}">
+                                                        </a>
+                                                        @foreach ($project->sharedUsers as $user)
+                                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
+                                                                data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                                title="{{ $user->name }} ({{ $user->pivot->permissions }})">
+                                                                <img src="{{ $user->image_profile ? url('storage/images/' . $user->image_profile) : Avatar::create($user->name)->toBase64() }}"
+                                                                    alt="user{{ $loop->index + 2 }}">
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle text-center text-sm">
+                                                    <span
+                                                        class="text-xs font-weight-bold">{{ \Carbon\Carbon::parse($project->end_date)->diffForHumans() }}</span>
+                                                </td>
+                                                <td
+                                                    class="align-middle mt-3">
+                                                    <div class="d-flex justify-content-center">
+                                                        @php
+                                                            $statuses = [
+                                                                'pending' => 'danger',
+                                                                'in_progress' => 'warning',
+                                                                'completed' => 'success',
+                                                            ];
+                                                        @endphp
+                                                        @foreach ($statuses as $status => $badgeClass)
+                                                            <span class="badge text-bg-{{ $badgeClass }} me-2"
+                                                                title="{{ ucfirst(str_replace('_', ' ', $status)) }}">
+                                                                {{ $project->taskLists->where('status', $status)->count() }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                </td>
+                                            </a>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="pagination my-3 justify-content-center">
+                            {{ $projects->links('pagination::bootstrap-4') }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-xl-6 my-2">
+        <div class="col-xl-4 my-2">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title mb-4">Quote of the Day</h5>
@@ -77,108 +185,6 @@
             </div>
         </div>
     </div>
-    <div class="card">
-        <div class="card-header pb-0">
-            <div class="row">
-                <div class="col-lg-6 col-7">
-                    <h6>Projects</h6>
-                    <p class="text-sm mb-0">
-                        <i class="fa fa-check text-info" aria-hidden="true"></i>
-                        <span class="font-weight-bold ms-1">30 done</span> this month
-                    </p>
-                </div>
-                <div class="col-lg-6 col-5 my-auto text-end">
-                    <div class="dropdown float-lg-end pe-4">
-                        <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-ellipsis-v text-secondary"></i>
-                        </a>
-                        <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
-                            <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a></li>
-                            <li><a class="dropdown-item border-radius-md" href="javascript:;">Another action</a></li>
-                            <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else here</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-body px-0 pb-2">
-            <div class="table-responsive">
-                <table class="table align-items-center mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Projects</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Members
-                            </th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Deadline</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Detail List</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($projects as $project)
-                            @if (
-                                $project->user_id == auth()->id() ||
-                                    $project->sharedUsers()->where('user_id', auth()->id())->exists())
-                                <tr>
-                                    <a href="{{ route('projects.show', $project->id) }}">
-                                        <td>
-                                            <div class="d-flex px-2 py-1">
-                                                <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-sm">{{ $project->name }}</h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="avatar-group mt-2">
-                                                <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                                    title="Project Owner: {{ $project->owner->name }}">
-                                                    <img src="{{ $project->owner->image_profile ? url('storage/images/' . $project->owner->image_profile) : Avatar::create($project->owner->name)->toBase64() }}"
-                                                        alt="{{ $project->owner->name }}">
-                                                </a>
-                                                @foreach ($project->sharedUsers as $user)
-                                                    <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                                        title="{{ $user->name }} ({{ $user->pivot->permissions }})">
-                                                        <img src="{{ $user->image_profile ? url('storage/images/' . $user->image_profile) : Avatar::create($user->name)->toBase64() }}"
-                                                            alt="user{{ $loop->index + 2 }}">
-                                                    </a>
-                                                @endforeach
-                                            </div>
-                                        </td>
-                                        <td class="align-middle text-center text-sm">
-                                            <span
-                                                class="text-xs font-weight-bold">{{ \Carbon\Carbon::parse($project->end_date)->diffForHumans() }}</span>
-                                        </td>
-                                        <td class="align-middle">
-                                            <div class="d-flex">
-                                                @php
-                                                    $statuses = [
-                                                        'pending' => 'danger',
-                                                        'in_progress' => 'warning',
-                                                        'completed' => 'success',
-                                                    ];
-                                                @endphp
-                                                @foreach ($statuses as $status => $badgeClass)
-                                                    <span class="badge text-bg-{{ $badgeClass }} me-2"
-                                                        title="{{ ucfirst(str_replace('_', ' ', $status)) }}">
-                                                        {{ $project->taskLists->where('status', $status)->count() }}</span>
-                                                @endforeach
-                                            </div>
-                                        </td>
-                                    </a>
-                                </tr>
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="pagination my-3 justify-content-center">
-                    {{ $projects->links('pagination::bootstrap-4') }}
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('script')
@@ -193,7 +199,7 @@
                 events: taskData.map(function(task) {
                     return {
                         id: task.id,
-                        title: task.title,
+                        title: `${task.title} - ${task.project}`,
                         start: task.start,
                         end: task.end,
                     };

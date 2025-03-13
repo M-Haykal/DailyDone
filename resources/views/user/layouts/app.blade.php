@@ -44,73 +44,53 @@
         <hr class="horizontal dark mt-0 mb-2">
         <div class="collapse navbar-collapse w-auto " id="sidenav-collapse-main">
             <ul class="navbar-nav">
+                <li class="nav-item my-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="ps-4 text-uppercase mb-0 text-xs text-dark font-weight-bolder opacity-5">
+                            Menu
+                        </h6>
+                    </div>
+                </li>
                 <li class="nav-item">
-                    <a class="nav-link active bg-gradient-dark text-white" href="{{ route('user.dashboard') }}">
-                        <i class="material-symbols-rounded opacity-5">home</i>
+                    <a class="nav-link  text-dark {{ request()->routeIs('user.dashboard') ? 'bg-gradient-dark text-white' : '' }}"
+                        href="{{ route('user.dashboard') }}">
+                        <i class="material-symbols-rounded opacity-5">dashboard</i>
                         <span class="nav-link-text ms-1">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item mt-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="ps-4 text-uppercase mb-0 text-xs text-dark font-weight-bolder opacity-5">Add
-                            Project
-                        </h6>
-                        <a href="" class="text-decoration-none" data-bs-toggle="modal"
-                            data-bs-target="#createProject">
-                            <i class="material-symbols-rounded opacity-5 mx-3">add</i>
-                        </a>
-                    </div>
+                <li class="nav-item">
+                    <a class="nav-link text-dark {{ request()->routeIs('user.project') ? 'bg-gradient-dark text-white' : '' }}"
+                        href="{{ route('user.project') }}">
+                        <i class="material-symbols-rounded opacity-5">task_alt</i>
+                        <span class="nav-link-text ms-1">Projects</span>
+                    </a>
                 </li>
-                @foreach ($projects as $project)
-                    @if ($project->end_date >= now()->format('Y-m-d') || !$project->end_date)
-                        <li class="nav-item">
-                            @if ($project->user_id == auth()->id() || $project->sharedUsers->contains(auth()->id()))
-                                <a class="nav-link text-dark align-items-center"
-                                    href="{{ route('projects.show', $project->id) }}">
-                                    <div class="folder d-flex">
-                                        <i class="material-symbols-rounded opacity-5">folder</i>
-                                        <span class="nav-link-text ms-1">{{ $project->name }}</span>
-                                    </div>
-                                </a>
-                            @endif
-                        </li>
-                    @endif
-                @endforeach
-                <li class="nav-item mt-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="ps-4 text-uppercase mb-0 text-xs text-dark font-weight-bolder opacity-5">
-                            Project Inactive
-                        </h6>
-                    </div>
+                <li class="nav-item">
+                    <a class="nav-link text-dark {{ request()->routeIs('user.archive') ? 'bg-gradient-dark text-white' : '' }}"
+                        href="{{ route('user.archive') }}">
+                        <i class="material-symbols-rounded opacity-5">archive</i>
+                        <span class="nav-link-text ms-1">Archive</span>
+                    </a>
                 </li>
-                @if ($projects->count() > 0)
-                    @foreach ($projects as $project)
-                        @if (
-                            $project->end_date < now()->format('Y-m-d') &&
-                                ($project->user_id == auth()->id() || $project->sharedUsers->contains(auth()->id())))
-                            <li class="nav-item opacity-7">
-                                <a class="nav-link text-dark align-items-center"
-                                    href="{{ route('projects.show', $project->id) }}">
-                                    <div class="folder d-flex">
-                                        <i class="material-symbols-rounded opacity-5">folder</i>
-                                        <span class="nav-link-text ms-1">{{ $project->name }} (Expired)</span>
-                                    </div>
-                                </a>
-                            </li>
-                        @endif
-                    @endforeach
-                @else
-                    <li class="nav-item opacity-7">
-                        No projects Inactive
-                    </li>
-                @endif
+                <li class="nav-item">
+                    <a class="nav-link text-dark {{ request()->routeIs('user.deadline') ? 'bg-gradient-dark text-white' : '' }}"
+                        href="{{ route('user.deadline') }}">
+                        <i class="material-symbols-rounded opacity-5">date_range</i>
+                        <span class="nav-link-text ms-1">Deadline</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
             <div class="mx-3">
+                <a class="btn btn-outline-dark w-100 align-items-center" href="{{ route('user.profile') }}">
+                    <img src="{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}"
+                        class="navbar-brand-img rounded-circle" width="30" height="30" alt="main_logo">
+                    {{ auth()->user()->name }}
+                </a>
                 <form action="{{ route('logout') }}" method="post">
                     @csrf
-                    <button class="btn btn-outline-primary mt-4 w-100 align-items-center" type="submit"><i
+                    <button class="btn btn-outline-danger w-100 align-items-center" type="submit"><i
                             class="material-symbols-rounded py-2">logout</i>Logout</button>
                 </form>
             </div>
@@ -118,8 +98,8 @@
     </aside>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg my-2">
         <!-- Navbar -->
-        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl bg-white" id="navbarBlur"
-            data-scroll="true">
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl bg-white"
+            id="navbarBlur" data-scroll="true">
             <div class="container-fluid py-1 px-3">
                 <nav>
                     <div class="input-group input-group-outline">

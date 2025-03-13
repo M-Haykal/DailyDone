@@ -6,6 +6,7 @@ use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\User\ProjectController;
 use App\Http\Controllers\User\TaskController;
 use App\Http\Controllers\User\CommentController;
+use App\Http\Controllers\User\backgroundProjectController;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -31,6 +32,9 @@ Route::middleware('auth')->post('logout', [AuthController::class, 'logout'])->na
 Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user', [UsersController::class, 'index'])->name('user.dashboard');
     Route::get('user/profile', [UsersController::class, 'profile'])->name('user.profile');
+    Route::get('user/deadline', [UsersController::class, 'deadline'])->name('user.deadline');
+    Route::get('user/projects', [UsersController::class, 'project'])->name('user.project');
+    Route::get('user/archive', [UsersController::class, 'archive'])->name('user.archive');
     Route::get('user/edit-profile', [UsersController::class, 'editProfile'])->name('user.profile.edit');
     Route::post('user/update-profile', [UsersController::class, 'updateProfile'])->name('user.profile.update');    
     Route::post('user/create-project', [ProjectController::class, 'store'])->name('user.project.store');
@@ -53,4 +57,6 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user/comments/{comment}', [CommentController::class, 'show'])->name('user.comments.show');
     Route::put('user/comments/{comment}/edit', [CommentController::class, 'update'])->name('user.comments.update');
     Route::delete('user/comments/{comment}', [CommentController::class, 'destroy'])->name('user.comments.destroy');
+    Route::get('user/background-projects', [backgroundProjectController::class, 'index'])->name('user.backgroundProjects.index');
+    Route::post('user/background-projects/store', [backgroundProjectController::class, 'store'])->name('user.backgroundProjects.store');
 });

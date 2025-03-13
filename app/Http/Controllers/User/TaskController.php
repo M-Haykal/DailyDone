@@ -8,6 +8,7 @@ use App\Models\TaskList;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use App\Models\Project;
 
@@ -113,9 +114,16 @@ class TaskController extends Controller
 
     public function detailList($idProject, $idTaskList)
     {
+        $userId = auth()->id();
+        $userEmail = auth()->user()->email;
+
         $taskList = TaskList::where('project_id', $idProject)
-            ->whereHas('project', function ($query) {
-                $query->where('user_id', auth()->id());
+            ->whereHas('project', function ($query) use ($userId, $userEmail) {
+                $query->where('user_id', $userId)
+                    ->orWhereHas('sharedUsers', function ($subQuery) use ($userId, $userEmail) {
+                        $subQuery->where('shared_projects.user_id', $userId)
+                            ->orWhere('shared_projects.email', $userEmail);
+                    });
             })->findOrFail($idTaskList);
 
         return view('user.pages.detail-list-page', compact('taskList'));
@@ -163,4 +171,5 @@ class TaskController extends Controller
     }
 
 }
+
 

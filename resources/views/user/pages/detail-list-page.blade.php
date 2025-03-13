@@ -3,7 +3,7 @@
 @section('title', 'Detail List')
 
 @section('content')
-    <div class="my-3 d-flex align-items-center">
+    <div class="d-flex align-items-center my-3">
         <a href="{{ url()->previous() }}"><i class="material-symbols-rounded">arrow_back</i></a>
         <h3 class="mb-0 h4 font-weight-bolder mx-2">Detail Task List</h3>
     </div>
@@ -11,40 +11,18 @@
         <div class="col-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3 class="card-title">{{ $taskList->list_items }}</h3>
+                    <h5 class="card-title">{{ $taskList->list_items }}</h5>
                     <p class="card-text">{!! htmlspecialchars_decode($taskList->detail_list) !!}</p>
                     <div class="row">
                         <div class="col-6">
                             <strong>Status:</strong>
-                            @switch($taskList->status)
-                                @case('pending')
-                                    <span class="badge rounded-pill bg-danger">{{ $taskList->status }}</span>
-                                @break
-
-                                @case('in_progress')
-                                    <span class="badge rounded-pill bg-warning">{{ $taskList->status }}</span>
-                                @break
-
-                                @case('completed')
-                                    <span class="badge rounded-pill bg-success">{{ $taskList->status }}</span>
-                                @break
-                            @endswitch
+                            <span
+                                class="badge rounded-pill bg-{{ $taskList->status === 'pending' ? 'danger' : ($taskList->status === 'in_progress' ? 'warning' : 'success') }}">{{ $taskList->status }}</span>
                         </div>
                         <div class="col-6">
                             <strong>Priority:</strong>
-                            @switch($taskList->priority)
-                                @case('high')
-                                    <span class="badge rounded-pill bg-danger">{{ $taskList->priority }}</span>
-                                @break
-
-                                @case('medium')
-                                    <span class="badge rounded-pill bg-warning">{{ $taskList->priority }}</span>
-                                @break
-
-                                @case('low')
-                                    <span class="badge rounded-pill bg-success">{{ $taskList->priority }}</span>
-                                @break
-                            @endswitch
+                            <span
+                                class="badge rounded-pill bg-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}">{{ $taskList->priority }}</span>
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -67,8 +45,11 @@
             </div>
         </div>
         <div class="col-6">
-            <div class="card text-center">
-                <div class="card-body overflow-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">Comments</h5>
+                    </div>
                     <ul class="list-group list-group-flush" id="comment-list">
                     </ul>
                     <input type="hidden" id="reply-comment-id">
@@ -77,23 +58,13 @@
                         <button type="button" class="btn btn-sm btn-danger" id="cancel-reply"><i
                                 class="material-symbols-rounded">close</i></button>
                     </div>
-                </div>
-                <div class="card-footer border-top">
-                    <div class="row d-flex align-items-center justify-content-between">
-                        <div class="col-9">
-                            <div class="input-group input-group-outline">
-                                <input type="text" class="form-control" id="comment-content"
-                                    placeholder="Enter text here">
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <button type="button" class="btn btn-primary mb-0" id="btn-comment">Comment</button>
-                        </div>
+                    <div class="input-group input-group-outline mt-3">
+                        <input type="text" class="form-control" id="comment-content" placeholder="Enter text here">
+                        <button type="button" class="btn btn-primary mb-0" id="btn-comment">Comment</button>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 @endsection
 

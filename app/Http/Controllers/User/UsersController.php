@@ -14,48 +14,104 @@ use App\Models\User;
 
 class UsersController extends Controller
 {
-    public function index() {
-        $projects = Project::where('user_id', auth()->id())
-            ->with('taskLists')
-            ->simplePaginate(5);
-
+    public function index(Request $request) {
+        // Initialize the query for Projects
+        $projectsQuery = Project::where('user_id', auth()->id())
+            ->with('taskLists');
+    
+        // Sorting logic based on the 'sort' query parameter
+        if ($request->has('sort')) {
+            $sort = $request->sort;
+    
+            switch ($sort) {
+                case 'az':
+                    $projectsQuery->orderBy('name', 'asc'); // Sort by project name (A-Z)
+                    break;
+    
+                case 'newest':
+                    $projectsQuery->orderBy('created_at', 'desc'); // Sort by newest projects
+                    break;
+    
+                case 'deadline':
+                    $projectsQuery->orderBy('end_date', 'asc'); // Sort by closest deadline
+                    break;
+    
+                default:
+                    // If no valid sort parameter, you can set a default sort order here, if needed
+                    $projectsQuery->orderBy('created_at', 'desc'); // Default sort by newest
+                    break;
+            }
+        }
+    
+        // Paginate the results
+        $projects = $projectsQuery->simplePaginate(5);
+    
+        // Fetch the task list
         $taskList = TaskList::where('user_id', auth()->id())
             ->orderBy('start_date')
             ->orderBy('end_date')
+            ->with('project')
             ->get();
         
+        // Format the task list for the frontend
         $tasks = $taskList->map(function ($task) {
             return [
                 'id' => $task->id,
                 'title' => $task->list_items,
                 'start' => $task->start_date,
                 'end' => $task->end_date,
-                'body' => $task->detail_list,
+                'project' => $task->project->name
             ];
         })->toArray();
-
+    
+        // Get the daily quote from the API
         $quote = Cache::remember('daily_quote', now()->endOfDay(), function () {
             $response = Http::get('https://dummyjson.com/quotes');
             $quotes = $response->json()['quotes'];
             return $quotes[array_rand($quotes)];
         });
-
+    
         $userId = Auth::id();
-
+    
+        // Get status counts for each project
         $statusCounts = TaskList::whereHas('project', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, status, COUNT(*) as total')
-            ->groupBy('month', 'status')
-            ->orderBy('month')
-            ->get();
-
+            $query->where('user_id', $userId);
+        })
+        ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, status, COUNT(*) as total')
+        ->groupBy('month', 'status')
+        ->orderBy('month')
+        ->get();
+    
+        // Format the status counts by month and status
         $formattedData = [];
         foreach ($statusCounts as $row) {
             $formattedData[$row->month][$row->status] = $row->total;
         }
-
+    
         return view('user.dashboard', compact('projects', 'tasks', 'quote', 'formattedData'));
+    }
+
+    public function archive() {
+        $projects = Project::where('user_id', auth()->id())
+        ->orWhereHas('sharedUsers', function ($query) {
+            $query->where('user_id', auth()->id());
+        })
+        ->get();
+
+        return view('user.pages.archive-page', compact('projects'));
+    }
+    
+    public function deadline() {
+        return view('user.pages.deadline-page');
+    }
+
+    public function project() {
+        $projects = Project::where('user_id', auth()->id())
+            ->orWhereHas('sharedUsers', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->get();
+        return view('user.pages.list-project-page', compact('projects'));
     }
 
     public function profile() {

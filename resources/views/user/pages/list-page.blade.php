@@ -25,9 +25,10 @@
                                         <i class="material-symbols-rounded">add</i>
                                         Add Task
                                     </a>
-                                    <a class="position-absolute bottom-0 end-0 p-3 text-white" href="#" role="button"
-                                        data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop"
-                                        aria-controls="offcanvasTop"><i class="material-symbols-rounded">edit</i></a>
+                                    {{-- <a class="position-absolute bottom-0 end-0 p-3 text-white"
+                                        href="{{ route('user.backgroundProjects.index', ['project_id' => $project->id]) }}"
+                                        role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop"
+                                        aria-controls="offcanvasTop"><i class="material-symbols-rounded">edit</i></a> --}}
                                 @endif
                             @endif
                         </div>
@@ -233,6 +234,7 @@
                 $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists());
 
         document.addEventListener("DOMContentLoaded", function() {
+
             function updateTaskStatus(taskId, status) {
                 if (!canEdit) return;
 
