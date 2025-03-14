@@ -6,10 +6,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "11.44.1",
         "laravel/socialite": "^5.17",
         "laravel/tinker": "^2.9",
+        "laraveldaily/laravel-charts": "^0.2.3",
         "laravolt/avatar": "^6.0",
+        "livewire/livewire": "^3.6",
         "mews/purifier": "^3.4"
     },
     "require-dev": {

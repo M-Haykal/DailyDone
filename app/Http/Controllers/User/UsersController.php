@@ -19,30 +19,6 @@ class UsersController extends Controller
         $projectsQuery = Project::where('user_id', auth()->id())
             ->with('taskLists');
     
-        // Sorting logic based on the 'sort' query parameter
-        if ($request->has('sort')) {
-            $sort = $request->sort;
-    
-            switch ($sort) {
-                case 'az':
-                    $projectsQuery->orderBy('name', 'asc'); // Sort by project name (A-Z)
-                    break;
-    
-                case 'newest':
-                    $projectsQuery->orderBy('created_at', 'desc'); // Sort by newest projects
-                    break;
-    
-                case 'deadline':
-                    $projectsQuery->orderBy('end_date', 'asc'); // Sort by closest deadline
-                    break;
-    
-                default:
-                    // If no valid sort parameter, you can set a default sort order here, if needed
-                    $projectsQuery->orderBy('created_at', 'desc'); // Default sort by newest
-                    break;
-            }
-        }
-    
         // Paginate the results
         $projects = $projectsQuery->simplePaginate(5);
     
@@ -72,23 +48,8 @@ class UsersController extends Controller
         });
     
         $userId = Auth::id();
-    
-        // Get status counts for each project
-        $statusCounts = TaskList::whereHas('project', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })
-        ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, status, COUNT(*) as total')
-        ->groupBy('month', 'status')
-        ->orderBy('month')
-        ->get();
-    
-        // Format the status counts by month and status
-        $formattedData = [];
-        foreach ($statusCounts as $row) {
-            $formattedData[$row->month][$row->status] = $row->total;
-        }
-    
-        return view('user.dashboard', compact('projects', 'tasks', 'quote', 'formattedData'));
+
+        return view('user.dashboard', compact('projects', 'tasks', 'quote'));
     }
 
     public function archive() {
@@ -102,7 +63,40 @@ class UsersController extends Controller
     }
     
     public function deadline() {
-        return view('user.pages.deadline-page');
+        $projects = Project::where('user_id', auth()->id())
+            ->orWhereHas('sharedUsers', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->orderBy('start_date')
+            ->orderBy('end_date')
+            ->get();
+
+        $project = $projects->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'name' => $project->name,
+                'start_date' => $project->start_date,
+                'end_date' => $project->end_date
+            ];
+        })->toArray();
+
+        $taskList = TaskList::where('user_id', auth()->id())
+            ->orderBy('start_date')
+            ->orderBy('end_date')
+            ->with('project')
+            ->get();
+        
+        $tasks = $taskList->map(function ($task) {
+            return [
+                'id' => $task->id,
+                'title' => $task->list_items,
+                'start' => $task->start_date,
+                'end' => $task->end_date,
+                'project' => $task->project->name
+            ];
+        })->toArray();
+
+        return view('user.pages.deadline-page', compact('tasks', 'project'));
     }
 
     public function project() {

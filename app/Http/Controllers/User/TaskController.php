@@ -90,26 +90,21 @@ class TaskController extends Controller
         ]);
     }
 
-    public function bulkDelete(Request $request)
+    public function destroy($id)
     {
-        $taskIds = $request->task_ids;
-
-        if (!is_array($taskIds) || empty($taskIds)) {
-            return response()->json(['success' => false, 'message' => 'Tidak ada tugas yang dipilih'], 400);
+        $task = TaskList::find($id);
+        if (!$task) {
+            return response()->json(['message' => 'Task tidak ditemukan'], 404);
         }
 
-        $tasks = TaskList::whereIn('id', $taskIds)->get();
-
-        foreach ($tasks as $task) {
-            if (auth()->id() !== $task->project->user_id &&
-                !$task->project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists()) {
-                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
-            }
-
-            $task->delete();
+        if (auth()->id() !== $task->project->user_id &&
+            !$task->project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        return response()->json(['success' => true, 'message' => 'Tugas berhasil dihapus']);
+        $task->delete();
+
+        return redirect()->back()->with('success', 'Task berhasil dihapus');
     }
 
     public function detailList($idProject, $idTaskList)

@@ -56,30 +56,25 @@
 
         <div class="row my-3">
             <div class="col-md-4 my-2">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center m-3 p-0">
-                        <h4>To Do</h4>
-                        @if (auth()->id() == $project->user_id ||
-                                $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                            <a href="javascript:void(0);" id="delete-selected">
-                                <i class="material-symbols-rounded">delete</i>
-                            </a>
-                        @endif
+                <div class="card bg-danger">
+                    <div class="card-body d-flex justify-content-between align-items-center m-3 p-0">
+                        <h4 class="mb-0 text-white">To Do</h4>
+                        <i class="material-symbols-rounded text-white">neurology</i>
                     </div>
-                    <ul id="exampleLeft" class="list-group list-group-flush list-group-item-secondary">
-                        @forelse ($project->taskLists->where('status', 'pending') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between align-items-center m-1 rounded"
-                                data-id="{{ $taskList->id }}">
-                                {{ $taskList->list_items }}
+                </div>
+                <ul id="exampleLeft" class="list-group list-group-flush list-group-item-secondary">
+                    @forelse ($project->taskLists->where('status', 'pending') as $taskList)
+                        <li class="card list-group-item list-items rounded my-2 border border-2 bg-white"
+                            data-id="{{ $taskList->id }}">
+                            <div class="card-header bg-transparent border-success d-flex justify-content-between py-2 px-0">
+                                <span
+                                    class="badge d-flex align-items-center rounded-pill bg-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }} d-flex justify-content-between p-2"><i
+                                        class="material-symbols-rounded">schedule</i>{{ $taskList->priority }}</span>
                                 <div class="action d-flex align-items-center">
-                                    <div class="form-check">
-                                        <input class="form-check-input task-checkbox" type="checkbox"
-                                            value="{{ $taskList->id }}" id="flexCheckDefault">
-                                    </div>
                                     <div class="dropdown">
                                         <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
                                             aria-expanded="false">
-                                            <i class="material-symbols-rounded text-white">more_vert</i>
+                                            <i class="material-symbols-rounded">more_horiz</i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li><a class="dropdown-item"
@@ -91,43 +86,60 @@
                                                     <a class="dropdown-item"
                                                         href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
                                                 </li>
+                                                <li>
+                                                    <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                        class="dropdown-item"
+                                                        onclick="event.preventDefault();
+                                                            document.getElementById('delete-task-{{ $taskList->id }}').submit();">
+                                                        Hapus
+                                                    </a>
+                                                    <form id="delete-task-{{ $taskList->id }}"
+                                                        action="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                </li>
                                             @endif
                                         </ul>
                                     </div>
                                 </div>
-                            </li>
-                        @empty
-                            <p class="m-1 text-center">No tasks</p>
-                        @endforelse
-                    </ul>
-                </div>
+                            </div>
+                            <div class="card-body p-2">
+                                <h5 class="mb-0">
+                                    {{ $taskList->list_items }}
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    {!! htmlspecialchars_decode($taskList->detail_list) !!}
+                                </p>
+                            </div>
+                        </li>
+                    @empty
+                        <p class="m-1 text-center">No tasks</p>
+                    @endforelse
+                </ul>
             </div>
 
             <div class="col-md-4 my-2">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center m-3 p-0">
-                        <h4>In Progress</h4>
-                        @if (auth()->id() == $project->user_id ||
-                                $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                            <a href="javascript:void(0);" id="delete-selected">
-                                <i class="material-symbols-rounded">delete</i>
-                            </a>
-                        @endif
+                <div class="card bg-warning">
+                    <div class="card-body d-flex justify-content-between align-items-center m-3 p-0">
+                        <h4 class="mb-0 text-white">In Progress</h4>
+                        <i class="material-symbols-rounded text-white">progress_activity</i>
                     </div>
-                    <ul id="exampleMiddle" class="list-group list-group-flush list-group-item-secondary">
-                        @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between align-items-center m-1 rounded"
-                                data-id="{{ $taskList->id }}">
-                                {{ $taskList->list_items }}
+                </div>
+                <ul id="exampleMiddle" class="list-group list-group-flush list-group-item-secondary">
+                    @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
+                        <li class="card list-group-item list-items rounded my-2 border border-2 bg-white"
+                            data-id="{{ $taskList->id }}">
+                            <div class="card-header bg-transparent border-success d-flex justify-content-between py-2 px-0">
+                                <span
+                                    class="badge d-flex align-items-center rounded-pill bg-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }} d-flex justify-content-between p-2"><i
+                                        class="material-symbols-rounded">schedule</i>{{ $taskList->priority }}</span>
                                 <div class="action d-flex align-items-center">
-                                    <div class="form-check">
-                                        <input class="form-check-input task-checkbox" type="checkbox"
-                                            value="{{ $taskList->id }}" id="flexCheckDefault">
-                                    </div>
                                     <div class="dropdown">
                                         <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
                                             aria-expanded="false">
-                                            <i class="material-symbols-rounded text-white">more_vert</i>
+                                            <i class="material-symbols-rounded">more_horiz</i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li><a class="dropdown-item"
@@ -139,57 +151,105 @@
                                                     <a class="dropdown-item"
                                                         href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
                                                 </li>
+                                                <li>
+                                                    <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                        class="dropdown-item"
+                                                        onclick="event.preventDefault();
+                                                            document.getElementById('delete-task-{{ $taskList->id }}').submit();">
+                                                        Hapus
+                                                    </a>
+                                                    <form id="delete-task-{{ $taskList->id }}"
+                                                        action="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                </li>
                                             @endif
                                         </ul>
                                     </div>
                                 </div>
-                            </li>
-                        @empty
-                            <p class="m-1 text-center">No tasks</p>
-                        @endforelse
-                    </ul>
-                </div>
+                            </div>
+                            <div class="card-body p-2">
+                                <h5 class="mb-0">
+                                    {{ $taskList->list_items }}
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    {!! htmlspecialchars_decode($taskList->detail_list) !!}
+                                </p>
+                            </div>
+                        </li>
+                    @empty
+                        <p class="m-1 text-center">No tasks</p>
+                    @endforelse
+                </ul>
             </div>
 
             <div class="col-md-4 my-2">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center m-3 p-0">
-                        <h4>Completed</h4>
-                        @if (auth()->id() == $project->user_id ||
-                                $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                            <a href="javascript:void(0);" id="delete-selected">
-                                <i class="material-symbols-rounded">delete</i>
-                            </a>
-                        @endif
+
+                <div class="card bg-success">
+                    <div class="card-body d-flex justify-content-between align-items-center m-3 p-0">
+                        <h4 class="mb-0 text-white">Completed</h4>
+                        <i class="material-symbols-rounded text-white">task_alt</i>
                     </div>
-                    <ul id="exampleRight" class="list-group list-group-flush list-group-item-secondary">
-                        @forelse ($project->taskLists->where('status', 'completed') as $taskList)
-                            <li class="list-group-item list-items d-flex justify-content-between align-items-center m-1 rounded"
-                                data-id="{{ $taskList->id }}">
-                                {{ $taskList->list_items }}
+                </div>
+                <ul id="exampleRight" class="list-group list-group-flush list-group-item-secondary">
+                    @forelse ($project->taskLists->where('status', 'completed') as $taskList)
+                        <li class="card list-group-item list-items rounded my-2 border border-2 bg-white"
+                            data-id="{{ $taskList->id }}">
+                            <div
+                                class="card-header bg-transparent border-success d-flex justify-content-between py-2 px-0">
+                                <span
+                                    class="badge d-flex align-items-center rounded-pill bg-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }} d-flex justify-content-between p-2"><i
+                                        class="material-symbols-rounded">schedule</i>{{ $taskList->priority }}</span>
                                 <div class="action d-flex align-items-center">
-                                    <div class="form-check">
-                                        <input class="form-check-input task-checkbox" type="checkbox"
-                                            value="{{ $taskList->id }}" id="flexCheckDefault">
-                                    </div>
                                     <div class="dropdown">
                                         <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
                                             aria-expanded="false">
-                                            <i class="material-symbols-rounded text-white">more_vert</i>
+                                            <i class="material-symbols-rounded">more_horiz</i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li><a class="dropdown-item"
                                                     href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
                                             </li>
+                                            @if (auth()->id() == $project->user_id ||
+                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                        class="dropdown-item"
+                                                        onclick="event.preventDefault();
+                                                            document.getElementById('delete-task-{{ $taskList->id }}').submit();">
+                                                        Hapus
+                                                    </a>
+                                                    <form id="delete-task-{{ $taskList->id }}"
+                                                        action="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </div>
-                            </li>
-                        @empty
-                            <p class="m-1 text-center">No tasks</p>
-                        @endforelse
-                    </ul>
-                </div>
+                            </div>
+                            <div class="card-body p-2">
+                                <h5 class="mb-0">
+                                    {{ $taskList->list_items }}
+                                </h5>
+                                <p class="text-muted mb-0">
+                                    {!! htmlspecialchars_decode($taskList->detail_list) !!}
+                                </p>
+                            </div>
+                        </li>
+                    @empty
+                        <p class="m-1 text-center">No tasks</p>
+                    @endforelse
+                </ul>
             </div>
             @include('user.modal.note-project')
         </div>
@@ -289,7 +349,7 @@
                 });
             }
 
-            document.querySelectorAll(".list-items").forEach(item => {
+            document.querySelectorAll(".badge-list").forEach(item => {
                 let status = item.closest("ul").id === "exampleLeft" ? "pending" :
                     item.closest("ul").id === "exampleMiddle" ? "in_progress" : "completed";
                 updateTaskColor(item, status);
@@ -298,82 +358,6 @@
             initializeSortable("exampleLeft", "pending");
             initializeSortable("exampleMiddle", "in_progress");
             initializeSortable("exampleRight", "completed");
-        });
-
-        document.querySelectorAll("#delete-selected").forEach(button => {
-            button.addEventListener("click", function() {
-                let selectedTasks = [];
-                let parentCard = this.closest(".card");
-
-                parentCard.querySelectorAll(".task-checkbox:checked").forEach((checkbox) => {
-                    selectedTasks.push(checkbox.value);
-                });
-
-                if (selectedTasks.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Oops...',
-                        text: 'Pilih tugas yang ingin dihapus!'
-                    });
-                    return;
-                }
-
-                Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: "Anda tidak dapat mengembalikan ini!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Ya, hapus!'
-                }).then((result) => {
-                    if (!result.isConfirmed) return;
-
-                    fetch("{{ route('taskLists.bulkDelete') }}", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": document.querySelector(
-                                        'meta[name="csrf-token"]')
-                                    .getAttribute("content"),
-                            },
-                            body: JSON.stringify({
-                                task_ids: selectedTasks
-                            }),
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                selectedTasks.forEach((id) => {
-                                    let listItem = parentCard.querySelector(
-                                        `[data-id='${id}']`);
-                                    if (listItem) listItem.remove();
-                                });
-                                Swal.fire(
-                                    'Deleted!',
-                                    'Tugas berhasil dihapus!',
-                                    'success'
-                                );
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Gagal menghapus tugas: ' + (data.message ||
-                                        'Terjadi kesalahan tidak diketahui')
-                                });
-                                console.error("Error:", data);
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Terjadi kesalahan tidak diketahui!'
-                            });
-                        });
-                });
-            });
         });
     </script>
 @endsection

@@ -83,11 +83,6 @@
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
             <div class="mx-3">
-                <a class="btn btn-outline-dark w-100 align-items-center" href="{{ route('user.profile') }}">
-                    <img src="{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}"
-                        class="navbar-brand-img rounded-circle" width="30" height="30" alt="main_logo">
-                    {{ auth()->user()->name }}
-                </a>
                 <form action="{{ route('logout') }}" method="post">
                     @csrf
                     <button class="btn btn-outline-danger w-100 align-items-center" type="submit"><i

@@ -48,7 +48,7 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::delete('/user/tasklist/{id}', [TaskListController::class, 'destroy'])->name('user.tasklist.destroy');
     Route::get('user/detailList/{id}', [TaskController::class, 'detailList'])->name('user.detailList');
     Route::post('user/projects/{id}/delete', [ProjectController::class, 'deleteProject'])->name('projects.delete');
-    Route::post('user/tasklist/bulk-delete', [TaskController::class, 'bulkDelete'])->name('taskLists.bulkDelete'); 
+    Route::delete('/user/tasklist/{id}', [TaskController::class, 'destroy'])->name('user.tasklist.destroy');
     Route::put('user/project/{idProject}/tasklist/{idTaskList}/edit', [TaskController::class, 'edit'])->name('user.tasklist.edit');
     Route::get('user/project/{idProject}/tasklist/{idTaskList}/edit', [TaskController::class, 'viewEdit'])->name('user.tasklist.viewEdit');
     Route::get('user/project/{idProject}/tasklist/{idTaskList}', [TaskController::class, 'detailList'])->name('user.detailList');
