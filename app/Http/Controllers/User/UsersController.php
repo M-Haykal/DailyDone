@@ -36,20 +36,23 @@ class UsersController extends Controller
                 'title' => $task->list_items,
                 'start' => $task->start_date,
                 'end' => $task->end_date,
-                'project' => $task->project->name
+                'project' => $task->project->name,
+                'status' => $task->status
             ];
         })->toArray();
     
-        // Get the daily quote from the API
-        $quote = Cache::remember('daily_quote', now()->endOfDay(), function () {
-            $response = Http::get('https://dummyjson.com/quotes');
-            $quotes = $response->json()['quotes'];
-            return $quotes[array_rand($quotes)];
-        });
+        // Group the tasks by status
+        $taskStatus = collect($tasks)->groupBy('status');
     
+        $user = User::findOrFail(Auth::id());
+        $projectCount = Project::where('user_id', $user->id)->count();
+        $taskListCount = TaskList::where('user_id', $user->id)->count();
         $userId = Auth::id();
+        $projectEnded = Project::where('user_id', $user->id)
+            ->where('end_date', '<', now())
+            ->count();
 
-        return view('user.dashboard', compact('projects', 'tasks', 'quote'));
+        return view('user.dashboard', compact('projects', 'tasks', 'taskStatus', 'projectCount', 'taskListCount', 'projectEnded'));
     }
 
     public function archive() {
@@ -99,14 +102,30 @@ class UsersController extends Controller
         return view('user.pages.deadline-page', compact('tasks', 'project'));
     }
 
-    public function project() {
-        $projects = Project::where('user_id', auth()->id())
-            ->orWhereHas('sharedUsers', function ($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->get();
+    public function project(Request $request) {
+        $projectsQuery = Project::where(function ($query) use ($request) {
+            $query->where('user_id', auth()->id())
+                ->orWhereHas('sharedUsers', function ($query) {
+                    $query->where('user_id', auth()->id());
+                });
+        });
+    
+        if ($request->has('search') && !empty($request->search)) {
+            $projectsQuery->where('name', 'like', '%' . $request->search . '%');
+        }
+    
+        if ($request->has('sort')) {
+            if ($request->sort === 'alphabetical') {
+                $projectsQuery->orderBy('name');
+            } elseif ($request->sort === 'deadline') {
+                $projectsQuery->orderBy('end_date');
+            }
+        }
+    
+        $projects = $projectsQuery->simplePaginate(12);
+    
         return view('user.pages.list-project-page', compact('projects'));
-    }
+    }    
 
     public function profile() {
         $user = User::where('id', auth()->id())->first();

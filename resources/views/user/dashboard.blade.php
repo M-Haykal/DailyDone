@@ -2,38 +2,88 @@
 
 @section('title', 'Dashboard')
 @section('content')
-    <div class="row overflow-x-hidden">
+    <div class="row">
         <div class="my-3">
-            <h3 class="mb-0 h4 font-weight-bolder me-auto">Dashboard</h3>
-            <p class="mb-0 ms-auto text-secondary">
-                Plan, Do, Done.
+            <h3 class="mb-0 h4 font-weight-bolder">
+                @php
+                    $now = \Carbon\Carbon::now();
+                    if ($now->hour < 12) {
+                        echo 'Good morning';
+                    } elseif ($now->hour < 17) {
+                        echo 'Good afternoon';
+                    } else {
+                        echo 'Good evening';
+                    }
+                @endphp
+            </h3>
+            <p>
+                {{ auth()->user()->name }}
             </p>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+            <div class="card bg-gradient-info shadow-info">
+                <div class="card-header p-2 ps-3 bg-transparent border-info">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-white text-sm mb-0 text-capitalize">Total Projects</p>
+                            <h4 class="text-white mb-0">{{ $projectCount }}</h4>
+                        </div>
+                        <div
+                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                            <i class="material-symbols-rounded opacity-10 text-white">folder</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+            <div class="card bg-gradient-success shadow-success">
+                <div class="card-header p-2 ps-3 bg-transparent border-success">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-white text-sm mb-0 text-capitalize">Total Tasks</p>
+                            <h4 class="text-white mb-0">{{ $taskListCount }}</h4>
+                        </div>
+                        <div
+                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                            <i class="material-symbols-rounded opacity-10 text-white">task</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+            <div class="card bg-gradient-secondary shadow-dark">
+                <div class="card-header p-2 ps-3 bg-transparent border-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-white text-sm mb-0 text-capitalize">Total Archive</p>
+                            <h4 class="text-white mb-0">{{ $projectEnded }}</h4>
+                        </div>
+                        <div
+                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                            <i class="material-symbols-rounded opacity-10 text-white">archive</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-sm-6 my-2">
+            <div class="card mb-3">
+                <div class="card-body p-3">
+                    <h5 class="mb-0 ">Task Status</h5>
+                    <p class="text-sm ">Last Campaign Performance</p>
+                    <div class="chart">
+                        <canvas id="chart-pie-task-status" class="chart-canvas" height="170" width="309"
+                            style="display: block; box-sizing: border-box; height: 170px; width: 309px;"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="col-xl-8 my-2">
             <div class="card">
                 <div class="card-header pb-0">
-                    <div class="row">
-                        <div class="col-lg-6 col-7">
-                            <h5 class="card-title">Projects</h5>
-                        </div>
-                        <div class="col-lg-6 col-5 my-auto text-end">
-                            <div class="dropdown float-lg-end pe-4">
-                                <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    <i class="fa fa-ellipsis-v text-secondary"></i>
-                                </a>
-                                {{-- <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
-                                    <li><a class="dropdown-item border-radius-md"
-                                            href="{{ route('user.dashboard', ['sort' => 'az']) }}">A - Z</a></li>
-                                    <li><a class="dropdown-item border-radius-md"
-                                            href="{{ route('user.dashboard', ['sort' => 'newest']) }}">New Projects</a></li>
-                                    <li><a class="dropdown-item border-radius-md"
-                                            href="{{ route('user.dashboard', ['sort' => 'deadline']) }}">Closest
-                                            Deadline</a></li>
-                                </ul> --}}
-                            </div>
-                        </div>
-                    </div>
+                    <h5>Projects</h5>
                 </div>
                 <div class="card-body px-0 pb-2">
                     <div class="table-responsive">
@@ -118,30 +168,44 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 my-2">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Quote of the Day</h5>
-                    <blockquote class="blockquote text-center">
-                        <p class="font-italic text-primary">{{ $quote['quote'] }}</p>
-                        <footer class="blockquote-footer mt-2">{{ $quote['author'] }}</footer>
-                    </blockquote>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-6 my-2">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Task Status</h5>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection
 
 @section('script')
     <script>
-        
+        const ctx = document.getElementById('chart-pie-task-status').getContext('2d');
+        const taskStatus = @json($taskStatus);
+        const labels = Object.keys(taskStatus);
+        const data = Object.values(taskStatus).map(status => status.length);
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Task Status',
+                    data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
     </script>
 
 @endsection

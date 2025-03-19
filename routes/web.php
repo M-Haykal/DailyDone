@@ -6,7 +6,6 @@ use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\User\ProjectController;
 use App\Http\Controllers\User\TaskController;
 use App\Http\Controllers\User\CommentController;
-use App\Http\Controllers\User\backgroundProjectController;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -31,17 +30,18 @@ Route::middleware('auth')->post('logout', [AuthController::class, 'logout'])->na
 
 Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user', [UsersController::class, 'index'])->name('user.dashboard');
+    Route::post('/projects/{id}/share', [ProjectController::class, 'share'])->middleware('auth');
+    Route::get('/projects/join/{token}', [ProjectController::class, 'joinProject'])->name('projects.join');
+    Route::get('/projects/access/{token}', [ProjectController::class, 'accessProject'])->name('projects.access');
     Route::get('user/profile', [UsersController::class, 'profile'])->name('user.profile');
     Route::get('user/deadline', [UsersController::class, 'deadline'])->name('user.deadline');
     Route::get('user/projects', [UsersController::class, 'project'])->name('user.project');
     Route::get('user/archive', [UsersController::class, 'archive'])->name('user.archive');
+    Route::get('user/trash', [ProjectController::class, 'trashedProjects'])->name('user.projects.trashed');
     Route::get('user/edit-profile', [UsersController::class, 'editProfile'])->name('user.profile.edit');
     Route::post('user/update-profile', [UsersController::class, 'updateProfile'])->name('user.profile.update');    
     Route::post('user/create-project', [ProjectController::class, 'store'])->name('user.project.store');
     Route::get('user/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
-    Route::post('/projects/{id}/share', [ProjectController::class, 'share'])->middleware('auth');
-    Route::get('/projects/join/{token}', [ProjectController::class, 'joinProject'])->name('projects.join');
-    Route::get('/projects/access/{token}', [ProjectController::class, 'accessProject'])->name('projects.access');
     Route::get('user/tasklist', [TaskController::class, 'index'])->name('user.tasklist.index');
     Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
     Route::post('user/tasklist/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasklist.updateStatus');
@@ -57,6 +57,8 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user/comments/{comment}', [CommentController::class, 'show'])->name('user.comments.show');
     Route::put('user/comments/{comment}/edit', [CommentController::class, 'update'])->name('user.comments.update');
     Route::delete('user/comments/{comment}', [CommentController::class, 'destroy'])->name('user.comments.destroy');
-    Route::get('user/background-projects', [backgroundProjectController::class, 'index'])->name('user.backgroundProjects.index');
-    Route::post('user/background-projects/store', [backgroundProjectController::class, 'store'])->name('user.backgroundProjects.store');
+    Route::put('user/project/{id}/edit', [ProjectController::class, 'edit'])->name('user.project.edit');
+    // Route::put('user/projects/{id}/edit-permission', [ProjectController::class, 'editPermission'])->name('user.project.editPermission');
+    Route::post('user/projects/{id}/restore', [ProjectController::class, 'restoreProject'])->name('user.projects.restore');
+    Route::delete('user/projects/{id}/force-delete', [ProjectController::class, 'forceDeleteProject'])->name('user.projects.forceDelete');
 });

@@ -79,6 +79,13 @@
                         <span class="nav-link-text ms-1">Deadline</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark {{ request()->routeIs('user.projects.trashed') ? 'bg-gradient-dark text-white' : '' }}"
+                        href="{{ route('user.projects.trashed') }}">
+                        <i class="material-symbols-rounded opacity-5">delete</i>
+                        <span class="nav-link-text ms-1">Trash</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
@@ -93,14 +100,13 @@
     </aside>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg my-2">
         <!-- Navbar -->
-        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl bg-white"
-            id="navbarBlur" data-scroll="true">
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl bg-white" id="navbarBlur"
+            data-scroll="true">
             <div class="container-fluid py-1 px-3">
-                <nav>
-                    <div class="input-group input-group-outline">
-                        <label class="form-label">Type here...</label>
-                        <input type="text" class="form-control">
-                    </div>
+                <nav class="nav">
+                    <p class="fw-bold mb-0">
+                        {{ request()->routeIs('user.dashboard') ? 'Dashboard' : (request()->routeIs('user.project') ? 'Projects' : (request()->routeIs('user.archive') ? 'Archive' : (request()->routeIs('user.deadline') ? 'Deadline' : (request()->routeIs('user.projects.trashed') ? 'Trash' : ''))) )}}
+                    </p>
                 </nav>
                 <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                     <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -195,11 +201,11 @@
         </div>
     </main>
     @include('user.modal.create-project')
-    <script src="{{ asset('js/material-js/core/popper.min.js') }}"></script>
-    <script src="{{ asset('js/material-js/core/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/material-js/plugins/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('js/material-js/plugins/smooth-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('js/material-js/plugins/chartjs.min.js') }}"></script>
+    <script src="{{ asset('js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/smooth-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/chartjs.min.js') }}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -238,7 +244,7 @@
         }
     </script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script src="{{ asset('js/material-js/material-dashboard.min.js?v=3.2.0') }}"></script>
+    <script src="{{ asset('js/material-dashboard.min.js?v=3.2.0') }}"></script>
     <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

@@ -49,15 +49,30 @@ class ProjectController extends Controller
         return redirect()->back()->with('success', 'Task created successfully');
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
+        $request->validate([
+            'background_project' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        
         $project = Project::findOrFail($id);
         
         if ($project->user_id != auth()->id()) {
             abort(403, 'Anda tidak memiliki akses untuk mengedit proyek ini.');
         }
         
-        return view('user.dashboard', compact('project'));
+        if ($request->hasFile('background_project')) {
+            $image = $request->file('background_project');
+            $filename = md5($image->getClientOriginalName().time()).'.'.$image->getClientOriginalExtension();
+            $image->storeAs('public/bgProject', $filename);
+            $project->background_project = $filename;
+        } else {
+            $project->background_project = $request->background_project;
+        }
+        
+        $project->save();
+        
+        return redirect()->back()->with('success', 'Proyek berhasil diedit.');
     }
 
     public function share(Request $request, $id)
@@ -89,7 +104,18 @@ class ProjectController extends Controller
         return redirect()->back()->with('success', 'Proyek berhasil dibagikan.');
     }
 
-    
+    public function editPermission(Request $request, $id)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'permissions' => 'required|in:view,edit',
+        ]);
+        $sharedProject = SharedProject::findOrFail($id);
+        $sharedProject->permissions = $request->permissions;
+        $sharedProject->save();
+        return redirect()->back()->with('success', 'Permission berhasil diedit.');
+    }
+
     public function joinProject($token)
     {
         $sharedProject = SharedProject::where('token', $token)
@@ -120,8 +146,12 @@ class ProjectController extends Controller
     {
         $sharedProject = SharedProject::where('token', $token)->first();
 
-        if (!$sharedProject || now()->greaterThan($sharedProject->expires_at)) {
-            return abort(403, 'Token tidak valid atau telah kedaluwarsa.');
+        if (!$sharedProject) {
+            abort(404);
+        }
+
+        if (now()->greaterThan($sharedProject->expires_at)) {
+            abort(403, 'Token telah kedaluwarsa.');
         }
 
         if (!auth()->check()) {
@@ -129,8 +159,19 @@ class ProjectController extends Controller
             return redirect('/register')->with('info', 'Silakan daftar atau login terlebih dahulu.');
         }
 
-        return redirect()->route('projects.show', ['id' => $sharedProject->project_id])
+        $project = Project::findOrFail($sharedProject->project_id);
+        if ($project->trashed()) {
+            abort(404);
+        }
+
+        return redirect()->route('projects.show', ['id' => $project->id])
             ->with('success', 'Anda berhasil mengakses proyek ini.');
+    }
+
+    public function trashedProjects()
+    {
+        $projects = Project::onlyTrashed()->where('user_id', auth()->id())->get();
+        return view('user.pages.trash-project-page', compact('projects'));
     }
 
     public function deleteProject($id)
@@ -146,4 +187,34 @@ class ProjectController extends Controller
         return redirect()->route('user.dashboard')->with('success', 'Proyek berhasil dihapus.');
     }
 
+    public function restoreProject($id)
+    {
+        $project = Project::onlyTrashed()->findOrFail($id);
+
+        if ($project->user_id != auth()->id()) {
+            return abort(403, 'Anda tidak memiliki izin untuk mengembalikan proyek ini.');
+        }
+
+        $project->restore();
+
+        return redirect()->route('user.dashboard')->with('success', 'Proyek berhasil dikembalikan.');
+    }
+
+    public function forceDeleteProject($id)
+    {
+        $project = Project::onlyTrashed()->findOrFail($id);
+
+        if ($project->user_id != auth()->id()) {
+            return abort(403, 'Anda tidak memiliki izin untuk menghapus proyek ini secara permanen.');
+        }
+
+        $project->forceDelete(); // Hapus permanen dari database
+
+        return redirect()->route('user.dashboard')->with('success', 'Proyek berhasil dihapus secara permanen.');
+    }
+
+
+
+
 }
+

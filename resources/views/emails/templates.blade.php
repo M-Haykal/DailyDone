@@ -11,10 +11,10 @@
         <p style="font-size: 18px;">Anda telah diberikan akses ke proyek:</p>
         <h2 style="color: #2a9d8f;">{{ $data['project']->name }}</h2>
 
-        <p style="font-size: 16px;">
+        {{-- <p style="font-size: 16px;">
             Anda mendapatkan akses sebagai
             <strong style="color: #e76f51;">{{ $sharedUser ? $sharedUser->pivot->permissions : 'Tidak diketahui' }}</strong>.
-        </p>
+        </p> --}}
 
         @component('mail::button', ['url' => route('projects.access', ['token' => $data['token']])])
             Akses Proyek

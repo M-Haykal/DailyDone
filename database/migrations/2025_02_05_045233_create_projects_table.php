@@ -16,10 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->text('note')->nullable();
+            $table->string('background_project')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

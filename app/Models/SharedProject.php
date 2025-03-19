@@ -8,6 +8,7 @@ class SharedProject extends Model
 {
     protected $table = 'shared_projects';
     protected $fillable = [
+        'id',
         'project_id',
         'user_id',
         'email',

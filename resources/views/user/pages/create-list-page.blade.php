@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="my-3 d-flex align-items-center">
-        <a href="{{ url()->previous() }}"><i class="material-symbols-rounded">arrow_back</i></a>
+        <a href="{{ route('projects.show', $project->id) }}"><i class="material-symbols-rounded">arrow_back</i></a>
         <h3 class="mb-0 h4 font-weight-bolder mx-2">Create List</h3>
     </div>
     <div class="card">
@@ -124,19 +124,7 @@
 
         document.getElementById('btn-submit').addEventListener('click', event => {
             event.preventDefault();
-            Swal.fire({
-                title: 'Anda yakin?',
-                text: "Anda tidak dapat membatalkan ini!",
-                icon: 'peringatan',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, simpan!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('form-store').submit();
-                }
-            });
+            document.getElementById('form-store').submit();
         });
 
         @if (session('success'))
@@ -172,3 +160,5 @@
         });
     </script>
 @endsection
+
+
