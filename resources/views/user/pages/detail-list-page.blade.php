@@ -27,7 +27,10 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col-6">
-                            <strong>Tag:</strong> {{ $taskList->tag }}
+                            <strong>Tag:</strong>
+                            @foreach (explode(',', $taskList->tag) as $userId)
+                                {{ $users->find($userId)->name }},
+                            @endforeach
                         </div>
                         <div class="col-6">
                             <strong>Note:</strong> {{ $taskList->note }}

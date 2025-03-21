@@ -29,9 +29,9 @@ class TaskList extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class);
-    }
+        return $this->belongsToMany(User::class, 'tasklist_user', 'tasklist_id', 'user_id');
+    }    
 }
 

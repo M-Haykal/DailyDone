@@ -4,13 +4,15 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\TaskList;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use App\Models\TaskList;
 use App\Models\Project;
+use App\Models\User;
 
 class TaskController extends Controller
 {
@@ -19,54 +21,56 @@ class TaskController extends Controller
         if (!view()->exists('user.pages.create-list-page')) {
             abort(404, 'View not found');
         }
-        return view('user.pages.create-list-page', ['project' => $project]);        
+        $users = User::all();
+        return view('user.pages.create-list-page', ['project' => $project, 'users' => $users]);        
     }
     
-    public function store(Request $request) {
-        $project = Project::findOrFail($request->project_id);
-
+    public function store(Request $request)
+    {
+        $project = Project::with('users')->findOrFail($request->project_id);
+    
         $request->validate([
             'list_items' => 'required|string|max:255',
             'detail_list' => 'required|string|max:5000',
             'status' => 'required|in:pending,in_progress,completed',
             'priority' => 'required|in:low,medium,high',
-            'tag' => 'required|string|max:255',
+            'tag' => 'required|array',
+            'tag.*' => 'exists:users,id',
             'note' => 'required|string|max:255',
             'start_date' => [
-                'required',
-                'date',
+                'required', 'date',
                 'after_or_equal:' . $project->start_date,
                 'before_or_equal:' . $project->end_date,
             ],
             'end_date' => [
-                'required',
-                'date',
-            'after_or_equal:start_date',
+                'required', 'date',
+                'after_or_equal:start_date',
                 'before_or_equal:' . $project->end_date,
             ],
             'project_id' => 'required|exists:projects,id',
         ]);
-
-        $safeDetailList = htmlspecialchars($request->detail_list, ENT_QUOTES, 'UTF-8');
     
         $taskList = TaskList::create([
             'list_items' => $request->list_items,
-            'detail_list' => $safeDetailList,
+            'detail_list' => htmlspecialchars($request->detail_list, ENT_QUOTES, 'UTF-8'),
             'status' => $request->status,
             'priority' => $request->priority,
-            'tag' => $request->tag,
+            'tag' => implode(',', $request->tag),
             'note' => $request->note,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'project_id' => $request->project_id,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
         ]);
     
+        // Simpan user yang dipilih
+        $taskList->users()->attach($request->tag);
+    
         return redirect()->back()->with('success', 'Task List created successfully!');
-    }
+    }        
 
     public function show($id) {
-        $project = Project::where('user_id', auth()->id())->findOrFail($id);
+        $project = Project::where('user_id', Auth::id())->findOrFail($id);
     
         $taskLists = $project->taskLists;
     
@@ -97,8 +101,8 @@ class TaskController extends Controller
             return response()->json(['message' => 'Task tidak ditemukan'], 404);
         }
 
-        if (auth()->id() !== $task->project->user_id &&
-            !$task->project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists()) {
+        if (Auth::id() !== $task->project->user_id &&
+            !$task->project->sharedUsers()->where('user_id', Auth::id())->where('permissions', 'edit')->exists()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -109,8 +113,8 @@ class TaskController extends Controller
 
     public function detailList($idProject, $idTaskList)
     {
-        $userId = auth()->id();
-        $userEmail = auth()->user()->email;
+        $userId = Auth::id();
+        $userEmail = Auth::check() ? Auth::user()->email : null;
 
         $taskList = TaskList::where('project_id', $idProject)
             ->whereHas('project', function ($query) use ($userId, $userEmail) {
@@ -121,14 +125,16 @@ class TaskController extends Controller
                     });
             })->findOrFail($idTaskList);
 
-        return view('user.pages.detail-list-page', compact('taskList'));
+        $users = User::all();
+
+        return view('user.pages.detail-list-page', compact('taskList', 'users'));
     }
 
     public function viewEdit($idProject, $idTaskList)
     {
         $tasklist = TaskList::where('project_id', $idProject)
             ->whereHas('project', function ($query) {
-                $query->where('user_id', auth()->id());
+                $query->where('user_id', Auth::id());
             })->findOrFail($idTaskList);
 
         return view('user.pages.edit-list-page', compact('tasklist'));
@@ -138,15 +144,15 @@ class TaskController extends Controller
     {
         $task = TaskList::where('project_id', $idProject)
             ->whereHas('project', function ($query) {
-                $query->where('user_id', auth()->id());
+                $query->where('user_id', Auth::id());
             })->findOrFail($idTaskList);
 
         if (!$task) {
             return back()->with('error', 'Task tidak ditemukan');
         }
 
-        if (auth()->id() !== $task->project->user_id &&
-            !$task->project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists()) {
+        if (Auth::id() !== $task->project->user_id &&
+            !$task->project->sharedUsers()->where('user_id', Auth::id())->where('permissions', 'edit')->exists()) {
             return back()->with('error', 'Unauthorized');
         }
 
@@ -166,5 +172,4 @@ class TaskController extends Controller
     }
 
 }
-
 

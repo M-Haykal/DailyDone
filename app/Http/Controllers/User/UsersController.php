@@ -16,14 +16,14 @@ class UsersController extends Controller
 {
     public function index(Request $request) {
         // Initialize the query for Projects
-        $projectsQuery = Project::where('user_id', auth()->id())
+        $projectsQuery = Project::where('user_id', Auth::id())
             ->with('taskLists');
     
         // Paginate the results
         $projects = $projectsQuery->simplePaginate(5);
     
         // Fetch the task list
-        $taskList = TaskList::where('user_id', auth()->id())
+        $taskList = TaskList::where('user_id', Auth::id())
             ->orderBy('start_date')
             ->orderBy('end_date')
             ->with('project')
@@ -56,19 +56,22 @@ class UsersController extends Controller
     }
 
     public function archive() {
-        $projects = Project::where('user_id', auth()->id())
-        ->orWhereHas('sharedUsers', function ($query) {
-            $query->where('user_id', auth()->id());
-        })
-        ->get();
-
+        $projects = Project::where(function ($query) {
+                $query->where('user_id', Auth::id())
+                        ->orWhereHas('sharedUsers', function ($q) {
+                            $q->where('user_id', Auth::id());
+                    });
+            })
+            ->where('end_date', '<', now()) // Hanya ambil proyek yang sudah melewati end_date
+            ->get();
+    
         return view('user.pages.archive-page', compact('projects'));
-    }
+    }    
     
     public function deadline() {
-        $projects = Project::where('user_id', auth()->id())
+        $projects = Project::where('user_id', Auth::id())
             ->orWhereHas('sharedUsers', function ($query) {
-                $query->where('user_id', auth()->id());
+                $query->where('user_id', Auth::id());
             })
             ->orderBy('start_date')
             ->orderBy('end_date')
@@ -83,7 +86,7 @@ class UsersController extends Controller
             ];
         })->toArray();
 
-        $taskList = TaskList::where('user_id', auth()->id())
+        $taskList = TaskList::where('user_id', Auth::id())
             ->orderBy('start_date')
             ->orderBy('end_date')
             ->with('project')
@@ -104,9 +107,9 @@ class UsersController extends Controller
 
     public function project(Request $request) {
         $projectsQuery = Project::where(function ($query) use ($request) {
-            $query->where('user_id', auth()->id())
+            $query->where('user_id', Auth::id())
                 ->orWhereHas('sharedUsers', function ($query) {
-                    $query->where('user_id', auth()->id());
+                    $query->where('user_id', Auth::id());
                 });
         });
     
@@ -122,30 +125,32 @@ class UsersController extends Controller
             }
         }
     
-        $projects = $projectsQuery->simplePaginate(12);
+        $projects = Project::where('user_id', Auth::id())
+            ->whereDate('end_date', '>=', now())
+            ->paginate(12);
     
         return view('user.pages.list-project-page', compact('projects'));
     }    
 
     public function profile() {
-        $user = User::where('id', auth()->id())->first();
+        $user = User::where('id', Auth::id())->first();
         return view('user.pages.profile-page', compact('user'));
     }
 
     public function editProfile() {
-        $user = User::where('id', auth()->id())->first();
+        $user = User::where('id', Auth::id())->first();
         return view('user.pages.edit-profile-page', compact('user'));
     }
 
     public function updateProfile(Request $request) {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . Auth::id()],
             'image_profile' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user = User::where('id', auth()->id())->first();
+        $user = User::where('id', Auth::id())->first();
         $user->name = $request->name;
         $user->email = $request->email;
         if ($request->hasFile('image_profile')) {
@@ -163,3 +168,4 @@ class UsersController extends Controller
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 }
+

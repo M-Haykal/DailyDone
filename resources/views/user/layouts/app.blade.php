@@ -90,13 +90,13 @@
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
             <div class="mx-3">
-                <form action="{{ route('logout') }}" method="post">
-                    @csrf
-                    <button class="btn btn-outline-danger w-100 align-items-center" type="submit"><i
-                            class="material-symbols-rounded py-2">logout</i>Logout</button>
-                </form>
+                <button class="btn btn-outline-danger w-100 align-items-center" id="logout-btn"><i
+                        class="material-symbols-rounded py-2">logout</i>Logout</button>
             </div>
         </div>
+        <form action="{{ route('logout') }}" method="post" id="logout-form">
+            @csrf
+        </form>
     </aside>
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg my-2">
         <!-- Navbar -->
@@ -105,7 +105,7 @@
             <div class="container-fluid py-1 px-3">
                 <nav class="nav">
                     <p class="fw-bold mb-0">
-                        {{ request()->routeIs('user.dashboard') ? 'Dashboard' : (request()->routeIs('user.project') ? 'Projects' : (request()->routeIs('user.archive') ? 'Archive' : (request()->routeIs('user.deadline') ? 'Deadline' : (request()->routeIs('user.projects.trashed') ? 'Trash' : ''))) )}}
+                        {{ request()->routeIs('user.dashboard') ? 'Dashboard' : (request()->routeIs('user.project') ? 'Projects' : (request()->routeIs('user.archive') ? 'Archive' : (request()->routeIs('user.deadline') ? 'Deadline' : (request()->routeIs('user.projects.trashed') ? 'Trash' : '')))) }}
                     </p>
                 </nav>
                 <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -113,7 +113,7 @@
                     </div>
                     <ul class="navbar-nav d-flex align-items-center justify-content-end">
                         <li class="nav-item dropdown mx-4 mb-0 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
+                            <a href="javascript:;" class="nav-link text-body p-0 position-relative" id="dropdownMenuButton"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="material-symbols-rounded">notifications</i>
                                 @php
@@ -233,6 +233,33 @@
                 }
             });
         }
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda akan logout!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Logout!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            })
+        });
+
+        document.getElementById('logout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            axios.post(this.action, $(this).serialize())
+                .then(response => {
+                    window.location.href = response.data.redirect;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        });
     </script>
     <script>
         var win = navigator.platform.indexOf('Win') > -1;

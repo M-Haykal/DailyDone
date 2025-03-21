@@ -10,13 +10,13 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
     public function show($id) {
-        $userId = auth()->id();
-        $userEmail = auth()->user()->email;
+        $userId = Auth::id();
+        $userEmail = Auth::user()->email;
     
         $project = Project::where('id', $id)
             ->where(function ($query) use ($userId, $userEmail) {
@@ -39,7 +39,7 @@ class ProjectController extends Controller
         ]);
         
         $project = new Project();
-        $project->user_id = auth()->id();
+        $project->user_id = Auth::id();
         $project->name = $request->name;
         $project->description = $request->description;
         $project->start_date = $request->start_date;
@@ -57,7 +57,7 @@ class ProjectController extends Controller
         
         $project = Project::findOrFail($id);
         
-        if ($project->user_id != auth()->id()) {
+        if ($project->user_id != Auth::id()) {
             abort(403, 'Anda tidak memiliki akses untuk mengedit proyek ini.');
         }
         
@@ -126,14 +126,14 @@ class ProjectController extends Controller
             return redirect('/')->with('error', 'Token tidak valid atau sudah kedaluwarsa.');
         }
     
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             session(['redirect_to_project' => $sharedProject->project_id]);
     
             return redirect('login')->with('error', 'Silakan login atau register untuk mengakses proyek.');
         }
 
         if ($sharedProject->user_id == null) {
-            $sharedProject->user_id = auth()->id();
+            $sharedProject->user_id = Auth::id();
             $sharedProject->save();
         }
     
@@ -154,7 +154,7 @@ class ProjectController extends Controller
             abort(403, 'Token telah kedaluwarsa.');
         }
 
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             session(['pending_project_token' => $token]);
             return redirect('/register')->with('info', 'Silakan daftar atau login terlebih dahulu.');
         }
@@ -170,14 +170,14 @@ class ProjectController extends Controller
 
     public function trashedProjects()
     {
-        $projects = Project::onlyTrashed()->where('user_id', auth()->id())->get();
+        $projects = Project::onlyTrashed()->where('user_id', Auth::id())->get();
         return view('user.pages.trash-project-page', compact('projects'));
     }
 
     public function deleteProject($id)
     {
         $project = Project::findOrFail($id);
-        if ($project->user_id != auth()->id()) {
+        if ($project->user_id != Auth::id()) {
             return abort(403, 'Anda tidak memiliki izin untuk menghapus proyek ini.');
         }
         foreach ($project->taskLists as $taskList) {
@@ -191,7 +191,7 @@ class ProjectController extends Controller
     {
         $project = Project::onlyTrashed()->findOrFail($id);
 
-        if ($project->user_id != auth()->id()) {
+        if ($project->user_id != Auth::id()) {
             return abort(403, 'Anda tidak memiliki izin untuk mengembalikan proyek ini.');
         }
 
@@ -204,7 +204,7 @@ class ProjectController extends Controller
     {
         $project = Project::onlyTrashed()->findOrFail($id);
 
-        if ($project->user_id != auth()->id()) {
+        if ($project->user_id != Auth::id()) {
             return abort(403, 'Anda tidak memiliki izin untuk menghapus proyek ini secara permanen.');
         }
 

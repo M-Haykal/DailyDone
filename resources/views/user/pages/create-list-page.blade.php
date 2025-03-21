@@ -65,7 +65,22 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <input type="hidden" name="tag" value="{{ auth()->user()->name }}">
+                <div class="mb-3">
+                    <label for="tag" class="form-label">Tag</label>
+                    <select class="form-select @error('tag') is-invalid @enderror" id="tag" name="tag[]" multiple
+                        required aria-label="multiple select example">
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}"
+                                {{ in_array($user->id, old('tag', [])) ? 'selected' : '' }}
+                                {{ $user->id == auth()->id() }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('tag')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
                 <div class="mb-3 input-group input-group-outline">
                     <label for="note" class="form-label">Note</label>
                     <input type="text" class="form-control @error('note') is-invalid @enderror" id="note"
@@ -160,5 +175,3 @@
         });
     </script>
 @endsection
-
-

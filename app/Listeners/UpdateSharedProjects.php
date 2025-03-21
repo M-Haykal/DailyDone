@@ -5,7 +5,7 @@ namespace App\Listeners;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Models\SharedProject;
-use App\Events\Authenticated;
+use Illuminate\Auth\Events\Authenticated;
 
 class UpdateSharedProjects
 {
@@ -29,3 +29,4 @@ class UpdateSharedProjects
             ->update(['user_id' => $user->id]);
     }
 }
+
