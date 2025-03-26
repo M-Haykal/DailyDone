@@ -8,6 +8,7 @@
     <title>DailyDone</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/animsition.min.css') }}">
     <style>
         body {
             background-image: url('{{ asset('img/office-dark.jpg') }}');
@@ -61,29 +62,52 @@
             <h1>Welcome to DailyDone!</h1>
             <p>The best place to plan your ideas.</p>
         </div>
-        <div class="action" data-aos="fade-left">
+        <div class="action animsition-overlay" data-animsition-overlay="true">
             @auth
-                @if (auth()->user()->is_admin)
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-custom">Start Now</a>
-                @else
-                    <a href="{{ route('user.dashboard') }}" class="btn btn-custom">Start Now</a>
-                @endif
+                <a href="{{ route('user.dashboard') }}" class="btn btn-custom animsition-link"
+                    data-animsition-out-class="overlay-slide-out-top">Start Now</a>
             @else
-                @if (Route::has('register'))
-                    <a href="{{ route('login') }}" class="btn btn-custom">Log In Now</a>
-                @else
-                    <a href="{{ route('register') }}" class="btn btn-custom">Register Now</a>
-                @endif
+                <a href="{{ route('login') }}" class="btn btn-custom animsition-link"
+                    data-animsition-out-class="overlay-slide-out-top" data-animsition-out-duration="200">Log In
+                    Now</a>
             @endauth
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="{{ asset('js/animsition.min.js') }}"></script>
     <script>
         AOS.init();
+
+        $(document).ready(function() {
+            $(".animsition-overlay").animsition({
+                inClass: 'overlay-slide-in-top',
+                outClass: 'overlay-slide-out-top',
+                inDuration: 1500,
+                outDuration: 800,
+                linkElement: '.animsition-link',
+                // e.g. linkElement: 'a:not([target="_blank"]):not([href^="#"])'
+                loading: true,
+                loadingParentElement: 'body', //animsition wrapper element
+                loadingClass: 'animsition-loading',
+                loadingInner: '', // e.g '<img src="loading.svg" />'
+                timeout: false,
+                timeoutCountdown: 5000,
+                onLoadEvent: true,
+                browser: ['animation-duration', '-webkit-animation-duration'],
+                // "browser" option allows you to disable the "animsition" in case the css property in the array is not supported by your browser.
+                // The default setting is to disable the "animsition" in a browser that does not support "animation-duration".
+                overlay: true,
+                overlayClass: 'animsition-overlay-slide',
+                overlayParentElement: 'body',
+                transition: function(url) {
+                    window.location.href = url;
+                }
+            });
+        });
     </script>
 </body>
 
 </html>
-

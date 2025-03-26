@@ -38,7 +38,7 @@
             @forelse ($projects as $project)
                 @if (\Carbon\Carbon::parse($project->end_date)->isFuture())
                     <div class="col-md-4 col-12 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                        @if ($project->user_id == auth()->id() || $project->sharedUsers->contains(auth()->id()))
+                        @if ($project->user_id == auth()->id() || $project->sharedUsers()->where('user_id', auth()->id())->exists())
                             <a href="{{ route('projects.show', $project->id) }}" class="text-decoration-none">
                                 <div class="card shadow">
                                     <div class="card-header d-flex g-2 justify-content-between">

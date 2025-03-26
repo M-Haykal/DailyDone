@@ -19,7 +19,8 @@
                 </div>
             @endif
 
-            <form action="{{ route('user.tasklist.edit', [$tasklist->project_id, $tasklist->id]) }}" method="POST" id="form-update">
+            <form action="{{ route('user.tasklist.edit', [$tasklist->project_id, $tasklist->id]) }}" method="POST"
+                id="form-update">
                 @csrf
                 @method('PUT')
                 <div class="mb-3 input-group input-group-outline">
@@ -40,10 +41,17 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="mb-3 input-group input-group-outline">
+                        <div class="mb-3">
                             <label for="tag" class="form-label">Tag</label>
-                            <input type="text" class="form-control @error('tag') is-invalid @enderror" id="tag"
-                                name="tag" value="{{ old('tag', $tasklist->tag) }}" required>
+                            <select class="form-select @error('tag') is-invalid @enderror" id="tag" name="tag[]"
+                                multiple required aria-label="multiple select example">
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ is_array(old('tag', json_decode($tasklist->tag, true))) && in_array($user->id, old('tag', json_decode($tasklist->tag, true))) ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                             @error('tag')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -65,7 +73,8 @@
                         <div class="mb-3">
                             <label for="start-date" class="form-label">Start Date</label>
                             <input type="date" class="form-control @error('start_date') is-invalid @enderror"
-                                id="start-date" name="start_date" value="{{ old('start_date', $tasklist->start_date) }}" required>
+                                id="start-date" name="start_date" value="{{ old('start_date', $tasklist->start_date) }}"
+                                required>
                             @error('start_date')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -132,4 +141,3 @@
         @endif
     </script>
 @endsection
-

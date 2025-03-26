@@ -5,16 +5,7 @@
     <div class="row">
         <div class="my-3">
             <h3 class="mb-0 h4 font-weight-bolder">
-                @php
-                    $now = \Carbon\Carbon::now();
-                    if ($now->hour < 12) {
-                        echo 'Good morning';
-                    } elseif ($now->hour < 17) {
-                        echo 'Good afternoon';
-                    } else {
-                        echo 'Good evening';
-                    }
-                @endphp
+                Halo
             </h3>
             <p>
                 {{ auth()->user()->name }}

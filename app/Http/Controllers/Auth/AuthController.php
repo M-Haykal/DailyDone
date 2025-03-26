@@ -49,7 +49,7 @@ class AuthController extends Controller
         SharedProject::where('email', $user->email)
         ->update(['user_id' => $user->id, 'email' => null]);
 
-        auth()->login($user);
+        Auth::login($user);
 
         return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
     }

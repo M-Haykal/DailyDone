@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
     <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    @stack('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -34,8 +34,7 @@
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
                 aria-hidden="true" id="iconSidenav"></i>
-            <a class="navbar-brand px-4 py-3 m-0"
-                href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
+            <a class="navbar-brand px-4 py-3 m-0 " href="{{ route('user.dashboard') }}" target="_blank">
                 <img src="{{ asset('img/logo_hayproject.jpeg') }}" class="navbar-brand-img rounded-circle"
                     width="30" height="30" alt="main_logo">
                 <span class="ms-1 text-sm text-dark">Daily Done</span>
@@ -80,6 +79,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-dark {{ request()->routeIs('user.notes') ? 'bg-gradient-dark text-white' : '' }}"
+                        href="{{ route('user.notes') }}">
+                        <i class="material-symbols-rounded opacity-5">description</i>
+                        <span class="nav-link-text ms-1">Notes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-dark {{ request()->routeIs('user.projects.trashed') ? 'bg-gradient-dark text-white' : '' }}"
                         href="{{ route('user.projects.trashed') }}">
                         <i class="material-symbols-rounded opacity-5">delete</i>
@@ -103,18 +109,22 @@
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl bg-white" id="navbarBlur"
             data-scroll="true">
             <div class="container-fluid py-1 px-3">
-                <nav class="nav">
-                    <p class="fw-bold mb-0">
-                        {{ request()->routeIs('user.dashboard') ? 'Dashboard' : (request()->routeIs('user.project') ? 'Projects' : (request()->routeIs('user.archive') ? 'Archive' : (request()->routeIs('user.deadline') ? 'Deadline' : (request()->routeIs('user.projects.trashed') ? 'Trash' : '')))) }}
-                    </p>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                        <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a>
+                        </li>
+                        <li class="breadcrumb-item text-sm text-dark active" aria-current="page">
+                            {{ request()->routeIs('user.dashboard') ? 'Dashboard' : (request()->routeIs('user.project') ? 'Projects' : (request()->routeIs('user.archive') ? 'Archive' : (request()->routeIs('user.deadline') ? 'Deadline' : (request()->routeIs('user.notes') ? 'Notes' : (request()->routeIs('user.projects.trashed') ? 'Trash' : (request()->routeIs('user.profile') ? 'Profile' : (request()->routeIs('user.profile.edit') ? 'Edit Profile' : (request()->routeIs('projects.show') ? 'Detail Project' : (request()->routeIs('user.detailList') ? 'Detail List' : (request()->routeIs('user.tasklist.viewEdit') ? 'Edit List' : '')))))))))) }}
+                        </li>
+                    </ol>
                 </nav>
                 <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                     <div class="ms-md-auto pe-md-3 d-flex align-items-center">
                     </div>
                     <ul class="navbar-nav d-flex align-items-center justify-content-end">
                         <li class="nav-item dropdown mx-4 mb-0 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0 position-relative" id="dropdownMenuButton"
-                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <a href="javascript:;" class="nav-link text-body p-0 position-relative"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="material-symbols-rounded">notifications</i>
                                 @php
                                     $projectsNotification = $projects->filter(function ($project) {
@@ -277,6 +287,7 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     @yield('script')
 </body>
 

@@ -213,8 +213,63 @@ class ProjectController extends Controller
         return redirect()->route('user.dashboard')->with('success', 'Proyek berhasil dihapus secara permanen.');
     }
 
+    public function shareBySlug(Request $request, $slug)
+    {
+        $request->validate([
+            'permissions' => 'required|in:view,edit',
+        ]);
 
+        $project = Project::where('slug', $slug)->firstOrFail();
 
+        if ($project->user_id !== Auth::id()) {
+            return abort(403, 'Anda tidak memiliki izin untuk membagikan proyek ini.');
+        }
+
+        $token = Str::random(32);
+
+        SharedProject::updateOrCreate(
+            ['project_id' => $project->id],
+            [
+                'permissions' => $request->permissions,
+                'token' => $token,
+                'expires_at' => now()->addDays(7),
+            ]
+        );
+
+        $shareUrl = route('projects.access', ['slug' => $project->slug, 'token' => $token]);
+
+        session()->flash('share_url', $shareUrl);
+
+        return back();
+    }
+
+    public function accessBySlug($slug, $token)
+    {
+        $sharedProject = SharedProject::where('token', $token)->first();
+
+        if (!$sharedProject) {
+            return abort(404, 'Token tidak valid.');
+        }
+
+        if (now()->greaterThan($sharedProject->expires_at)) {
+            return abort(403, 'Token telah kedaluwarsa.');
+        }
+
+        if (!Auth::check()) {
+            session(['pending_project_token' => $token]);
+            return redirect('/login')->with('info', 'Silakan login terlebih dahulu.');
+        }
+
+        $project = Project::where('slug', $slug)->firstOrFail();
+        
+        if ($sharedProject->user_id === null) {
+            $sharedProject->user_id = Auth::id();
+            $sharedProject->save();
+        }
+
+        return redirect()->route('projects.show', ['id' => $project->id])
+            ->with('success', 'Anda berhasil mengakses proyek ini.');
+    }
 
 }
 

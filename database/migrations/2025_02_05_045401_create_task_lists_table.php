@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'in_progress', 'completed']);
             $table->enum('priority', ['low', 'medium', 'high']);
             $table->string('tag');
-            $table->string('note');
+            $table->string('note')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');

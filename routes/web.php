@@ -6,11 +6,9 @@ use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\User\ProjectController;
 use App\Http\Controllers\User\TaskController;
 use App\Http\Controllers\User\CommentController;
+use App\Http\Controllers\User\NoteController;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SendEmail;
 
 Route::get('/', function () {
     return view('start');
@@ -37,6 +35,7 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user/deadline', [UsersController::class, 'deadline'])->name('user.deadline');
     Route::get('user/projects', [UsersController::class, 'project'])->name('user.project');
     Route::get('user/archive', [UsersController::class, 'archive'])->name('user.archive');
+    Route::get('user/notes', [UsersController::class, 'notes'])->name('user.notes');
     Route::get('user/trash', [ProjectController::class, 'trashedProjects'])->name('user.projects.trashed');
     Route::get('user/edit-profile', [UsersController::class, 'editProfile'])->name('user.profile.edit');
     Route::post('user/update-profile', [UsersController::class, 'updateProfile'])->name('user.profile.update');    
@@ -45,7 +44,7 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user/tasklist', [TaskController::class, 'index'])->name('user.tasklist.index');
     Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
     Route::post('user/tasklist/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasklist.updateStatus');
-    Route::delete('/user/tasklist/{id}', [TaskListController::class, 'destroy'])->name('user.tasklist.destroy');
+    Route::delete('/user/tasklist/{id}', [TaskController::class, 'destroy'])->name('user.tasklist.destroy');
     Route::get('user/detailList/{id}', [TaskController::class, 'detailList'])->name('user.detailList');
     Route::post('user/projects/{id}/delete', [ProjectController::class, 'deleteProject'])->name('projects.delete');
     Route::delete('/user/tasklist/{id}', [TaskController::class, 'destroy'])->name('user.tasklist.destroy');
@@ -61,4 +60,13 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     // Route::put('user/projects/{id}/edit-permission', [ProjectController::class, 'editPermission'])->name('user.project.editPermission');
     Route::post('user/projects/{id}/restore', [ProjectController::class, 'restoreProject'])->name('user.projects.restore');
     Route::delete('user/projects/{id}/force-delete', [ProjectController::class, 'forceDeleteProject'])->name('user.projects.forceDelete');
+    Route::get('projects/access/{slug}/{token}', [ProjectController::class, 'accessBySlug'])->name('projects.access');
+    Route::post('projects/share/{slug}', [ProjectController::class, 'shareBySlug'])->name('projects.shareBySlug');
+    Route::get('user/note/detail/{id?}', [NoteController::class, 'index'])
+        ->name('user.note.index');
+    Route::post('/user/notes/store', [NoteController::class, 'store']);
+    Route::put('/user/notes/{id}/update', [NoteController::class, 'update']);
+    Route::delete('/user/notes/{id}/destroy', [NoteController::class, 'destroy']);
+    // Route::get('user/notes', [NoteController::class, 'notes'])->name('user.notes');
 });
+

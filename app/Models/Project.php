@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -48,6 +49,13 @@ class Project extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'project_user', 'project_id', 'user_id');
-    }       
-
+    }     
+    
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($project) {
+            $project->slug = Str::slug($project->name) . '-' . Str::random(6);
+        });
+    }
 }

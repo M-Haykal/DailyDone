@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\TaskList;
 use App\Models\Project;
 use App\Models\User;
+use App\Models\Notes;
 
 class UsersController extends Controller
 {
@@ -105,6 +106,12 @@ class UsersController extends Controller
         return view('user.pages.deadline-page', compact('tasks', 'project'));
     }
 
+    public function notes() {
+        $notes = Notes::where('user_id', Auth::id())->latest()->get();
+
+        return view('user.pages.list-notes-page', compact('notes'));       
+    }
+
     public function project(Request $request) {
         $projectsQuery = Project::where(function ($query) use ($request) {
             $query->where('user_id', Auth::id())
@@ -112,11 +119,11 @@ class UsersController extends Controller
                     $query->where('user_id', Auth::id());
                 });
         });
-    
+
         if ($request->has('search') && !empty($request->search)) {
             $projectsQuery->where('name', 'like', '%' . $request->search . '%');
         }
-    
+
         if ($request->has('sort')) {
             if ($request->sort === 'alphabetical') {
                 $projectsQuery->orderBy('name');
@@ -124,13 +131,11 @@ class UsersController extends Controller
                 $projectsQuery->orderBy('end_date');
             }
         }
-    
-        $projects = Project::where('user_id', Auth::id())
-            ->whereDate('end_date', '>=', now())
-            ->paginate(12);
-    
+
+        $projects = $projectsQuery->whereDate('end_date', '>=', now())->paginate(12);
+
         return view('user.pages.list-project-page', compact('projects'));
-    }    
+    }
 
     public function profile() {
         $user = User::where('id', Auth::id())->first();

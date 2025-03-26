@@ -36,7 +36,7 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high',
             'tag' => 'required|array',
             'tag.*' => 'exists:users,id',
-            'note' => 'required|string|max:255',
+            'note' => 'nullable|string|max:255',
             'start_date' => [
                 'required', 'date',
                 'after_or_equal:' . $project->start_date,
@@ -126,6 +126,8 @@ class TaskController extends Controller
             })->findOrFail($idTaskList);
 
         $users = User::all();
+    
+        // dd($taskList, $users);
 
         return view('user.pages.detail-list-page', compact('taskList', 'users'));
     }
@@ -136,8 +138,10 @@ class TaskController extends Controller
             ->whereHas('project', function ($query) {
                 $query->where('user_id', Auth::id());
             })->findOrFail($idTaskList);
+        
+        $users = User::all();
 
-        return view('user.pages.edit-list-page', compact('tasklist'));
+        return view('user.pages.edit-list-page', compact('tasklist', 'users'));
     }
 
     public function edit(Request $request, $idProject, $idTaskList)
@@ -160,7 +164,8 @@ class TaskController extends Controller
             'list_items' => 'required|string',
             'detail_list' => 'nullable|string',
             'priority' => 'nullable|string',
-            'tag' => 'nullable|string',
+            'tag' => 'required|array',
+            'tag.*' => 'exists:users,id',
             'note' => 'nullable|string',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date'
