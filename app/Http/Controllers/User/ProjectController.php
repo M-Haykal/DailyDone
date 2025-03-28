@@ -75,6 +75,25 @@ class ProjectController extends Controller
         return redirect()->back()->with('success', 'Proyek berhasil diedit.');
     }
 
+    public function saveNote(Request $request, Project $project)
+    {
+        if ($project->user_id != Auth::id() && 
+            !$project->sharedUsers()->where('user_id', Auth::id())->where('permissions', 'edit')->exists()) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk menambahkan catatan.');
+        }
+
+        $request->validate([
+            'note' => 'required|string|max:2000',
+        ]);
+
+        $project->update([
+            'note' => $request->note,
+            'completed_at' => now()
+        ]);
+
+        return back()->with('success', 'Catatan project berhasil disimpan.');
+    }
+
     public function share(Request $request, $id)
     {
         $request->validate([
@@ -104,16 +123,40 @@ class ProjectController extends Controller
         return redirect()->back()->with('success', 'Proyek berhasil dibagikan.');
     }
 
-    public function editPermission(Request $request, $id)
+    public function editPermission(Request $request, Project $project, SharedProject $sharedProject)
     {
+        if ($project->user_id != Auth::id()) {
+            return back()->with('error', 'Hanya pemilik proyek yang dapat mengubah izin.');
+        }
+    
+        if ($sharedProject->project_id != $project->id) {
+            return back()->with('error', 'Izin tidak valid untuk proyek ini.');
+        }
+    
         $request->validate([
-            'email' => 'required|email',
             'permissions' => 'required|in:view,edit',
         ]);
-        $sharedProject = SharedProject::findOrFail($id);
-        $sharedProject->permissions = $request->permissions;
-        $sharedProject->save();
-        return redirect()->back()->with('success', 'Permission berhasil diedit.');
+    
+        $sharedProject->update([
+            'permissions' => $request->permissions
+        ]);
+    
+        return back()->with('success', 'Izin berhasil diperbarui.');
+    }
+
+    public function deleteAccess(Project $project, SharedProject $sharedProject)
+    {
+        if ($project->user_id != Auth::id()) {
+            return back()->with('error', 'Hanya pemilik proyek yang dapat menghapus akses.');
+        }
+
+        if ($sharedProject->project_id != $project->id) {
+            return back()->with('error', 'Akses tidak valid untuk proyek ini.');
+        }
+
+        $sharedProject->delete();
+
+        return back()->with('success', 'Akses berhasil dihapus.');
     }
 
     public function joinProject($token)
@@ -218,57 +261,74 @@ class ProjectController extends Controller
         $request->validate([
             'permissions' => 'required|in:view,edit',
         ]);
-
+    
         $project = Project::where('slug', $slug)->firstOrFail();
-
+    
         if ($project->user_id !== Auth::id()) {
             return abort(403, 'Anda tidak memiliki izin untuk membagikan proyek ini.');
         }
-
+    
+        // Generate token berdasarkan permission
+        $tokenType = $request->permissions . '_token';
+        $expiresType = $request->permissions . '_expires_at';
+        
         $token = Str::random(32);
-
+        $expiresAt = now()->addDays(7);
+    
         SharedProject::updateOrCreate(
-            ['project_id' => $project->id],
             [
-                'permissions' => $request->permissions,
+                'project_id' => $project->id,
+                'permissions' => $request->permissions
+            ],
+            [
                 'token' => $token,
-                'expires_at' => now()->addDays(7),
+                'expires_at' => $expiresAt,
+                // Simpan juga di field khusus jika diperlukan
+                $tokenType => $token,
+                $expiresType => $expiresAt
             ]
         );
-
-        $shareUrl = route('projects.access', ['slug' => $project->slug, 'token' => $token]);
-
+    
+        $shareUrl = route('projects.access', [
+            'slug' => $project->slug,
+            'token' => $token,
+            'permission' => $request->permissions // Tambahkan parameter permission
+        ]);
+    
         session()->flash('share_url', $shareUrl);
-
+        session()->flash('permission_type', $request->permissions);
+    
         return back();
     }
 
     public function accessBySlug($slug, $token)
     {
-        $sharedProject = SharedProject::where('token', $token)->first();
-
+        $project = Project::where('slug', $slug)->firstOrFail();
+        $sharedProject = SharedProject::where('token', $token)
+                        ->where('project_id', $project->id)
+                        ->first();
+    
         if (!$sharedProject) {
             return abort(404, 'Token tidak valid.');
         }
-
+    
         if (now()->greaterThan($sharedProject->expires_at)) {
             return abort(403, 'Token telah kedaluwarsa.');
         }
-
+    
         if (!Auth::check()) {
             session(['pending_project_token' => $token]);
             return redirect('/login')->with('info', 'Silakan login terlebih dahulu.');
         }
-
-        $project = Project::where('slug', $slug)->firstOrFail();
-        
+    
+        // Update user_id jika belum ada
         if ($sharedProject->user_id === null) {
             $sharedProject->user_id = Auth::id();
             $sharedProject->save();
         }
-
+    
         return redirect()->route('projects.show', ['id' => $project->id])
-            ->with('success', 'Anda berhasil mengakses proyek ini.');
+            ->with('success', 'Anda berhasil mengakses proyek ini dengan izin ' . $sharedProject->permissions);
     }
 
 }

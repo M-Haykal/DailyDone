@@ -29,7 +29,8 @@
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
-    <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white my-2"
+    <aside
+        class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white my-2 d-lg-block d-xl-block"
         id="sidenav-main">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
@@ -220,10 +221,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         AOS.init();
-        document.getElementById('iconNavbarSidenav').addEventListener('click', function() {
-            var sidenav = document.getElementById('sidenav-main');
-            sidenav.classList.toggle('d-none');
-        });
+        // document.getElementById('iconNavbarSidenav').addEventListener('click', function() {
+        //     var sidenav = document.getElementById('sidenav-main');
+        //     sidenav.classList.toggle('d-none');
+        // });
 
         function confirmDelete(event, projectId) {
             event.preventDefault();
@@ -269,6 +270,43 @@
                 .catch(error => {
                     console.log(error);
                 });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const iconNavbarSidenav = document.getElementById('iconNavbarSidenav');
+            const sidenavMain = document.getElementById('sidenav-main');
+
+            if (iconNavbarSidenav && sidenavMain) {
+                iconNavbarSidenav.addEventListener('click', function() {
+                    // Toggle class untuk menampilkan/menyembunyikan sidebar
+                    if (sidenavMain.classList.contains('d-none')) {
+                        sidenavMain.classList.remove('d-none');
+                        sidenavMain.classList.add('d-block');
+                        sidenavMain.style.width = '250px';
+                    } else {
+                        sidenavMain.classList.add('d-none');
+                        sidenavMain.classList.remove('d-block');
+                        sidenavMain.style.width = '0';
+                    }
+                });
+            }
+
+            // Handle resize event untuk responsive behavior
+            window.addEventListener('resize', function() {
+                if (window.innerWidth < 1200) { // Sesuaikan dengan breakpoint yang diinginkan
+                    sidenavMain.classList.add('d-none');
+                    sidenavMain.classList.remove('d-block');
+                } else {
+                    sidenavMain.classList.remove('d-none');
+                    sidenavMain.classList.add('d-block');
+                }
+            });
+
+            // Inisialisasi awal berdasarkan ukuran layar
+            if (window.innerWidth < 1200) {
+                sidenavMain.classList.add('d-none');
+                sidenavMain.classList.remove('d-block');
+            }
         });
     </script>
     <script>

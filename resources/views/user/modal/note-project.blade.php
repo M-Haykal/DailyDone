@@ -1,24 +1,30 @@
-<div class="modal" tabindex="-1" id="note-project">
+<div class="modal fade" id="note-project" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Comment</h5>
+                <h5 class="modal-title">Project Completion Note</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, cupiditate aut illum sequi mollitia
-                    iste modi sit molestias earum facilis dolorum laboriosam ab quis aperiam minima error ratione
-                    nesciunt unde. Quas quasi similique eos, expedita enim modi nesciunt, molestias dolores placeat
-                    soluta, minima amet facilis neque tempore quod voluptas dolore laborum impedit. Nisi, adipisci vel
-                    perspiciatis qui, consequatur expedita earum placeat hic numquam in architecto molestiae aspernatur
-                    reprehenderit quaerat perferendis sit, blanditiis nam alias dignissimos quas? Velit, explicabo quas
-                    ipsa minus quam ullam maiores? Saepe quisquam eaque, molestias quam nulla doloribus labore nam
-                    voluptas dicta! Minus vitae a odio? Nostrum.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+            <form action="{{ route('projects.saveNote', $project->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    @if ($project->end_date->isPast())
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Project ini telah melewati deadline pada {{ $project->end_date->format('d F Y') }}
+                        </div>
+                    @endif
+                    <div class="mb-3">
+                        <label for="project_note" class="form-label">Berikan catatan tentang project ini:</label>
+                        <textarea class="form-control" id="project_note" name="note" rows="5"
+                            placeholder="Mengapa project tidak selesai? Apa kendalanya?">{{ $project->note }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan Catatan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

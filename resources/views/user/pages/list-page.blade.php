@@ -32,23 +32,38 @@
                         @endif
                     </div>
                     <div class="avatar-group mt-2">
-                        <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                            data-bs-placement="bottom" title="Project Owner: {{ $project->owner->name }}">
+                        <span class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            title="Project Owner: {{ $project->owner->name }}">
                             <img src="{{ $project->owner->image_profile ? url('storage/images/' . $project->owner->image_profile) : Avatar::create($project->owner->name)->toBase64() }}"
                                 alt="{{ $project->owner->name }}">
-                        </a>
-                        @foreach ($project->sharedUsers as $user)
-                            <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
-                                data-bs-placement="bottom" title="{{ $user->name }} ({{ $user->pivot->permissions }})">
-                                <img src="{{ $user->image_profile ? url('storage/images/' . $user->image_profile) : Avatar::create($user->name)->toBase64() }}"
-                                    alt="user{{ $loop->index + 2 }}">
-                            </a>
+                        </span>
+
+                        @foreach ($project->sharedProjects as $shared)
+                            @if ($shared->user)
+                                @if (auth()->id() == $project->user_id)
+                                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="modal"
+                                        data-bs-target="#editPermission{{ $shared->id }}" data-bs-toggle="tooltip"
+                                        data-bs-placement="bottom"
+                                        title="{{ $shared->user->name }} ({{ $shared->permissions }}) - Klik untuk edit">
+                                        <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
+                                            alt="{{ $shared->user->name }}">
+                                    </a>
+                                @else
+                                    <span class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
+                                        data-bs-placement="bottom"
+                                        title="{{ $shared->user->name }} ({{ $shared->permissions }})">
+                                        <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
+                                            alt="{{ $shared->user->name }}">
+                                    </span>
+                                @endif
+                            @endif
                         @endforeach
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    @include('user.modal.edit-permission')
     @include('user.modal.share-project')
     @include('user.modal.edit-background-image')
 
@@ -253,7 +268,7 @@
                 @endforelse
             </ul>
         </div>
-        @include('user.modal.note-project')
+        {{-- @include('user.modal.note-project') --}}
     </div>
 @endsection
 
@@ -360,6 +375,70 @@
             initializeSortable("exampleMiddle", "in_progress");
             initializeSortable("exampleRight", "completed");
         });
+
+        function confirmDeleteAccess(sharedProjectId) {
+            Swal.fire({
+                title: 'Hapus Akses?',
+                text: "Anda yakin ingin menghapus akses ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteAccessForm' + sharedProjectId).submit();
+                }
+            });
+        }
+
+        function copyToClipboard() {
+            var copyText = document.getElementById("share_url");
+            var permissionType = "{{ session('permission_type', 'view') }}";
+            var message = "URL " + permissionType + " disalin: " + copyText.value;
+
+            navigator.clipboard.writeText(copyText.value)
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'URL Disalin',
+                        text: 'URL dengan izin ' + permissionType + ' telah disalin ke clipboard',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                })
+                .catch(err => {
+                    console.error('Gagal menyalin teks: ', err);
+                });
+        }
+
+        document.getElementById("drop-area").addEventListener("click", function() {
+            document.getElementById("background_project").click();
+        });
+
+        function handleDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            document.getElementById("background_project").files = event.dataTransfer.files;
+            previewImage({
+                target: {
+                    files: [file]
+                }
+            });
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewContainer = document.getElementById("preview-container");
+                    previewContainer.innerHTML = ""; // Menghapus pratinjau lama sebelum menampilkan yang baru
+                    previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" width="200">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 @endsection
-

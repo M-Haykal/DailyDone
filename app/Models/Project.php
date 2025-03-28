@@ -39,10 +39,15 @@ class Project extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function sharedProjects()
+    {
+        return $this->hasMany(SharedProject::class);
+    }
+
     public function sharedUsers()
     {
         return $this->belongsToMany(User::class, 'shared_projects', 'project_id', 'user_id')
-                    ->withPivot('permissions')
+                    ->withPivot('id', 'permissions', 'token', 'email')
                     ->withTimestamps();
     }
     

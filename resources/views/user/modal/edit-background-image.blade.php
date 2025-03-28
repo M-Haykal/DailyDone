@@ -30,33 +30,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById("drop-area").addEventListener("click", function() {
-        document.getElementById("background_project").click();
-    });
-
-    function handleDrop(event) {
-        event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        document.getElementById("background_project").files = event.dataTransfer.files;
-        previewImage({
-            target: {
-                files: [file]
-            }
-        });
-    }
-
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const previewContainer = document.getElementById("preview-container");
-                previewContainer.innerHTML = ""; // Menghapus pratinjau lama sebelum menampilkan yang baru
-                previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" width="200">`;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-</script>

@@ -50,14 +50,25 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Generate URL</button>
                         </form>
+
                         @if (session('share_url'))
                             <div class="mt-3">
-                                <label for="share_url" class="form-label">URL Berbagi</label>
+                                <label for="share_url" class="form-label">URL Berbagi (Izin:
+                                    {{ session('permission_type') }})</label>
                                 <input type="text" id="share_url" class="form-control"
                                     value="{{ session('share_url') }}" readonly>
                                 <div class="mt-2">
-                                    <a href="{{ session('share_url') }}" target="_blank" class="btn btn-primary">Lihat Preview</a>
+                                    <a href="{{ session('share_url') }}" target="_blank" class="btn btn-primary">Lihat
+                                        Preview</a>
                                     <button class="btn btn-success" onclick="copyToClipboard()">Salin URL</button>
+                                </div>
+                                <div class="alert alert-info mt-2">
+                                    <small>
+                                        <i class="fas fa-info-circle"></i> URL ini memberikan akses
+                                        <strong>{{ session('permission_type') }}</strong>.
+                                        Untuk membuat URL dengan permission berbeda, generate ulang dengan memilih
+                                        akses yang diinginkan.
+                                    </small>
                                 </div>
                             </div>
                         @endif
@@ -70,16 +81,3 @@
         </div>
     </div>
 </div>
-<script>
-    function copyToClipboard() {
-        var copyText = document.getElementById("share_url");
-        navigator.clipboard.writeText(copyText.value)
-            .then(() => {
-                alert("URL disalin: " + copyText.value);
-            })
-            .catch(err => {
-                console.error('Gagal menyalin teks: ', err);
-            });
-    }
-</script>
-</script>

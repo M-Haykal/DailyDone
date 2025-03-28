@@ -28,7 +28,7 @@
                     title: `${task.title} - ${task.project}`,
                     start: task.start,
                     end: task.end,
-                    color: '#007bff'
+                    color: '#007bff',
                 };
             }));
 
@@ -38,13 +38,24 @@
                     title: project.name,
                     start: project.start_date,
                     end: project.end_date,
-                    color: '#28a745'
+                    color: '#28a745',
+                    url: "{{ route('projects.show', ':id') }}".replace(':id', project.id),
+                    extendedProps: {
+                        type: 'project'
+                    }
                 };
             }));
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                events: events
+                events: events,
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); // don't let the browser navigate
+
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                    }
+                }
             });
 
             calendar.render();

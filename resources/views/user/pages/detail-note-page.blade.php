@@ -3,7 +3,6 @@
 @section('title', 'Notes')
 
 @section('content')
-
     <style>
         #saveStatus {
             transition: all 0.3s ease;

@@ -31,6 +31,8 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::post('/projects/{id}/share', [ProjectController::class, 'share'])->middleware('auth');
     Route::get('/projects/join/{token}', [ProjectController::class, 'joinProject'])->name('projects.join');
     Route::get('/projects/access/{token}', [ProjectController::class, 'accessProject'])->name('projects.access');
+    Route::post('/projects/{project}/save-note', [ProjectController::class, 'saveNote'])
+        ->name('projects.saveNote');
     Route::get('user/profile', [UsersController::class, 'profile'])->name('user.profile');
     Route::get('user/deadline', [UsersController::class, 'deadline'])->name('user.deadline');
     Route::get('user/projects', [UsersController::class, 'project'])->name('user.project');
@@ -57,7 +59,10 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::put('user/comments/{comment}/edit', [CommentController::class, 'update'])->name('user.comments.update');
     Route::delete('user/comments/{comment}', [CommentController::class, 'destroy'])->name('user.comments.destroy');
     Route::put('user/project/{id}/edit', [ProjectController::class, 'edit'])->name('user.project.edit');
-    // Route::put('user/projects/{id}/edit-permission', [ProjectController::class, 'editPermission'])->name('user.project.editPermission');
+    Route::put('/projects/{project}/permissions/{sharedProject}', [ProjectController::class, 'editPermission'])
+        ->name('user.project.editPermission');
+    Route::delete('/projects/{project}/permissions/{sharedProject}', [ProjectController::class, 'deleteAccess'])
+        ->name('user.project.deleteAccess');
     Route::post('user/projects/{id}/restore', [ProjectController::class, 'restoreProject'])->name('user.projects.restore');
     Route::delete('user/projects/{id}/force-delete', [ProjectController::class, 'forceDeleteProject'])->name('user.projects.forceDelete');
     Route::get('projects/access/{slug}/{token}', [ProjectController::class, 'accessBySlug'])->name('projects.access');
@@ -67,6 +72,5 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::post('/user/notes/store', [NoteController::class, 'store']);
     Route::put('/user/notes/{id}/update', [NoteController::class, 'update']);
     Route::delete('/user/notes/{id}/destroy', [NoteController::class, 'destroy']);
-    // Route::get('user/notes', [NoteController::class, 'notes'])->name('user.notes');
 });
 
