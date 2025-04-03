@@ -104,14 +104,11 @@
                 })
                 .catch(error => {
                     console.error('CKEditor initialization error:', error);
-                    // Fallback to regular textarea if CKEditor fails
                     $('#content').show();
                 });
 
-            // Title input event
             $('#title').on('input', handleContentChange);
 
-            // Handle content changes
             function handleContentChange() {
                 clearTimeout(typingTimer);
 
@@ -126,7 +123,6 @@
                 }, delay);
             }
 
-            // Show status indicator
             function showStatus(text, bgClass = 'bg-secondary') {
                 const $status = $('#saveStatus');
                 $status.find('#statusText').text(text);
@@ -135,7 +131,6 @@
                 $status.fadeIn(200);
             }
 
-            // Show saved status
             function showSavedStatus() {
                 const $status = $('#saveStatus');
                 lastSavedTime = new Date();
@@ -146,29 +141,36 @@
                 setTimeout(() => {
                     $status.addClass('fade-out');
                     setTimeout(() => {
-                        if (!$status.hasClass('bg-info')) { // Don't hide if changed back to editing
+                        if (!$status.hasClass('bg-info')) {
                             $status.fadeOut(200);
                         }
                     }, 1000);
                 }, 1500);
             }
 
-            // Save note function
             function saveNote() {
                 if (isSaving) {
-                    // If already saving, try again in 500ms
                     setTimeout(saveNote, 500);
+                    return;
+                }
+
+                const title = $('#title').val();
+                const content = editor ? editor.getData() : $('#content').val();
+
+                if (!title || !content) {
+                    showStatus('Please fill all fields', 'bg-warning');
                     return;
                 }
 
                 isSaving = true;
                 showStatus('Saving...', 'bg-secondary');
+                $('#saveStatus').addClass('saving');
 
                 const noteId = $('#note_id').val();
                 const formData = {
                     _token: "{{ csrf_token() }}",
-                    title: $('#title').val(),
-                    content: editor ? editor.getData() : $('#content').val()
+                    title: title,
+                    content: content
                 };
 
                 const url = noteId ? `/user/notes/${noteId}/update` : "/user/notes/store";
@@ -186,24 +188,48 @@
                         }
                         showSavedStatus();
                         showToast('Changes saved', 'success');
+
+                        clearTimeout(typingTimer);
+                        typingTimer = setTimeout(saveNote, delay);
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.message || 'Connection error';
                         showStatus('Failed to save', 'bg-danger');
                         showToast('Error: ' + errorMessage, 'error');
 
-                        // Retry after 5 seconds if offline
-                        if (!navigator.onLine) {
-                            setTimeout(saveNote, 5000);
+                        isTyping = true;
+
+                        if (xhr.status === 422) {
+                            clearTimeout(typingTimer);
+                            typingTimer = setTimeout(saveNote, delay);
                         }
                     },
                     complete: function() {
                         isSaving = false;
+                        $('#saveStatus').removeClass('saving');
                     }
                 });
             }
 
-            // Delete note handler
+            function handleContentChange() {
+                clearTimeout(typingTimer);
+
+                if (!isTyping) {
+                    showStatus('Editing...', 'bg-info');
+                    isTyping = true;
+                }
+
+                const title = $('#title').val();
+                const content = editor ? editor.getData() : $('#content').val();
+
+                if (title && content) {
+                    typingTimer = setTimeout(() => {
+                        isTyping = false;
+                        saveNote();
+                    }, delay);
+                }
+            }
+
             $('#deleteNote').on('click', function() {
                 if (confirm("Are you sure you want to move this note to trash?")) {
                     const noteId = $('#note_id').val();
@@ -227,7 +253,6 @@
                 }
             });
 
-            // Network status detection
             window.addEventListener('offline', () => {
                 showStatus('Offline - changes not saved', 'bg-warning');
                 showToast('You are offline. Changes will be saved when you reconnect.', 'warning');
@@ -236,16 +261,13 @@
             window.addEventListener('online', () => {
                 showToast('Connection restored', 'success');
                 if ($('#title').val() || (editor && editor.getData())) {
-                    saveNote(); // Try to save when coming back online
+                    saveNote();
                 }
             });
 
-            // Show toast notification
             function showToast(message, type = 'success') {
-                // Using basic alert as fallback
                 alert(type.toUpperCase() + ': ' + message);
 
-                
                 if (type === 'success') {
                     HotToast.success(message, {
                         position: 'top-right',
@@ -262,10 +284,9 @@
                         duration: 4000
                     });
                 }
-                
+
             }
 
-            // Periodic save every 30 seconds if there are unsaved changes
             setInterval(() => {
                 if ((editor && editor.getData()) || $('#title').val()) {
                     saveNote();
@@ -274,4 +295,3 @@
         });
     </script>
 @endsection
-

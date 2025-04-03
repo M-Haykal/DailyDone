@@ -128,9 +128,17 @@
                                 id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="material-symbols-rounded">notifications</i>
                                 @php
-                                    $projectsNotification = $projects->filter(function ($project) {
-                                        return $project->user_id == auth()->id() ||
-                                            $project->sharedUsers->contains(auth()->id());
+                                    $now = \Carbon\Carbon::now();
+                                    $threeDaysFromNow = $now->copy()->addDays(3);
+
+                                    $projectsNotification = $projects->filter(function ($project) use (
+                                        $now,
+                                        $threeDaysFromNow,
+                                    ) {
+                                        $endDate = \Carbon\Carbon::parse($project->end_date);
+                                        return ($project->user_id == auth()->id() ||
+                                            $project->sharedUsers->contains(auth()->id())) &&
+                                            $endDate->between($now, $threeDaysFromNow);
                                     });
                                 @endphp
                                 <span

@@ -48,12 +48,13 @@ class UsersController extends Controller
         $user = User::findOrFail(Auth::id());
         $projectCount = Project::where('user_id', $user->id)->count();
         $taskListCount = TaskList::where('user_id', $user->id)->count();
+        $noteCount = Notes::where('user_id', $user->id)->count();
         $userId = Auth::id();
         $projectEnded = Project::where('user_id', $user->id)
             ->where('end_date', '<', now())
             ->count();
 
-        return view('user.dashboard', compact('projects', 'tasks', 'taskStatus', 'projectCount', 'taskListCount', 'projectEnded'));
+        return view('user.dashboard', compact('projects', 'tasks', 'taskStatus', 'projectCount', 'taskListCount', 'noteCount', 'projectEnded'));
     }
 
     public function archive() {

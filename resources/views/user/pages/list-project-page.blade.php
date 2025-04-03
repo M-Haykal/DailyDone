@@ -113,7 +113,7 @@
 
         <!-- Pagination -->
         @if ($projects->count())
-            <div class="d-flex justify-content-center mt-4">
+            <div class="d-flex justify-content-center">
                 {{ $projects->appends(['search' => request('search'), 'sort' => request('sort')])->links('pagination::bootstrap-4') }}
             </div>
         @endif

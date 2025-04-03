@@ -11,7 +11,7 @@
                 {{ auth()->user()->name }}
             </p>
         </div>
-        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
             <div class="card bg-gradient-info shadow-info">
                 <div class="card-header p-2 ps-3 bg-transparent border-info">
                     <div class="d-flex justify-content-between align-items-center">
@@ -27,7 +27,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
             <div class="card bg-gradient-success shadow-success">
                 <div class="card-header p-2 ps-3 bg-transparent border-success">
                     <div class="d-flex justify-content-between align-items-center">
@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
             <div class="card bg-gradient-secondary shadow-dark">
                 <div class="card-header p-2 ps-3 bg-transparent border-dark">
                     <div class="d-flex justify-content-between align-items-center">
@@ -54,6 +54,22 @@
                         <div
                             class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
                             <i class="material-symbols-rounded opacity-10 text-white">archive</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card bg-gradient-warning shadow-warning">
+                <div class="card-header p-2 ps-3 bg-transparent border-warning">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-white text-sm mb-0 text-capitalize">Total Notes</p>
+                            <h4 class="text-white mb-0">{{ $noteCount }}</h4>
+                        </div>
+                        <div
+                            class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                            <i class="material-symbols-rounded opacity-10 text-white">note</i>
                         </div>
                     </div>
                 </div>
@@ -153,7 +169,7 @@
                             </tbody>
                         </table>
                         <div class="pagination my-3 justify-content-center">
-                            {{ $projects->links('pagination::bootstrap-4') }}
+                            {{ $projects->links() }}
                         </div>
                     </div>
                 </div>

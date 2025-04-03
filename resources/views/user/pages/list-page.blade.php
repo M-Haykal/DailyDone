@@ -49,12 +49,13 @@
                                             alt="{{ $shared->user->name }}">
                                     </a>
                                 @else
-                                    <span class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
+                                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="modal"
+                                        data-bs-target="#profileModal{{ $shared->user->id }}" data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
                                         title="{{ $shared->user->name }} ({{ $shared->permissions }})">
                                         <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
                                             alt="{{ $shared->user->name }}">
-                                    </span>
+                                    </a>
                                 @endif
                             @endif
                         @endforeach
@@ -66,6 +67,7 @@
     @include('user.modal.edit-permission')
     @include('user.modal.share-project')
     @include('user.modal.edit-background-image')
+    @include('user.modal.profile-user')
 
     <div class="row my-3">
         <div class="col-md-4 my-2">

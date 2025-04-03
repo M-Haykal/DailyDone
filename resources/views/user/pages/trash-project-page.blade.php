@@ -4,63 +4,67 @@
 
 @section('content')
     <div class="row">
-        <div class="col-xl-12 my-2">
-            <div class="card p-3">
-                <h5 class="card-title mb-4">Trash Project</h5>
-                <div class="table-responsive">
-                    <table class="table align-items-center mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    No
-                                </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    Project
-                                </th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($projects as $project)
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Trash Project</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="thead-light">
                                 <tr>
-                                    <td>
-                                        <p class="text-xs font-weight-bold mb-0">{{ $loop->iteration }}</p>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ $project->name }}</h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <form action="{{ route('user.projects.restore', $project->id) }}" method="POST"
-                                            class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success btn-sm">Restore</button>
-                                        </form>
+                                    <th width="5%">#</th>
+                                    <th>Project Name</th>
+                                    <th width="25%" class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($projects as $project)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $project->name }}</td>
+                                        <td class="text-center">
+                                            <form action="{{ route('user.projects.restore', $project->id) }}" method="POST"
+                                                class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-trash-restore"></i> Restore
+                                                </button>
+                                            </form>
 
-                                        <!-- Tombol Hapus Permanen -->
-                                        <button type="button" class="btn btn-danger btn-sm"
-                                            onclick="confirmDelete(event, {{ $project->id }})">Hapus
-                                            Permanen</button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3">
-                                        <p class="m-1 text-center">No projects</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick="confirmDelete(event, {{ $project->id }})">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </button>
+
+                                            <form id="delete-form-{{ $project->id }}"
+                                                action="{{ route('user.projects.forceDelete', $project->id) }}"
+                                                method="POST" class="d-none">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center py-4">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <img src="{{ asset('img/data-empety.png') }}" alt="No projects in archive"
+                                                    class="img-fluid" style="max-width: 300px">
+                                                <h5 class="text-muted">No projects in trash</h5>
+                                                <p class="text-muted">Deleted projects will appear here</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('script')
@@ -69,17 +73,17 @@
             event.preventDefault();
 
             Swal.fire({
-                title: "Apakah Anda yakin?",
-                text: "Proyek yang dihapus permanen tidak bisa dikembalikan!",
+                title: "Are you sure?",
+                text: "This will permanently delete the project!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal"
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + projectId).submit();
+                    document.getElementById(`delete-form-${projectId}`).submit();
                 }
             });
         }

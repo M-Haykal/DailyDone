@@ -22,8 +22,8 @@
                     <div class="tab-pane active" id="share-email" role="tabpanel" aria-labelledby="fill-tab-0">
                         <form action="{{ url('/projects/' . $project->id . '/share') }}" method="POST">
                             @csrf
-                            <div class="mb-3">
-                                <label>Email Destination</label>
+                            <div class="mb-3 input-group input-group-outline">
+                                <label for="list-items" class="form-label">Email Destination</label>
                                 <input type="email" name="email" class="form-control" required>
                             </div>
                             <div class="mb-3">
