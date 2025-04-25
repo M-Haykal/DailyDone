@@ -15,20 +15,44 @@
                     <span class="text-white">{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }} -
                         {{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</span>
                     <div class="d-grid gap-2 d-md-block">
-                        @if (\Carbon\Carbon::parse($project->end_date)->gt(now()))
+                        @if (auth()->id() == $project->user_id)
                             <a class="btn btn-primary" href="#" role="button" data-bs-toggle="modal"
                                 data-bs-target="#shareProject"><i class="material-symbols-rounded">share</i>Share</a>
-                            @if (auth()->id() == $project->user_id ||
-                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                                <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
-                                    class="btn btn-success text-decoration-none">
-                                    <i class="material-symbols-rounded">add</i>
-                                    Add Task
+                            <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
+                                class="btn btn-success text-decoration-none">
+                                <i class="material-symbols-rounded">add</i>
+                                Add Task
+                            </a>
+                            @if ($project->status == 'archived')
+                                <a href="{{ route('projects.activate', $project) }}" class="btn btn-warning"
+                                    onclick="event.preventDefault(); document.getElementById('activate-form{{ $project->id }}').submit();">
+                                    <i class="fas fa-recycle"></i> Reactivate
                                 </a>
-                                <button class="position-absolute bottom-0 end-0 p-3 text-white btn btn-link" href=""
-                                    role="button" data-bs-toggle="modal" data-bs-target="#editBackgroundImage"><i
-                                        class="material-symbols-rounded">edit</i></button>
+                                <form id="activate-form{{ $project->id }}"
+                                    action="{{ route('projects.activate', $project) }}" method="POST" class="d-none">
+                                    @csrf
+                                    @method('PATCH')
+                                </form>
+                            @elseif ($project->status == 'active')
+                                <a href="{{ route('projects.archive', $project) }}" class="btn btn-warning"
+                                    onclick="event.preventDefault(); document.getElementById('archive-form{{ $project->id }}').submit();">
+                                    <i class="fas fa-archive"></i> Archive
+                                </a>
+                                <form id="archive-form{{ $project->id }}"
+                                    action="{{ route('projects.archive', $project) }}" method="POST" class="d-none">
+                                    @csrf
+                                    @method('PATCH')
+                                </form>
                             @endif
+                            <button class="position-absolute bottom-0 end-0 p-3 text-white btn btn-link" href=""
+                                role="button" data-bs-toggle="modal" data-bs-target="#editBackgroundImage"><i
+                                    class="material-symbols-rounded">edit</i></button>
+                        @elseif ($project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                            <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
+                                class="btn btn-success text-decoration-none">
+                                <i class="material-symbols-rounded">add</i>
+                                Add Task
+                            </a>
                         @endif
                     </div>
                     <div class="avatar-group mt-2">
@@ -380,14 +404,14 @@
 
         function confirmDeleteAccess(sharedProjectId) {
             Swal.fire({
-                title: 'Hapus Akses?',
-                text: "Anda yakin ingin menghapus akses ini?",
+                title: 'Delete Access?',
+                text: "Are you sure you want to delete this access?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Delete!',
+                cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('deleteAccessForm' + sharedProjectId).submit();

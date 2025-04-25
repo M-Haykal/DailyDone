@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Project extends Model
 {
@@ -17,6 +19,9 @@ class Project extends Model
         'description',
         'note',
         'background_project',
+        'status',
+        'archived_at',
+        'archived_by',
         'start_date',
         'end_date',
         'user_id',
@@ -31,7 +36,7 @@ class Project extends Model
 
     public function taskLists()
     {
-        return $this->hasMany(TaskList::class, 'project_id');
+        return $this->hasMany(TaskList::class, 'project_id')->withTrashed();
     }
 
     public function owner()
@@ -63,4 +68,40 @@ class Project extends Model
             $project->slug = Str::slug($project->name) . '-' . Str::random(6);
         });
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+    
+    public function scopeArchived($query) {
+        return $query->where('status', 'archived');
+    }
+    
+    public function archive()
+    {
+        $this->update([
+            'status' => 'archived',
+            'archived_at' => now(),
+            'archived_by' => Auth::id()
+        ]);
+    }
+    
+    public function activate()
+    {
+        $this->update([
+            'status' => 'active',
+            'archived_at' => null,
+            'archived_by' => null
+        ]);
+    }
+
+    public function progress()
+    {
+        $total = $this->taskLists()->count();
+        if ($total == 0) return 0;
+        
+        return round(($this->taskLists()->where('status', 'completed')->count() / $total) * 100);
+    }
 }
+

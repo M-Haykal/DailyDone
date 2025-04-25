@@ -16,21 +16,18 @@ use App\Models\Notes;
 class UsersController extends Controller
 {
     public function index(Request $request) {
-        // Initialize the query for Projects
-        $projectsQuery = Project::where('user_id', Auth::id())
+        $projectsQuery = Project::active()
+            ->where('user_id', Auth::id())
             ->with('taskLists');
     
-        // Paginate the results
         $projects = $projectsQuery->simplePaginate(5);
     
-        // Fetch the task list
         $taskList = TaskList::where('user_id', Auth::id())
             ->orderBy('start_date')
             ->orderBy('end_date')
             ->with('project')
             ->get();
         
-        // Format the task list for the frontend
         $tasks = $taskList->map(function ($task) {
             return [
                 'id' => $task->id,
@@ -42,33 +39,35 @@ class UsersController extends Controller
             ];
         })->toArray();
     
-        // Group the tasks by status
         $taskStatus = collect($tasks)->groupBy('status');
     
         $user = User::findOrFail(Auth::id());
-        $projectCount = Project::where('user_id', $user->id)->count();
+        $projectCount = Project::active()->where('user_id', $user->id)->count();
         $taskListCount = TaskList::where('user_id', $user->id)->count();
         $noteCount = Notes::where('user_id', $user->id)->count();
         $userId = Auth::id();
         $projectEnded = Project::where('user_id', $user->id)
-            ->where('end_date', '<', now())
+            ->where('status', 'archived')
             ->count();
 
         return view('user.dashboard', compact('projects', 'tasks', 'taskStatus', 'projectCount', 'taskListCount', 'noteCount', 'projectEnded'));
     }
 
     public function archive() {
-        $projects = Project::where(function ($query) {
-                $query->where('user_id', Auth::id())
-                        ->orWhereHas('sharedUsers', function ($q) {
-                            $q->where('user_id', Auth::id());
+        $userId = Auth::id();
+        
+        $projects = Project::archived()
+            ->where(function($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->orWhereHas('sharedUsers', function($q) use ($userId) {
+                        $q->where('user_id', $userId);
                     });
             })
-            ->where('end_date', '<', now()) // Hanya ambil proyek yang sudah melewati end_date
-            ->get();
+            ->orderBy('end_date', 'desc')
+            ->paginate(10);
     
         return view('user.pages.archive-page', compact('projects'));
-    }    
+    }
     
     public function deadline() {
         $projects = Project::where('user_id', Auth::id())
@@ -114,17 +113,20 @@ class UsersController extends Controller
     }
 
     public function project(Request $request) {
-        $projectsQuery = Project::where(function ($query) use ($request) {
-            $query->where('user_id', Auth::id())
-                ->orWhereHas('sharedUsers', function ($query) {
-                    $query->where('user_id', Auth::id());
-                });
-        });
-
+        $projectsQuery = Project::active() // Tambahkan scope active di sini
+            ->where(function ($query) use ($request) {
+                $query->where('user_id', Auth::id())
+                    ->orWhereHas('sharedUsers', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    });
+            });
+    
+        // Filter pencarian
         if ($request->has('search') && !empty($request->search)) {
             $projectsQuery->where('name', 'like', '%' . $request->search . '%');
         }
-
+    
+        // Filter sorting
         if ($request->has('sort')) {
             if ($request->sort === 'alphabetical') {
                 $projectsQuery->orderBy('name');
@@ -132,9 +134,10 @@ class UsersController extends Controller
                 $projectsQuery->orderBy('end_date');
             }
         }
-
+    
+        // Filter project yang belum berakhir (end_date >= sekarang)
         $projects = $projectsQuery->whereDate('end_date', '>=', now())->paginate(12);
-
+    
         return view('user.pages.list-project-page', compact('projects'));
     }
 

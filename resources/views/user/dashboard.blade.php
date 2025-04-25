@@ -132,14 +132,17 @@
                                                             <img src="{{ $project->owner->image_profile ? url('storage/images/' . $project->owner->image_profile) : Avatar::create($project->owner->name)->toBase64() }}"
                                                                 alt="{{ $project->owner->name }}">
                                                         </a>
-                                                        @foreach ($project->sharedUsers as $user)
+                                                        @foreach ($project->sharedProjects as $shared)
                                                             <a href="javascript:;" class="avatar avatar-xs rounded-circle"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#profileModal{{ $shared->user->id }}"
                                                                 data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                                                title="{{ $user->name }} ({{ $user->pivot->permissions }})">
-                                                                <img src="{{ $user->image_profile ? url('storage/images/' . $user->image_profile) : Avatar::create($user->name)->toBase64() }}"
-                                                                    alt="user{{ $loop->index + 2 }}">
+                                                                title="{{ $shared->user->name }} ({{ $shared->permissions }})">
+                                                                <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
+                                                                    alt="{{ $shared->user->name }}">
                                                             </a>
                                                         @endforeach
+                                                        @include('user.modal.profile-user')
                                                     </div>
                                                 </td>
                                                 <td class="align-middle text-center text-sm">
@@ -169,7 +172,7 @@
                             </tbody>
                         </table>
                         <div class="pagination my-3 justify-content-center">
-                            {{ $projects->links() }}
+                            {{ $projects->appends(request()->query())->links('pagination::bootstrap-4', ['elements' => $projects]) }}
                         </div>
                     </div>
                 </div>

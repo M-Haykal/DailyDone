@@ -72,7 +72,13 @@
                                 </div>
                                 <div class="card-body">
                                     <p class="card-text text-muted">{{ Str::limit($project->description, 25) }}</p>
-
+                                    <div style="width: 100%; background: #e0e0e0; border-radius: 5px;">
+                                        <div
+                                            style="height: 20px; border-radius: 5px; background: #4CAF50; width: {{ $project->progress() }}%">
+                                            <span
+                                                style="color: white; padding-left: 5px;">{{ $project->progress() }}%</span>
+                                        </div>
+                                    </div>
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                         <div class="avatar-group">
                                             <a href="javascript:;" class="avatar avatar-sm rounded-circle"

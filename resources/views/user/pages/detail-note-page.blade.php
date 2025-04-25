@@ -74,7 +74,9 @@
                     <div class="d-flex justify-content-between">
                         <a href="{{ url()->previous() }}" class="btn btn-secondary">Back to List</a>
                         @if (isset($note))
-                            <button type="button" class="btn btn-danger" id="deleteNote">Delete Note</button>
+                            <button type="button" class="btn btn-danger" id="clearNote">Clear Input</button>
+                        @else
+                            <button type="button" class="btn btn-danger" id="clearNote">Clear Input</button>
                         @endif
                     </div>
                 </form>
@@ -230,26 +232,25 @@
                 }
             }
 
-            $('#deleteNote').on('click', function() {
-                if (confirm("Are you sure you want to move this note to trash?")) {
-                    const noteId = $('#note_id').val();
-                    showStatus('Deleting...', 'bg-warning');
+            $('#clearNote').on('click', function() {
+                if (confirm("Are you sure you want to clear all input?")) {
+                    $('#title').val('');
+                    if (editor) {
+                        editor.setData('');
+                    } else {
+                        $('#content').val('');
+                    }
 
-                    $.ajax({
-                        url: `/user/notes/${noteId}/destroy`,
-                        type: "DELETE",
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function() {
-                            showToast('Note moved to trash', 'success');
-                            window.location.href = "{{ route('user.notes') }}";
-                        },
-                        error: function(xhr) {
-                            showStatus('Delete failed', 'bg-danger');
-                            showToast('Error: ' + xhr.responseJSON.message, 'error');
-                        }
-                    });
+                    if (!"{{ isset($note) ? 'true' : 'false' }}") {
+                        $('#note_id').val('');
+                    }
+
+                    showStatus('Input cleared', 'bg-info');
+                    setTimeout(() => {
+                        $('#saveStatus').fadeOut(200);
+                    }, 1500);
+
+                    showToast('All inputs have been cleared', 'info');
                 }
             });
 

@@ -19,10 +19,11 @@ return new class extends Migration
             $table->enum('priority', ['low', 'medium', 'high']);
             $table->string('tag');
             $table->string('note')->nullable();
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

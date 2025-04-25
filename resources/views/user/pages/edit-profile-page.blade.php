@@ -6,8 +6,10 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-lg border-0">
-                    <div class="card-header bg-primary text-white text-center py-3">
-                        <h4 class="mb-0 text-white">Edit Profile</h4>
+                    <div class="card-header bg-primary">
+                        <a href="{{ url()->previous() }}" class="text-decoration-none me-3 text-white">
+                            <i class="material-symbols-rounded fs-4">arrow_back</i>
+                        </a>
                     </div>
                     <div class="card-body p-4">
                         <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
@@ -123,7 +125,8 @@
                         confirmButtonColor: '#3085d6'
                     });
                     imageInput.value = "";
-                    previewImage.src = "{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}";
+                    previewImage.src =
+                        "{{ auth()->user()->image_profile ? url('storage/images/' . auth()->user()->image_profile) : Avatar::create(auth()->user()->name)->toBase64() }}";
                 }
             };
             img.src = dataURL;
@@ -141,4 +144,3 @@
         @endif
     </script>
 @endsection
-

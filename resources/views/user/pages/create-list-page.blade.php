@@ -1,14 +1,17 @@
 @extends('user.layouts.app')
 
-@section('title', 'Create List Page')
+@section('title', 'Create Task Page')
 
 @section('content')
     <div class="my-3 d-flex align-items-center">
         <a href="{{ route('projects.show', $project->id) }}"><i class="material-symbols-rounded">arrow_back</i></a>
-        <h3 class="mb-0 h4 font-weight-bolder mx-2">Create List</h3>
+        <h3 class="mb-0 h4 font-weight-bolder mx-2">Create Task</h3>
     </div>
     <div class="card">
         <div class="m-3">
+            <div class="card-body">
+                
+            </div>
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
@@ -22,7 +25,7 @@
             <form action="{{ route('user.tasklist.store') }}" method="POST" id="form-store">
                 @csrf
                 <div class="mb-3 input-group input-group-outline">
-                    <label for="list-items" class="form-label">List Items</label>
+                    <label for="list-items" class="form-label">Name Task</label>
                     <input type="text" class="form-control @error('list_items') is-invalid @enderror" id="list-items"
                         name="list_items" value="{{ old('list_items') }}" required>
                     @error('list_items')
@@ -30,7 +33,7 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label for="detail-list" class="form-label">Detail List</label>
+                    <label for="detail-list" class="form-label">Detail Task</label>
                     <textarea class="form-control @error('detail_list') is-invalid @enderror" id="detail-list" name="detail_list"
                         rows="3">{{ old('detail_list') }}</textarea>
                     @error('detail_list')
@@ -66,14 +69,13 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label for="tag" class="form-label">Tag</label>
+                    <label for="tag" class="form-label">Tag (Opsional)</label>
                     <select class="form-select @error('tag') is-invalid @enderror" id="tag" name="tag[]" multiple
                         required aria-label="multiple select example">
-                        @foreach ($users as $user)
-                            <option value="{{ $user->id }}"
-                                {{ in_array($user->id, old('tag', [])) ? 'selected' : '' }}
-                                {{ $user->id == auth()->id() }}>
-                                {{ $user->name }}
+                        @foreach ($project->sharedProjects as $shared)
+                            <option value="{{ $shared->user->id }}"
+                                {{ in_array($shared->user->id, old('tag', [])) ? 'selected' : '' }}>
+                                {{ $shared->user->name }} ({{ $shared->permissions }})
                             </option>
                         @endforeach
                     </select>
@@ -100,7 +102,7 @@
                             <label for="start-date" class="form-label">Start Date</label>
                             <input type="date" class="form-control @error('start_date') is-invalid @enderror"
                                 id="start-date" name="start_date" min="{{ $minStartDate }}" max="{{ $maxEndDate }}"
-                                value="{{ old('start_date') }}" required>
+                                value="{{ old('start_date') }}" nullable>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -108,7 +110,7 @@
                             <label for="end-date" class="form-label">End Date</label>
                             <input type="date" class="form-control @error('end_date') is-invalid @enderror"
                                 id="end-date" name="end_date" min="{{ $minStartDate }}" max="{{ $maxEndDate }}"
-                                value="{{ old('end_date') }}" required>
+                                value="{{ old('end_date') }}" nullable>
                         </div>
                     </div>
                 </div>
@@ -120,8 +122,7 @@
                 @endif
 
                 <div class="modal-footer">
-                    <a href="{{ url()->previous() }}" class="btn btn-secondary mx-1">Close</a>
-                    <button type="submit" class="btn btn-success mx-1" id="btn-submit">Save changes</button>
+                    <button type="submit" class="btn btn-success mx-1" id="btn-submit">Save Task</button>
                 </div>
             </form>
         </div>
@@ -129,13 +130,16 @@
 @endsection
 
 @section('script')
-    
+
     <script>
-        ClassicEditor
-            .create(document.querySelector('#detail-list'))
-            .catch(error => {
-                console.error(error);
-            });
+        tinymce.init({
+            selector: 'textarea#detail-list',
+            skin: 'bootstrap',
+            icons: 'bootstrap',
+            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+            toolbar_mode: 'floating',
+            menubar: false,
+        });
 
         document.getElementById('btn-submit').addEventListener('click', event => {
             event.preventDefault();
@@ -175,4 +179,3 @@
         });
     </script>
 @endsection
-

@@ -8,6 +8,7 @@ use App\Models\Project;
 use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Support\Facades\Event;
 use App\Models\SharedProject;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('user.layouts.app', function ($view) {
-            $view->with('projects', Project::all());
+            $projects = Project::all();
+            $now = \Carbon\Carbon::now();
+            $threeDaysFromNow = $now->copy()->addDays(3);
+            $projectsNotification = $projects->filter(function ($project) use ($now, $threeDaysFromNow) {
+                $endDate = \Carbon\Carbon::parse($project->end_date);
+                return ($project->user_id == Auth::id() || $project->sharedUsers->contains(Auth::id())) &&
+                    $endDate->between($now, $threeDaysFromNow);
+            });
+            $view->with('projects', $projects)->with('projectsNotification', $projectsNotification);
         });
 
         Event::listen(Authenticated::class, function ($event) {

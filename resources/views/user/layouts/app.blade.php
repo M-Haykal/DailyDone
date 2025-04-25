@@ -115,7 +115,34 @@
                         <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a>
                         </li>
                         <li class="breadcrumb-item text-sm text-dark active" aria-current="page">
-                            {{ request()->routeIs('user.dashboard') ? 'Dashboard' : (request()->routeIs('user.project') ? 'Projects' : (request()->routeIs('user.archive') ? 'Archive' : (request()->routeIs('user.deadline') ? 'Deadline' : (request()->routeIs('user.notes') ? 'Notes' : (request()->routeIs('user.projects.trashed') ? 'Trash' : (request()->routeIs('user.profile') ? 'Profile' : (request()->routeIs('user.profile.edit') ? 'Edit Profile' : (request()->routeIs('projects.show') ? 'Detail Project' : (request()->routeIs('user.detailList') ? 'Detail List' : (request()->routeIs('user.tasklist.viewEdit') ? 'Edit List' : '')))))))))) }}
+                            {{ request()->routeIs('user.dashboard')
+                                ? 'Dashboard'
+                                : (request()->routeIs('user.project')
+                                    ? 'Projects'
+                                    : (request()->routeIs('user.archive')
+                                        ? 'Archive'
+                                        : (request()->routeIs('user.deadline')
+                                            ? 'Deadline'
+                                            : (request()->routeIs('user.notes')
+                                                ? 'Notes'
+                                                : (request()->routeIs('user.projects.trashed')
+                                                    ? 'Trash'
+                                                    : (request()->routeIs('user.profile')
+                                                        ? 'Profile'
+                                                        : (request()->routeIs('user.profile.edit')
+                                                            ? 'Edit Profile'
+                                                            : (request()->routeIs('projects.show')
+                                                                ? 'Detail Project'
+                                                                : (request()->routeIs('user.detailList')
+                                                                    ? 'Detail Task'
+                                                                    : (request()->routeIs('user.tasklist.viewEdit')
+                                                                        ? 'Edit Task'
+                                                                        : (request()->routeIs('user.tasklist.index')
+                                                                            ? 'Create Task'
+                                                                            : (request()->routeIs('user.tasklist.edit')
+                                                                                ? 'Edit Task'
+                                                                                : 'Create Note')))))))))))) }}
+
                         </li>
                     </ol>
                 </nav>
@@ -127,20 +154,6 @@
                             <a href="javascript:;" class="nav-link text-body p-0 position-relative"
                                 id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="material-symbols-rounded">notifications</i>
-                                @php
-                                    $now = \Carbon\Carbon::now();
-                                    $threeDaysFromNow = $now->copy()->addDays(3);
-
-                                    $projectsNotification = $projects->filter(function ($project) use (
-                                        $now,
-                                        $threeDaysFromNow,
-                                    ) {
-                                        $endDate = \Carbon\Carbon::parse($project->end_date);
-                                        return ($project->user_id == auth()->id() ||
-                                            $project->sharedUsers->contains(auth()->id())) &&
-                                            $endDate->between($now, $threeDaysFromNow);
-                                    });
-                                @endphp
                                 <span
                                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                     {{ $projectsNotification->count() }}
@@ -156,7 +169,7 @@
                                                 <div class="d-flex flex-column justify-content-center">
                                                     <h6 class="text-sm font-weight-normal mb-1">
                                                         <span class="font-weight-bold">{{ $project->name }}</span>
-                                                        {{ \Carbon\Carbon::parse($project->end_date)->isPast() ? 'telah berakhir' : 'segera berakhir' }}
+                                                        {{ \Carbon\Carbon::parse($project->end_date)->isPast() ? 'Has ended' : 'Coming to an end' }}
                                                     </h6>
                                                     <p class="text-xs text-secondary mb-0">
                                                         <i class="fa fa-clock me-1"></i>
@@ -167,7 +180,7 @@
                                         </a>
                                     </li>
                                 @empty
-                                    <li class="text-center text-muted p-2">Tidak ada notifikasi</li>
+                                    <li class="text-center text-muted p-2">No notification</li>
                                 @endforelse
                             </ul>
                         </li>
@@ -238,14 +251,14 @@
             event.preventDefault();
 
             Swal.fire({
-                title: "Apakah Anda yakin?",
-                text: "Proyek yang dihapus tidak bisa dikembalikan!",
+                title: "Are you sure?",
+                text: "Deleted projects cannot be recovered!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel"
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('delete-form-' + projectId).submit();
@@ -255,13 +268,13 @@
         document.getElementById('logout-btn').addEventListener('click', function(e) {
             e.preventDefault();
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda akan logout!",
+                title: 'Are you sure?',
+                text: "You will logout!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Logout!'
+                confirmButtonText: 'Yes, Logout!'
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('logout-form').submit();
@@ -334,6 +347,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tiny.cloud/1/qmsq1hga0tygul287yejg9t6gpfa5npa36c0ezchh4zom7x1/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     @yield('script')
 </body>
 

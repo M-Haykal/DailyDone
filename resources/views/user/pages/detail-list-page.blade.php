@@ -1,13 +1,18 @@
 @extends('user.layouts.app')
 
-@section('title', 'Detail List')
+@section('title', 'Detail Task Page')
 
 @section('content')
     <div class="row">
         <div class="col-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">{{ $taskList->list_items }}</h5>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <a href="{{ url()->previous() }}" class="text-decoration-none me-3">
+                            <i class="material-symbols-rounded fs-4">arrow_back</i>
+                        </a>
+                        <h5 class="card-title flex-grow-1">{{ $taskList->list_items }}</h5>
+                    </div>
                     <p class="card-text">{!! htmlspecialchars_decode($taskList->detail_list) !!}</p>
                     <div class="row">
                         <div class="col-6">
@@ -25,7 +30,9 @@
                         <div class="col-6">
                             <strong>Tag:</strong>
                             @foreach (explode(',', $taskList->tag) as $userId)
-                                {{ $users->find($userId)->name }},
+                                @if ($user = $users->find($userId))
+                                    {{ $user->name }},
+                                @endif
                             @endforeach
                         </div>
                         <div class="col-6">
@@ -59,7 +66,7 @@
                     </div>
                     <div class="input-group input-group-outline mt-3">
                         <input type="text" class="form-control" id="comment-content" placeholder="Enter text here">
-                        <button type="button" class="btn btn-primary mb-0" id="btn-comment">Comment</button>
+                        <button type="button" class="btn btn-success mb-0" id="btn-comment">Comment</button>
                     </div>
                 </div>
             </div>

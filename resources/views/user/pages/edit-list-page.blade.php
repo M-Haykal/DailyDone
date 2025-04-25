@@ -1,15 +1,15 @@
 @extends('user.layouts.app')
 
-@section('title', 'Edit Task List Page')
+@section('title', 'Edit Task Page')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container">
         <!-- Back button and title -->
-        <div class="d-flex align-items-center mb-4">
+        <div class="d-flex align-items-center my-4">
             <a href="{{ url()->previous() }}" class="text-decoration-none me-3">
                 <i class="material-symbols-rounded fs-4">arrow_back</i>
             </a>
-            <h1 class="h4 mb-0 fw-bold">Edit Task List</h1>
+            <h1 class="h4 mb-0 fw-bold">Edit Task</h1>
         </div>
 
         <!-- Main card -->
@@ -32,7 +32,7 @@
 
                     <!-- List Items -->
                     <div class="mb-4">
-                        <label for="list-items" class="form-label fw-semibold">List Items</label>
+                        <label for="list-items" class="form-label fw-semibold">Task Name</label>
                         <input type="text" class="form-control @error('list_items') is-invalid @enderror" id="list-items"
                             name="list_items" value="{{ old('list_items', $tasklist->list_items) }}" required>
                         @error('list_items')
@@ -42,7 +42,7 @@
 
                     <!-- Detail List -->
                     <div class="mb-4">
-                        <label for="detail-list" class="form-label fw-semibold">Detail List</label>
+                        <label for="detail-list" class="form-label fw-semibold">Detail Task</label>
                         <textarea class="form-control @error('detail_list') is-invalid @enderror" id="detail-list" name="detail_list"
                             rows="4">{{ old('detail_list', $tasklist->detail_list) }}</textarea>
                         @error('detail_list')
@@ -105,7 +105,7 @@
                     <!-- Form buttons -->
                     <div class="d-flex justify-content-end pt-3">
                         <a href="{{ url()->previous() }}" class="btn btn-outline-secondary me-2">Cancel</a>
-                        <button type="submit" class="btn btn-primary" id="btn-update">Save Changes</button>
+                        <button type="submit" class="btn btn-success" id="btn-update">Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -116,11 +116,19 @@
 @section('script')
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
-        ClassicEditor
-            .create(document.querySelector('#detail-list'))
-            .catch(error => {
-                console.error(error);
-            });
+        tinymce.init({
+            selector: 'textarea#detail-list',
+            skin: 'bootstrap',
+            icons: 'bootstrap',
+            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+            toolbar_mode: 'floating',
+            menubar: false,
+        });
+        // ClassicEditor
+        //     .create(document.querySelector('#detail-list'))
+        //     .catch(error => {
+        //         console.error(error);
+        //     });
 
         document.getElementById('btn-update').addEventListener('click', event => {
             event.preventDefault();

@@ -29,7 +29,7 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <h5 class="card-title mb-0 text-truncate pe-2">{{ $project->name }}</h5>
-                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">
+                                        <span class="badge bg-secondary bg-opacity-10 text-white">
                                             <i class="fas fa-archive me-1"></i>Archived
                                         </span>
                                     </div>

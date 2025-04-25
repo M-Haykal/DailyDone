@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SharedProject;
+use App\Mail\WelcomeEmail;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -48,6 +50,8 @@ class AuthController extends Controller
 
         SharedProject::where('email', $user->email)
         ->update(['user_id' => $user->id, 'email' => null]);
+
+        Mail::to($user->email)->send(new WelcomeEmail($user));
 
         Auth::login($user);
 

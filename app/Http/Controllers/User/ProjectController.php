@@ -331,5 +331,19 @@ class ProjectController extends Controller
             ->with('success', 'Anda berhasil mengakses proyek ini dengan izin ' . $sharedProject->permissions);
     }
 
+    public function archive(Project $project)
+    {
+        $project->archive();
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Project berhasil diarsipkan');
+    }
+
+    public function activate(Project $project)
+    {
+        $project->activate();
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Project berhasil diaktifkan kembali');
+    }
+
 }
 

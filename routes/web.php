@@ -67,6 +67,8 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::delete('user/projects/{id}/force-delete', [ProjectController::class, 'forceDeleteProject'])->name('user.projects.forceDelete');
     Route::get('projects/access/{slug}/{token}', [ProjectController::class, 'accessBySlug'])->name('projects.access');
     Route::post('projects/share/{slug}', [ProjectController::class, 'shareBySlug'])->name('projects.shareBySlug');
+    Route::patch('/projects/{project}/archive', [ProjectController::class, 'archive'])->name('projects.archive');
+    Route::patch('/projects/{project}/activate', [ProjectController::class, 'activate'])->name('projects.activate');
     Route::get('user/note/detail/{id?}', [NoteController::class, 'index'])
         ->name('user.note.index');
     Route::post('/user/notes/store', [NoteController::class, 'store']);
