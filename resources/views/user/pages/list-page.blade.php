@@ -47,6 +47,10 @@
                             <button class="position-absolute bottom-0 end-0 p-3 text-white btn btn-link" href=""
                                 role="button" data-bs-toggle="modal" data-bs-target="#editBackgroundImage"><i
                                     class="material-symbols-rounded">edit</i></button>
+                            <a href="{{ url('Chat') }}"
+                                class="position-absolute bottom-0 start-0 p-3 text-white btn btn-link" role="button">
+                                <i class="material-symbols-rounded">chat</i>
+                            </a>
                         @elseif ($project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
                             <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
                                 class="btn btn-success text-decoration-none">
@@ -56,8 +60,9 @@
                         @endif
                     </div>
                     <div class="avatar-group mt-2">
-                        <span class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                            title="Project Owner: {{ $project->owner->name }}">
+                        <span class="avatar avatar-xs rounded-circle" data-bs-placement="bottom"
+                            title="Project Owner: {{ $project->owner->name }}" data-bs-toggle="modal"
+                            data-bs-target="#ownerProfileModal{{ $project->owner->id }}" style="cursor: pointer;">
                             <img src="{{ $project->owner->image_profile ? url('storage/images/' . $project->owner->image_profile) : Avatar::create($project->owner->name)->toBase64() }}"
                                 alt="{{ $project->owner->name }}">
                         </span>
@@ -92,6 +97,7 @@
     @include('user.modal.share-project')
     @include('user.modal.edit-background-image')
     @include('user.modal.profile-user')
+    @include('user.modal.profile-owner')
 
     <div class="row my-3">
         <div class="col-md-4 my-2">

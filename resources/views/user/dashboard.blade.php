@@ -170,10 +170,10 @@
                                     @endif
                                 @endforeach
                             </tbody>
+                            <div class="pagination my-3 justify-content-center">
+                                {{ $projects->links() }}
+                            </div>
                         </table>
-                        <div class="pagination my-3 justify-content-center">
-                            {{ $projects->appends(request()->query())->links('pagination::bootstrap-4', ['elements' => $projects]) }}
-                        </div>
                     </div>
                 </div>
             </div>
