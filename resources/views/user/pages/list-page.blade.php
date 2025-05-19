@@ -5,7 +5,15 @@
 @section('content')
 
     <div class="page-header min-height-300 border-radius-xl mt-2"
-        style="background-image: url('{{ $project->background_project ? asset('storage/bgProject/' . $project->background_project) : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;ixlib=rb-1.2.1&amp;auto=format&amp;fit=crop&amp;w=1920&amp;q=80' }}');">
+        style="background-image: url('{{ $project->background_project
+            ? (file_exists(public_path('storage/bgProject/' . $project->background_project))
+                ? asset('storage/bgProject/' . $project->background_project)
+                : (file_exists(public_path('img/bgImg/' . $project->background_project))
+                    ? asset('img/bgImg/' . $project->background_project)
+                    : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'))
+            : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80' }}');
+                background-size: cover;
+                background-position: center;">
         <span class="mask  bg-gradient-dark  opacity-6"></span>
         <div class="container">
             <div class="row justify-content-center">
@@ -98,6 +106,15 @@
     @include('user.modal.edit-background-image')
     @include('user.modal.profile-user')
     @include('user.modal.profile-owner')
+
+    {{-- <img src="{{ $project->background_project
+        ? (file_exists(public_path('storage/bgProject/' . $project->background_project))
+            ? asset('storage/bgProject/' . $project->background_project)
+            : (file_exists(public_path('img/bgImg/' . $project->background_project))
+                ? asset('img/bgImg/' . $project->background_project)
+                : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'))
+        : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80' }}"
+        alt=""> --}}
 
     <div class="row my-3">
         <div class="col-md-4 my-2">
@@ -445,32 +462,115 @@
                 });
         }
 
-        document.getElementById("drop-area").addEventListener("click", function() {
-            document.getElementById("background_project").click();
+        document.querySelectorAll('.template-card input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    const imgSrc = this.parentElement.querySelector('img').src;
+                    document.getElementById('previewImageLarge').src = imgSrc;
+                    $('#previewModal').modal('show');
+                }
+            });
         });
 
-        function handleDrop(event) {
-            event.preventDefault();
-            const file = event.dataTransfer.files[0];
-            document.getElementById("background_project").files = event.dataTransfer.files;
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dropArea = e.currentTarget;
+            dropArea.classList.remove('border-danger');
+
+            const fileInput = document.getElementById('background_project');
+            fileInput.files = e.dataTransfer.files;
             previewImage({
-                target: {
-                    files: [file]
-                }
+                target: fileInput
             });
         }
 
         function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
+            const previewContainer = document.getElementById('preview-container');
+            previewContainer.innerHTML = '';
+
+            if (event.target.files && event.target.files[0]) {
+                // Validate file size (max 2MB)
+                if (event.target.files[0].size > 2 * 1024 * 1024) {
+                    alert('File size should not exceed 2MB');
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const previewContainer = document.getElementById("preview-container");
-                    previewContainer.innerHTML = ""; // Menghapus pratinjau lama sebelum menampilkan yang baru
-                    previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" width="200">`;
-                };
-                reader.readAsDataURL(file);
+                    // Show small preview in upload tab
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'img-fluid rounded border';
+                    img.style.maxHeight = '150px';
+                    previewContainer.appendChild(img);
+
+                    // Show large preview in preview modal
+                    document.getElementById('previewImageLarge').src = e.target.result;
+                    $('#previewModal').modal('show');
+                }
+                reader.readAsDataURL(event.target.files[0]);
             }
         }
+
+        function submitBackground() {
+            const selectedTemplate = document.querySelector('input[name="background_option"]:checked');
+            const form = document.getElementById('uploadForm');
+
+            if (selectedTemplate) {
+                const value = selectedTemplate.value.replace('template_', '');
+                const dynamicForm = document.createElement('form');
+
+                dynamicForm.method = 'POST';
+                dynamicForm.action = form.action;
+                dynamicForm.enctype = 'multipart/form-data';
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'PUT';
+
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_token';
+                tokenInput.value = document.querySelector('input[name="_token"]').value;
+
+                const bgInput = document.createElement('input');
+                bgInput.type = 'hidden';
+                bgInput.name = 'background_project';
+                bgInput.value = value;
+
+                dynamicForm.appendChild(methodInput);
+                dynamicForm.appendChild(tokenInput);
+                dynamicForm.appendChild(bgInput);
+
+                document.body.appendChild(dynamicForm);
+                dynamicForm.submit();
+            } else {
+                form.submit();
+            }
+        }
+
+        function removeBackground() {
+            if (confirm('Are you sure you want to remove current background?')) {
+                fetch(`{{ route('user.project.removeBackground', $project->id) }}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        }
+                    });
+            }
+        }
+
+        document.getElementById('drop-area').addEventListener('click', () => {
+            document.getElementById('background_project').click();
+        });
     </script>
 @endsection

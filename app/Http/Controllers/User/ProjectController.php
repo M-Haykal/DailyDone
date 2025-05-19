@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -343,6 +344,84 @@ class ProjectController extends Controller
         $project->activate();
         return redirect()->route('user.dashboard')
             ->with('success', 'Project berhasil diaktifkan kembali');
+    }
+
+        // Untuk apply template
+    public function applyTemplate(Request $request, $id)
+    {
+        $project = Project::findOrFail($id);
+        
+        if ($project->user_id != Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'template' => 'required|string'
+        ]);
+
+        // Verifikasi file template ada
+        $templatePath = public_path('img/bgImg/'.$request->template);
+        if (!Storage::exists($templatePath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Template file not found'
+            ], 404);
+        }
+
+        // Reset custom background jika menggunakan template
+        if ($project->background_project) {
+            Storage::delete('public/bgProject/'.$project->background_project);
+        }
+
+        $project->background_project = $request->template;
+        $project->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Untuk upload custom background
+    public function updateBackground(Request $request, $id)
+    {
+        $project = Project::findOrFail($id);
+    
+        if ($request->hasFile('background_project')) {
+            $file = $request->file('background_project');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/bgProject', $filename);
+    
+            $project->background_project = $filename;
+        } elseif ($request->background_project) {
+            // Menyimpan pilihan template (anggap saja file template juga dianggap sebagai bgProject)
+            $project->background_project = $request->background_project;
+        }
+    
+        $project->save();
+    
+        return redirect()->back()->with('success', 'Background updated successfully.');
+    }
+    
+
+    // Untuk remove background
+    public function removeBackground($id)
+    {
+        $project = Project::findOrFail($id);
+        
+        if ($project->user_id != Auth::id()) {
+            abort(403);
+        }
+
+        if ($project->background_project) {
+            Storage::delete('public/bgProject/'.$project->background_project);
+            $project->background_project = null;
+        }
+
+        if ($project->background_template) {
+            $project->background_template = null;
+        }
+
+        $project->save();
+        
+        return response()->json(['success' => true]);
     }
 
 }

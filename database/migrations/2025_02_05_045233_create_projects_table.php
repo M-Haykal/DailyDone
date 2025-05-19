@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->text('note')->nullable();
             $table->string('background_project')->nullable();
-            $table->string('status')->default('active'); // 'active', 'archived'
+            $table->string('status')->default('active');
             $table->timestamp('archived_at')->nullable();
             $table->foreignId('archived_by')->nullable()->constrained('users');
             $table->date('start_date');

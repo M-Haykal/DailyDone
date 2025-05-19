@@ -69,6 +69,12 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::post('projects/share/{slug}', [ProjectController::class, 'shareBySlug'])->name('projects.shareBySlug');
     Route::patch('/projects/{project}/archive', [ProjectController::class, 'archive'])->name('projects.archive');
     Route::patch('/projects/{project}/activate', [ProjectController::class, 'activate'])->name('projects.activate');
+    Route::post('/projects/{id}/apply-template', [ProjectController::class, 'applyTemplate'])
+        ->name('projects.applyTemplate');
+    Route::put('/projects/{id}/background', [ProjectController::class, 'updateBackground'])
+        ->name('user.project.updateBackground');
+    Route::delete('/projects/{id}/background', [ProjectController::class, 'removeBackground'])
+        ->name('user.project.removeBackground');
     Route::get('user/note/detail/{id?}', [NoteController::class, 'index'])
         ->name('user.note.index');
     Route::post('/user/notes/store', [NoteController::class, 'store']);
