@@ -17,7 +17,7 @@ use App\Models\User;
 class TaskController extends Controller
 {
     public function index(Request $request) {
-        $project = Project::findOrFail($request->project_id);
+        $project = Project::where('slug', $request->project_slug)->firstOrFail();
         if (!view()->exists('user.pages.create-list-page')) {
             abort(404, 'View not found');
         }
@@ -111,17 +111,19 @@ class TaskController extends Controller
         return redirect()->back()->with('success', 'Task berhasil dihapus');
     }
 
-    public function detailList($idProject, $idTaskList)
+    public function detailList($slug, $idTaskList)
     {
         $userId = Auth::id();
         $userEmail = Auth::check() ? Auth::user()->email : null;
 
-        $taskList = TaskList::where('project_id', $idProject)
-            ->whereHas('project', function ($query) use ($userId, $userEmail) {
-                $query->where('user_id', $userId)
-                    ->orWhereHas('sharedUsers', function ($subQuery) use ($userId, $userEmail) {
-                        $subQuery->where('shared_projects.user_id', $userId)
-                            ->orWhere('shared_projects.email', $userEmail);
+        $taskList = TaskList::whereHas('project', function ($query) use ($slug, $userId, $userEmail) {
+                $query->where('slug', $slug)
+                    ->where(function ($query) use ($userId, $userEmail) {
+                        $query->where('user_id', $userId)
+                            ->orWhereHas('sharedUsers', function ($subQuery) use ($userId, $userEmail) {
+                                $subQuery->where('shared_projects.user_id', $userId)
+                                    ->orWhere('shared_projects.email', $userEmail);
+                            });
                     });
             })->findOrFail($idTaskList);
 
@@ -132,21 +134,21 @@ class TaskController extends Controller
         return view('user.pages.detail-list-page', compact('taskList', 'users'));
     }
 
-    public function viewEdit($idProject, $idTaskList)
+    public function viewEdit($slug, $idTaskList)
     {
-        $tasklist = TaskList::where('project_id', $idProject)
-            ->whereHas('project', function ($query) {
-                $query->where('user_id', Auth::id());
+        $tasklist = TaskList::whereHas('project', function ($query) use ($slug) {
+                $query->where('slug', $slug)
+                    ->where('user_id', Auth::id());
             })->findOrFail($idTaskList);
-        
+
         $users = User::all();
 
         return view('user.pages.edit-list-page', compact('tasklist', 'users'));
     }
 
-    public function edit(Request $request, $idProject, $idTaskList)
+    public function edit(Request $request, $slug, $idTaskList)
     {
-        $task = TaskList::where('project_id', $idProject)
+        $task = TaskList::where('slug', $slug)
             ->whereHas('project', function ($query) {
                 $query->where('user_id', Auth::id());
             })->findOrFail($idTaskList);
@@ -164,7 +166,7 @@ class TaskController extends Controller
             'list_items' => 'required|string',
             'detail_list' => 'nullable|string',
             'priority' => 'nullable|string',
-            'tag' => 'nullablex|array',
+            'tag' => 'nullable|array',
             'tag.*' => 'exists:users,id',
             'note' => 'nullable|string',
             'start_date' => 'nullable|date',

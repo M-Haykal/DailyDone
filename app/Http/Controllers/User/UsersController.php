@@ -22,7 +22,11 @@ class UsersController extends Controller
     
         $projects = $projectsQuery->simplePaginate(5);
     
-        $taskList = TaskList::where('user_id', Auth::id())
+        $taskList = TaskList::whereHas('project', function($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where('user_id', Auth::id())
+            ->whereNull('deleted_at')
             ->orderBy('start_date')
             ->orderBy('end_date')
             ->with('project')
@@ -43,7 +47,7 @@ class UsersController extends Controller
     
         $user = User::findOrFail(Auth::id());
         $projectCount = Project::active()->where('user_id', $user->id)->count();
-        $taskListCount = TaskList::where('user_id', $user->id)->count();
+        $taskListCount = TaskList::where('user_id', $user->id)->whereNull('deleted_at')->count();
         $noteCount = Notes::where('user_id', $user->id)->count();
         $userId = Auth::id();
         $projectEnded = Project::where('user_id', $user->id)
@@ -83,7 +87,8 @@ class UsersController extends Controller
                 'id' => $project->id,
                 'name' => $project->name,
                 'start_date' => $project->start_date,
-                'end_date' => $project->end_date
+                'end_date' => $project->end_date,
+                'slug' => $project->slug
             ];
         })->toArray();
 

@@ -25,6 +25,8 @@ class TaskList extends Model
         'user_id',
     ];
 
+    protected $dates = ['deleted_at'];
+
     public function project()
     {
         return $this->belongsTo(Project::class);

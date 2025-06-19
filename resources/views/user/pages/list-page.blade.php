@@ -3,322 +3,480 @@
 @section('title', $project->name)
 
 @section('content')
-
-    <div class="page-header min-height-300 border-radius-xl mt-2"
-        style="background-image: url('{{ $project->background_project
+    <div class="min-vh-100"
+        style="
+        background-image: linear-gradient(rgba(0, 0, 0, 0.26), rgba(0,0,0,0.45)),
+        url('{{ $project->background_project
             ? (file_exists(public_path('storage/bgProject/' . $project->background_project))
                 ? asset('storage/bgProject/' . $project->background_project)
                 : (file_exists(public_path('img/bgImg/' . $project->background_project))
                     ? asset('img/bgImg/' . $project->background_project)
                     : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'))
             : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80' }}');
-                background-size: cover;
-                background-position: center;">
-        <span class="mask  bg-gradient-dark  opacity-6"></span>
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6 text-center">
-                    <h1 class="mb-0 text-white">{{ $project->name }}</h1>
-                    <p class="text-white m-auto">{{ $project->description }}</p>
-                    <span class="text-white">{{ \Carbon\Carbon::parse($project->start_date)->format('d F Y') }} -
-                        {{ \Carbon\Carbon::parse($project->end_date)->format('d F Y') }}</span>
-                    <div class="d-grid gap-2 d-md-block">
-                        @if (auth()->id() == $project->user_id)
-                            <a class="btn btn-primary" href="#" role="button" data-bs-toggle="modal"
-                                data-bs-target="#shareProject"><i class="material-symbols-rounded">share</i>Share</a>
-                            <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
-                                class="btn btn-success text-decoration-none">
-                                <i class="material-symbols-rounded">add</i>
-                                Add Task
-                            </a>
-                            @if ($project->status == 'archived')
-                                <a href="{{ route('projects.activate', $project) }}" class="btn btn-warning"
-                                    onclick="event.preventDefault(); document.getElementById('activate-form{{ $project->id }}').submit();">
-                                    <i class="fas fa-recycle"></i> Reactivate
-                                </a>
-                                <form id="activate-form{{ $project->id }}"
-                                    action="{{ route('projects.activate', $project) }}" method="POST" class="d-none">
-                                    @csrf
-                                    @method('PATCH')
-                                </form>
-                            @elseif ($project->status == 'active')
-                                <a href="{{ route('projects.archive', $project) }}" class="btn btn-warning"
-                                    onclick="event.preventDefault(); document.getElementById('archive-form{{ $project->id }}').submit();">
-                                    <i class="fas fa-archive"></i> Archive
-                                </a>
-                                <form id="archive-form{{ $project->id }}"
-                                    action="{{ route('projects.archive', $project) }}" method="POST" class="d-none">
-                                    @csrf
-                                    @method('PATCH')
-                                </form>
-                            @endif
-                            <button class="position-absolute bottom-0 end-0 p-3 text-white btn btn-link" href=""
-                                role="button" data-bs-toggle="modal" data-bs-target="#editBackgroundImage"><i
-                                    class="material-symbols-rounded">edit</i></button>
-                            <a href="{{ url('Chat') }}"
-                                class="position-absolute bottom-0 start-0 p-3 text-white btn btn-link" role="button">
-                                <i class="material-symbols-rounded">chat</i>
-                            </a>
-                        @elseif ($project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                            <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
-                                class="btn btn-success text-decoration-none">
-                                <i class="material-symbols-rounded">add</i>
-                                Add Task
-                            </a>
-                        @endif
-                    </div>
-                    <div class="avatar-group mt-2">
-                        <span class="avatar avatar-xs rounded-circle" data-bs-placement="bottom"
-                            title="Project Owner: {{ $project->owner->name }}" data-bs-toggle="modal"
-                            data-bs-target="#ownerProfileModal{{ $project->owner->id }}" style="cursor: pointer;">
-                            <img src="{{ $project->owner->image_profile ? url('storage/images/' . $project->owner->image_profile) : Avatar::create($project->owner->name)->toBase64() }}"
-                                alt="{{ $project->owner->name }}">
-                        </span>
-
-                        @foreach ($project->sharedProjects as $shared)
-                            @if ($shared->user)
-                                @if (auth()->id() == $project->user_id)
-                                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="modal"
-                                        data-bs-target="#editPermission{{ $shared->id }}" data-bs-toggle="tooltip"
-                                        data-bs-placement="bottom"
-                                        title="{{ $shared->user->name }} ({{ $shared->permissions }}) - Klik untuk edit">
-                                        <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
-                                            alt="{{ $shared->user->name }}">
-                                    </a>
-                                @else
-                                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="modal"
-                                        data-bs-target="#profileModal{{ $shared->user->id }}" data-bs-toggle="tooltip"
-                                        data-bs-placement="bottom"
-                                        title="{{ $shared->user->name }} ({{ $shared->permissions }})">
-                                        <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
-                                            alt="{{ $shared->user->name }}">
-                                    </a>
+        background-size: auto;
+        background-position: center;">
+        <div class="container p-2">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 d-flex justify-content-between">
+                    <div class="detail-project">
+                        <div class="detail-section d-flex align-item-center">
+                            <h3 class="card-title fw-bold text-dark">{{ $project->name }}</h3>
+                            <span>|</span>
+                            <p class="text-muted mb-0">
+                                {{ Str::limit($project->description, 150) }}
+                                @if (strlen($project->description) > 150)
+                                    <a href="#" class="text-primary text-decoration-none" data-bs-toggle="modal"
+                                        data-bs-target="#descriptionModal{{ $project->id }}">... Read more</a>
                                 @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="action-project">
+                        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-sm-end my-2">
+                            @if (auth()->id() == $project->user_id)
+                                <button class="btn btn-primary btn-sm d-flex align-items-center gap-2"
+                                    data-bs-toggle="modal" data-bs-target="#shareProject">
+                                    <i class="fa-solid fa-share-nodes"></i> Share
+                                </button>
+                                <a href="{{ route('user.tasklist.index', ['project_slug' => $project->slug]) }}"
+                                    class="btn btn-success btn-sm d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-plus"></i> Add Task
+                                </a>
+                                @if ($project->status == 'archived')
+                                    <a href="{{ route('projects.activate', $project) }}"
+                                        class="btn btn-warning btn-sm d-flex align-items-center gap-2"
+                                        onclick="event.preventDefault(); document.getElementById('activate-form{{ $project->id }}').submit();">
+                                        <i class="fas fa-recycle"></i> Activate
+                                    </a>
+                                    <form id="activate-form{{ $project->id }}"
+                                        action="{{ route('projects.activate', $project) }}" method="POST" class="d-none">
+                                        @csrf
+                                        @method('PATCH')
+                                    </form>
+                                @elseif ($project->status == 'active')
+                                    <a href="{{ route('projects.archive', $project) }}"
+                                        class="btn btn-warning btn-sm d-flex align-items-center gap-2"
+                                        onclick="event.preventDefault(); document.getElementById('archive-form{{ $project->id }}').submit();">
+                                        <i class="fas fa-archive"></i> Archive
+                                    </a>
+                                    <form id="archive-form{{ $project->id }}"
+                                        action="{{ route('projects.archive', $project) }}" method="POST" class="d-none">
+                                        @csrf
+                                        @method('PATCH')
+                                    </form>
+                                @endif
+                                <button class="btn btn-dark btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal"
+                                    data-bs-target="#editBackgroundImage">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit Background
+                                </button>
+                                <a href="{{ url('Chat') }}"
+                                    class="btn btn-secondary btn-sm d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-comment"></i> Chat
+                                </a>
+                            @elseif ($project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                <a href="{{ route('user.tasklist.index', ['project_id' => $project->id]) }}"
+                                    class="btn btn-success btn-sm d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-plus"></i> Add Task
+                                </a>
                             @endif
-                        @endforeach
+                        </div>
+                    </div>
+                </div>
+                <!-- Description Modal -->
+                @if (strlen($project->description) > 150)
+                    <div class="modal fade" id="descriptionModal{{ $project->id }}" tabindex="-1"
+                        aria-labelledby="descriptionModalLabel{{ $project->id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="descriptionModalLabel{{ $project->id }}">
+                                        {{ $project->name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ $project->description }}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+
+
+            <!-- Include Modals -->
+            @include('user.modal.edit-permission')
+            @include('user.modal.share-project')
+            @include('user.modal.edit-background-image')
+            @include('user.modal.profile-user')
+            @include('user.modal.profile-owner')
+
+            <div class="container-fluid py-3">
+                <ul class="nav nav-fill nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="fill-tab-0" data-bs-toggle="tab" href="#task-statistic"
+                            role="tab" aria-controls="task-statistic" aria-selected="true"> Detail Project </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="fill-tab-1" data-bs-toggle="tab" href="#list-task" role="tab"
+                            aria-controls="list-task" aria-selected="false"> List Task </a>
+                    </li>
+                </ul>
+                <div class="tab-content pt-5" id="tab-content">
+                    <div class="tab-pane active" id="task-statistic" role="tabpanel" aria-labelledby="fill-tab-0">
+                        <div class="row row-cols-2">
+                            <div class="col">
+                                <div class="row mb-3">
+                                    <div class="card">
+                                        <div class="card-body p-2">
+                                            <div class="url-generate">
+                                                <label for="share_url" class="form-label">
+                                                    URL Berbagi
+                                                    @if (session('permission_type'))
+                                                        (Izin: {{ session('permission_type') }})
+                                                    @endif
+                                                </label>
+
+                                                <div class="input-group">
+                                                    <a href="{{ session('share_url') ?? '#' }}" target="_blank"
+                                                        class="btn btn-primary {{ session('share_url') ? '' : 'disabled' }}">
+                                                        Lihat Preview
+                                                    </a>
+
+                                                    <input type="text" id="share_url" class="form-control"
+                                                        value="{{ session('share_url') ?? '' }}" readonly>
+
+                                                    <button class="btn btn-success" onclick="copyToClipboard()">Salin
+                                                        URL</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="card">
+                                        <div class="card-body p-2">
+                                            <div class="card-title">
+                                                <h5 class="fw-bold">User Project {{ $project->name }}</h5>
+                                            </div>
+                                            <div class="user-section">
+                                                <div class="avatar-stack d-flex justify-content-end">
+                                                    @if (auth()->id() == $project->user_id)
+                                                        <span class="avatar"><a href=""
+                                                                class="text-white text-decoration-none"
+                                                                data-bs-toggle="modal" data-bs-target="#shareProject"
+                                                                title="Add User"><i
+                                                                    class="fa-solid fa-plus"></i></a></span>
+                                                    @endif
+                                                    @foreach ($project->sharedProjects as $shared)
+                                                        @if ($shared->user)
+                                                            @if (auth()->id() == $project->user_id)
+                                                                <a href="javascript:;"
+                                                                    class="avatar rounded-circle border border-2 border-white"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#editPermission{{ $shared->id }}"
+                                                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                                    title="{{ $shared->user->name }} ({{ $shared->permissions }}) - Click to edit">
+                                                                    <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
+                                                                        alt="{{ $shared->user->name }}"
+                                                                        class="img-fluid">
+                                                                </a>
+                                                            @else
+                                                                <a href="javascript:;"
+                                                                    class="avatar rounded-circle border border-2 border-white"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#profileModal{{ $shared->user->id }}"
+                                                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                                    title="{{ $shared->user->name }} ({{ $shared->permissions }})">
+                                                                    <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
+                                                                        alt="{{ $shared->user->name }}"
+                                                                        class="img-fluid">
+                                                                </a>
+                                                            @endif
+                                                        @endif
+                                                    @endforeach
+                                                    <span class="avatar rounded-circle border border-2 border-white"
+                                                        data-bs-placement="bottom"
+                                                        title="Project Owner: {{ $project->owner->name }}"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#ownerProfileModal{{ $project->owner->id }}"
+                                                        style="cursor: pointer;">
+                                                        <img src="{{ $project->owner->image_profile ? url('storage/images/' . $project->owner->image_profile) : Avatar::create($project->owner->name)->toBase64() }}"
+                                                            alt="{{ $project->owner->name }}" class="img-fluid">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0 fw-bold">{{ $project->name }} — Status Task</h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <canvas id="statusBarChart" height="120"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="list-task" role="tabpanel" aria-labelledby="fill-tab-1">
+                        <div class="row flex-nowrap overflow-x-auto">
+                            <!-- To Do Column -->
+                            <div class="col-md-4 col-12 px-2 mb-3">
+                                <div class="card bg-danger text-white shadow-sm">
+                                    <div class="card-body d-flex justify-content-between align-items-center py-2 px-3">
+                                        <h4 class="mb-0 fw-bold">To Do</h4>
+                                        <i class="fa-solid fa-brain fs-4"></i>
+                                    </div>
+                                </div>
+                                <ul id="exampleLeft" class="list-group list-group-flush mt-2 border-0">
+                                    @forelse ($project->taskLists->where('status', 'pending') as $taskList)
+                                        <li class="card list-group-item bg-white shadow-sm rounded-3 mb-2 border border-2 border-danger"
+                                            data-id="{{ $taskList->id }}">
+                                            <div
+                                                class="card-header bg-transparent border-bottom border-danger d-flex justify-content-between align-items-center py-2 px-3">
+                                                <h5 class="mb-0 text-dark fw-semibold text-truncate"
+                                                    title="{{ $taskList->list_items }}">
+                                                    {{ Str::limit($taskList->list_items, 20) }}
+                                                </h5>
+                                                <div class="action">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-link text-dark p-0" type="button"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fa-solid fa-bars"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('user.detailList', ['slug' => $project->slug, 'idTaskList' => $taskList->id]) }}">
+                                                                    Detail
+                                                                </a>
+                                                            </li>
+                                                            @if (auth()->id() == $project->user_id ||
+                                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                                                <li>
+                                                                    <a class="dropdown-item"
+                                                                        href="{{ route('user.tasklist.viewEdit', ['slug' => $project->slug, 'idTaskList' => $taskList->id]) }}">
+                                                                        Edit
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                                        class="dropdown-item"
+                                                                        onclick="event.preventDefault(); document.getElementById('delete-task-{{ $taskList->id }}').submit();">
+                                                                        Hapus
+                                                                    </a>
+                                                                    <form id="delete-task-{{ $taskList->id }}"
+                                                                        action="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                                        method="POST" class="d-none">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-2">
+                                                <h5>
+                                                    <i class="fa-solid fa-calendar-days"></i>
+                                                    <span>{{ \Carbon\Carbon::parse($taskList->end_date)->format('d M Y') }}</span>
+                                                </h5>
+                                                <h5>
+                                                    <i
+                                                        class="fa-solid fa-flag fs-5 text-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}"></i>
+                                                    <span>{{ ucfirst($taskList->priority) }}</span>
+                                                </h5>
+                                            </div>
+                                        </li>
+                                    @empty
+                                        <p class="text-center text-muted my-3">No tasks</p>
+                                    @endforelse
+                                </ul>
+                            </div>
+
+                            <!-- In Progress Column -->
+                            <div class="col-md-4 col-12 px-2 mb-3">
+                                <div class="card bg-warning text-white shadow-sm">
+                                    <div class="card-body d-flex justify-content-between align-items-center py-2 px-3">
+                                        <h4 class="mb-0 fw-bold">In Progress</h4>
+                                        <i class="fa-solid fa-spinner fs-4"></i>
+                                    </div>
+                                </div>
+                                <ul id="exampleMiddle" class="list-group list-group-flush mt-2 border-0">
+                                    @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
+                                        <li class="card list-group-item bg-white shadow-sm rounded-3 mb-2 border border-2 border-warning"
+                                            data-id="{{ $taskList->id }}">
+                                            <div
+                                                class="card-header bg-transparent border-bottom border-warning d-flex justify-content-between align-items-center py-2 px-3">
+                                                <h5 class="mb-0 text-dark fw-semibold text-truncate"
+                                                    title="{{ $taskList->list_items }}">
+                                                    {{ Str::limit($taskList->list_items, 20) }}
+                                                </h5>
+                                                <div class="action">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-link text-dark p-0" type="button"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fa-solid fa-bars"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('user.detailList', ['slug' => $project->slug, 'idTaskList' => $taskList->id]) }}">
+                                                                    Detail
+                                                                </a>
+                                                            </li>
+                                                            @if (auth()->id() == $project->user_id ||
+                                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                                                <li>
+                                                                    <a class="dropdown-item"
+                                                                        href="{{ route('user.tasklist.viewEdit', ['slug' => $project->slug, 'idTaskList' => $taskList->id]) }}">
+                                                                        Edit
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                                        class="dropdown-item"
+                                                                        onclick="event.preventDefault(); document.getElementById('delete-task-{{ $taskList->id }}').submit();">
+                                                                        Hapus
+                                                                    </a>
+                                                                    <form id="delete-task-{{ $taskList->id }}"
+                                                                        action="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                                        method="POST" class="d-none">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-2">
+                                                <h5>
+                                                    <i class="fa-solid fa-calendar-days"></i>
+                                                    <span>{{ \Carbon\Carbon::parse($taskList->end_date)->format('d M Y') }}</span>
+                                                </h5>
+                                                <h5>
+                                                    <i
+                                                        class="fa-solid fa-flag fs-5 text-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}"></i>
+                                                    <span>{{ ucfirst($taskList->priority) }}</span>
+                                                </h5>
+                                            </div>
+                                        </li>
+                                    @empty
+                                        <p class="text-center text-muted my-3">No tasks</p>
+                                    @endforelse
+                                </ul>
+                            </div>
+
+                            <!-- Completed Column -->
+                            <div class="col-md-4 col-12 px-2 mb-3">
+                                <div class="card bg-success text-white shadow-sm">
+                                    <div class="card-body d-flex justify-content-between align-items-center py-2 px-3">
+                                        <h4 class="mb-0 fw-bold">Completed</h4>
+                                        <i class="fa-solid fa-circle-check fs-4"></i>
+                                    </div>
+                                </div>
+                                <ul id="exampleRight" class="list-group list-group-flush mt-2 border-0">
+                                    @forelse ($project->taskLists->where('status', 'completed') as $taskList)
+                                        <li class="card list-group-item bg-white shadow-sm rounded-3 mb-2 border border-2 border-success"
+                                            data-id="{{ $taskList->id }}">
+                                            <div
+                                                class="card-header bg-transparent border-bottom border-success d-flex justify-content-between align-items-center py-2 px-3">
+                                                <h5 class="mb-0 text-dark fw-semibold text-truncate"
+                                                    title="{{ $taskList->list_items }}">
+                                                    {{ Str::limit($taskList->list_items, 20) }}
+                                                </h5>
+                                                <div class="action">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-link text-dark p-0" type="button"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fa-solid fa-bars"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('user.detailList', ['slug' => $project->slug, 'idTaskList' => $taskList->id]) }}">
+                                                                    Detail
+                                                                </a>
+                                                            </li>
+                                                            @if (auth()->id() == $project->user_id ||
+                                                                    $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
+                                                                <li>
+                                                                    <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                                        class="dropdown-item"
+                                                                        onclick="event.preventDefault(); document.getElementById('delete-task-{{ $taskList->id }}').submit();">
+                                                                        Hapus
+                                                                    </a>
+                                                                    <form id="delete-task-{{ $taskList->id }}"
+                                                                        action="{{ route('user.tasklist.destroy', $taskList->id) }}"
+                                                                        method="POST" class="d-none">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-2">
+                                                <h5>
+                                                    <i class="fa-solid fa-calendar-days"></i>
+                                                    <span>{{ \Carbon\Carbon::parse($taskList->end_date)->format('d M Y') }}</span>
+                                                </h5>
+                                                <h5>
+                                                    <i
+                                                        class="fa-solid fa-flag fs-5 text-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}"></i>
+                                                    <span>{{ ucfirst($taskList->priority) }}</span>
+                                                </h5>
+                                            </div>
+                                        </li>
+                                    @empty
+                                        <p class="text-center text-muted my-3">No tasks</p>
+                                    @endforelse
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @if (session('share_url'))
+        <div class="toast-container bottom-0 end-0 p-3">
+            <div class="toast show fade" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-body">
+                    <div class="d-flex gap-4">
+                        <span class="text-primary"><i class="fa-solid fa-circle-info fa-lg"></i></span>
+                        <div class="d-flex flex-grow-1 align-items-center">
+                            <span class="fw-semibold">
+                                URL ini memberikan akses
+                                <strong>{{ session('permission_type') }}</strong>.
+                                Untuk membuat URL dengan permission berbeda, generate ulang
+                                dengan memilih akses yang diinginkan.
+                            </span>
+                            <button type="button" class="btn-close btn-close-sm btn-close-black ms-auto"
+                                data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    @include('user.modal.edit-permission')
-    @include('user.modal.share-project')
-    @include('user.modal.edit-background-image')
-    @include('user.modal.profile-user')
-    @include('user.modal.profile-owner')
-
-    {{-- <img src="{{ $project->background_project
-        ? (file_exists(public_path('storage/bgProject/' . $project->background_project))
-            ? asset('storage/bgProject/' . $project->background_project)
-            : (file_exists(public_path('img/bgImg/' . $project->background_project))
-                ? asset('img/bgImg/' . $project->background_project)
-                : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'))
-        : 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80' }}"
-        alt=""> --}}
-
-    <div class="row my-3">
-        <div class="col-md-4 my-2">
-            <div class="card bg-danger">
-                <div class="card-body d-flex justify-content-between align-items-center m-3 p-0">
-                    <h4 class="mb-0 text-white">To Do</h4>
-                    <i class="material-symbols-rounded text-white">neurology</i>
-                </div>
-            </div>
-            <ul id="exampleLeft" class="list-group list-group-flush list-group-item-secondary">
-                @forelse ($project->taskLists->where('status', 'pending') as $taskList)
-                    <li class="card list-group-item list-items rounded my-2 border border-2 bg-white border-status shadow"
-                        data-id="{{ $taskList->id }}">
-                        <div
-                            class="card-header bg-transparent border-bottom border-status d-flex justify-content-between py-2 px-0">
-                            <h5 class="mb-0">
-                                {{ $taskList->list_items }}
-                            </h5>
-                            <div class="action d-flex align-items-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        <i class="material-symbols-rounded">more_horiz</i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item"
-                                                href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
-                                        </li>
-                                        @if (auth()->id() == $project->user_id ||
-                                                $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
-                                                    class="dropdown-item"
-                                                    onclick="event.preventDefault();
-                                                            document.getElementById('delete-task-{{ $taskList->id }}').submit();">
-                                                    Hapus
-                                                </a>
-                                                <form id="delete-task-{{ $taskList->id }}"
-                                                    action="{{ route('user.tasklist.destroy', $taskList->id) }}"
-                                                    method="POST" style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body p-2">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item px-0 py-1 border-0"><i
-                                        class="material-symbols-rounded">calendar_today</i>{{ \Carbon\Carbon::parse($taskList->end_date)->format('d F Y') }}
-                                </li>
-                                <li class="list-group-item px-0 py-1 border-0"><i
-                                        class="material-symbols-rounded text-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}">flag</i>{{ $taskList->priority }}
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                @empty
-                    <p class="m-1 text-center">No tasks</p>
-                @endforelse
-            </ul>
-        </div>
-
-        <div class="col-md-4 my-2">
-            <div class="card bg-warning">
-                <div class="card-body d-flex justify-content-between align-items-center m-3 p-0">
-                    <h4 class="mb-0 text-white">In Progress</h4>
-                    <i class="material-symbols-rounded text-white">progress_activity</i>
-                </div>
-            </div>
-            <ul id="exampleMiddle" class="list-group list-group-flush list-group-item-secondary">
-                @forelse ($project->taskLists->where('status', 'in_progress') as $taskList)
-                    <li class="card list-group-item list-items rounded my-2 border border-2 bg-white border-status shadow"
-                        data-id="{{ $taskList->id }}">
-                        <div
-                            class="card-header bg-transparent border-bottom border-status d-flex justify-content-between py-2 px-0">
-                            <h5 class="mb-0">
-                                {{ $taskList->list_items }}
-                            </h5>
-                            <div class="action d-flex align-items-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        <i class="material-symbols-rounded">more_horiz</i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item"
-                                                href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
-                                        </li>
-                                        @if (auth()->id() == $project->user_id ||
-                                                $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('user.tasklist.viewEdit', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
-                                                    class="dropdown-item"
-                                                    onclick="event.preventDefault();
-                                                    document.getElementById('delete-task-{{ $taskList->id }}').submit();">
-                                                    Hapus
-                                                </a>
-                                                <form id="delete-task-{{ $taskList->id }}"
-                                                    action="{{ route('user.tasklist.destroy', $taskList->id) }}"
-                                                    method="POST" style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body p-2">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item px-0 py-1 border-0"><i
-                                        class="material-symbols-rounded">calendar_today</i>{{ \Carbon\Carbon::parse($taskList->end_date)->format('d F Y') }}
-                                </li>
-                                <li class="list-group-item px-0 py-1 border-0"><i
-                                        class="material-symbols-rounded text-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}">flag</i>{{ $taskList->priority }}
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                @empty
-                    <p class="m-1 text-center">No tasks</p>
-                @endforelse
-            </ul>
-        </div>
-
-        <div class="col-md-4 my-2">
-
-            <div class="card bg-success">
-                <div class="card-body d-flex justify-content-between align-items-center m-3 p-0">
-                    <h4 class="mb-0 text-white">Completed</h4>
-                    <i class="material-symbols-rounded text-white">task_alt</i>
-                </div>
-            </div>
-            <ul id="exampleRight" class="list-group list-group-flush list-group-item-secondary">
-                @forelse ($project->taskLists->where('status', 'completed') as $taskList)
-                    <li class="card list-group-item list-items rounded my-2 border border-2 bg-white border-status shadow"
-                        data-id="{{ $taskList->id }}">
-                        <div
-                            class="card-header bg-transparent border-bottom border-status d-flex justify-content-between py-2 px-0">
-                            <h5 class="mb-0">
-                                {{ $taskList->list_items }}
-                            </h5>
-                            <div class="action d-flex align-items-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-link mb-0 p-0" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        <i class="material-symbols-rounded">more_horiz</i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item"
-                                                href="{{ route('user.detailList', ['idProject' => $project->id, 'idTaskList' => $taskList->id]) }}">Detail</a>
-                                        </li>
-                                        @if (auth()->id() == $project->user_id ||
-                                                $project->sharedUsers()->where('user_id', auth()->id())->where('permissions', 'edit')->exists())
-                                            <li>
-                                                <a href="{{ route('user.tasklist.destroy', $taskList->id) }}"
-                                                    class="dropdown-item"
-                                                    onclick="event.preventDefault();
-                                                    document.getElementById('delete-task-{{ $taskList->id }}').submit();">
-                                                    Hapus
-                                                </a>
-                                                <form id="delete-task-{{ $taskList->id }}"
-                                                    action="{{ route('user.tasklist.destroy', $taskList->id) }}"
-                                                    method="POST" style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body p-2">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item px-0 py-1 border-0"><i
-                                        class="material-symbols-rounded">calendar_today</i>{{ \Carbon\Carbon::parse($taskList->end_date)->format('d F Y') }}
-                                </li>
-                                <li class="list-group-item px-0 py-1 border-0"><i
-                                        class="material-symbols-rounded text-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}">flag</i>{{ $taskList->priority }}
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                @empty
-                    <p class="m-1 text-center">No tasks</p>
-                @endforelse
-            </ul>
-        </div>
-        {{-- @include('user.modal.note-project') --}}
-    </div>
+    @endif
 @endsection
 
 
@@ -444,10 +602,21 @@
 
         function copyToClipboard() {
             var copyText = document.getElementById("share_url");
+            var url = copyText.value;
             var permissionType = "{{ session('permission_type', 'view') }}";
-            var message = "URL " + permissionType + " disalin: " + copyText.value;
 
-            navigator.clipboard.writeText(copyText.value)
+            if (!url) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Belum Ada URL',
+                    text: 'Silakan generate URL terlebih dahulu.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                return;
+            }
+
+            navigator.clipboard.writeText(url)
                 .then(() => {
                     Swal.fire({
                         icon: 'success',
@@ -461,6 +630,8 @@
                     console.error('Gagal menyalin teks: ', err);
                 });
         }
+
+
 
         document.querySelectorAll('.template-card input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', function() {

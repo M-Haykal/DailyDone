@@ -4,15 +4,63 @@
 
 @section('content')
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .full-screen-container {
+            min-height: calc(100vh - 56px);
+            /* Adjust for navbar height */
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .note-form {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .note-title {
+            font-size: 2rem;
+            border: none;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 0;
+            padding: 1rem 1.5rem;
+            background: transparent;
+        }
+
+        .note-title:focus {
+            box-shadow: none;
+            border-color: #0d6efd;
+        }
+
+        .note-content {
+            flex-grow: 1;
+            border: none;
+            border-radius: 0;
+            padding: 1.5rem;
+            resize: none;
+            font-size: 1.1rem;
+            background: transparent;
+        }
+
+        .note-content:focus {
+            box-shadow: none;
+            border-color: #0d6efd;
+        }
+
         #saveStatus {
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(-10px);
             display: inline-flex !important;
             align-items: center;
-            padding: 5px 10px;
-            border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 8px 16px;
+            border-radius: 50px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: 0.9rem;
         }
 
         #saveStatus.fade-in {
@@ -27,61 +75,59 @@
 
         #saveStatus.bg-success {
             background-color: #28a745 !important;
+            color: white;
         }
 
         #saveStatus.bg-danger {
             background-color: #dc3545 !important;
+            color: white;
         }
 
         #saveStatus.bg-warning {
             background-color: #ffc107 !important;
+            color: #212529;
         }
 
         #saveStatus.bg-info {
             background-color: #17a2b8 !important;
+            color: white;
         }
 
         #saveSpinner {
             display: none;
+            width: 1.2rem;
+            height: 1.2rem;
         }
 
         #saveStatus.saving #saveSpinner {
             display: inline-block;
         }
+
+        .action-buttons {
+            padding: 1rem 1.5rem;
+            background: #fff;
+            border-top: 1px solid #dee2e6;
+        }
     </style>
-    <div class="row">
-        <div class="col-xl-12 my-2">
-            <div class="card p-3">
-                <div id="saveStatus" class="position-absolute top-0 end-0 mt-2 me-3" style="display: none; z-index: 1000;">
-                    <span class="badge bg-secondary" id="statusText"></span>
-                    <div class="spinner-border spinner-border-sm text-light ms-1" id="saveSpinner" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <span id="lastSavedTime" class="ms-1 small"></span>
-                </div>
-                <form id="noteForm">
-                    @csrf
-                    <input type="hidden" id="note_id" value="{{ $note->id ?? '' }}">
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="title" name="title"
-                            value="{{ $note->title ?? '' }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="content" class="form-label">Content</label>
-                        <textarea class="form-control" id="content" name="content" rows="5" style="width: 100%;" required>{{ $note->content ?? '' }}</textarea>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ url()->previous() }}" class="btn btn-secondary">Back to List</a>
-                        @if (isset($note))
-                            <button type="button" class="btn btn-danger" id="clearNote">Clear Input</button>
-                        @else
-                            <button type="button" class="btn btn-danger" id="clearNote">Clear Input</button>
-                        @endif
-                    </div>
-                </form>
+    <div class="container-fluid full-screen-container">
+        <div id="saveStatus" class="position-fixed top-0 end-0 mt-3 me-3" style="z-index: 1050; display: none;">
+            <span class="badge bg-secondary" id="statusText"></span>
+            <div class="spinner-border spinner-border-sm ms-2" id="saveSpinner" role="status">
+                <span class="visually-hidden">Loading...</span>
             </div>
+            <span id="lastSavedTime" class="ms-2 small"></span>
         </div>
+        <form id="noteForm" class="note-form">
+            @csrf
+            <input type="hidden" id="note_id" value="{{ $note->id ?? '' }}">
+            <input type="text" class="form-control note-title" id="title" name="title"
+                value="{{ $note->title ?? '' }}" placeholder="Note Title" required>
+            <textarea class="form-control note-content" id="content" name="content" required>{{ $note->content ?? '' }}</textarea>
+            <div class="action-buttons d-flex justify-content-between align-items-center">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-secondary px-4">Back to List</a>
+                <button type="button" class="btn btn-outline-danger px-4" id="clearNote">Clear Input</button>
+            </div>
+        </form>
     </div>
 @endsection
 
@@ -95,14 +141,17 @@
             let isTyping = false;
             let lastSavedTime = null;
 
+            // Initialize CKEditor
             ClassicEditor
-                .create(document.querySelector('#content'))
+                .create(document.querySelector('#content'), {
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                        'undo', 'redo'
+                    ],
+                    placeholder: 'Start typing your note here...'
+                })
                 .then(instance => {
                     editor = instance;
-
-                    editor.model.document.on('change:data', () => {
-                        handleContentChange();
-                    });
+                    editor.model.document.on('change:data', handleContentChange);
                 })
                 .catch(error => {
                     console.error('CKEditor initialization error:', error);
@@ -190,16 +239,11 @@
                         }
                         showSavedStatus();
                         showToast('Changes saved', 'success');
-
-                        clearTimeout(typingTimer);
-                        typingTimer = setTimeout(saveNote, delay);
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.message || 'Connection error';
                         showStatus('Failed to save', 'bg-danger');
                         showToast('Error: ' + errorMessage, 'error');
-
-                        isTyping = true;
 
                         if (xhr.status === 422) {
                             clearTimeout(typingTimer);
@@ -213,45 +257,41 @@
                 });
             }
 
-            function handleContentChange() {
-                clearTimeout(typingTimer);
-
-                if (!isTyping) {
-                    showStatus('Editing...', 'bg-info');
-                    isTyping = true;
-                }
-
-                const title = $('#title').val();
-                const content = editor ? editor.getData() : $('#content').val();
-
-                if (title && content) {
-                    typingTimer = setTimeout(() => {
-                        isTyping = false;
-                        saveNote();
-                    }, delay);
-                }
-            }
-
             $('#clearNote').on('click', function() {
-                if (confirm("Are you sure you want to clear all input?")) {
-                    $('#title').val('');
-                    if (editor) {
-                        editor.setData('');
-                    } else {
-                        $('#content').val('');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This will clear all input fields!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0d6efd',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, clear it!',
+                    customClass: {
+                        popup: 'rounded-3 shadow-lg',
+                        confirmButton: 'btn btn-primary px-4',
+                        cancelButton: 'btn btn-outline-secondary px-4'
                     }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#title').val('');
+                        if (editor) {
+                            editor.setData('');
+                        } else {
+                            $('#content').val('');
+                        }
 
-                    if (!"{{ isset($note) ? 'true' : 'false' }}") {
-                        $('#note_id').val('');
+                        if (!"{{ isset($note) ? 'true' : 'false' }}") {
+                            $('#note_id').val('');
+                        }
+
+                        showStatus('Input cleared', 'bg-info');
+                        setTimeout(() => {
+                            $('#saveStatus').fadeOut(200);
+                        }, 1500);
+
+                        showToast('All inputs have been cleared', 'info');
                     }
-
-                    showStatus('Input cleared', 'bg-info');
-                    setTimeout(() => {
-                        $('#saveStatus').fadeOut(200);
-                    }, 1500);
-
-                    showToast('All inputs have been cleared', 'info');
-                }
+                });
             });
 
             window.addEventListener('offline', () => {
@@ -267,25 +307,21 @@
             });
 
             function showToast(message, type = 'success') {
-                alert(type.toUpperCase() + ': ' + message);
+                const toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: type === 'error' ? 5000 : type === 'info' ? 4000 : 3000,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: `bg-${type} text-white rounded-3`
+                    }
+                });
 
-                if (type === 'success') {
-                    HotToast.success(message, {
-                        position: 'top-right',
-                        duration: 3000
-                    });
-                } else if (type === 'error') {
-                    HotToast.error(message, {
-                        position: 'top-right',
-                        duration: 5000
-                    });
-                } else {
-                    HotToast(message, {
-                        position: 'top-right',
-                        duration: 4000
-                    });
-                }
-
+                toast.fire({
+                    icon: type,
+                    title: message
+                });
             }
 
             setInterval(() => {

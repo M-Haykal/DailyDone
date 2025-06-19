@@ -11,13 +11,13 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="template-tab" data-bs-toggle="tab"
                             data-bs-target="#template-tab-pane" type="button" role="tab">
-                            <i class="material-symbols-rounded me-1">collections</i> Template
+                            Template
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload-tab-pane"
                             type="button" role="tab">
-                            <i class="material-symbols-rounded me-1">upload</i> Upload
+                            Upload
                         </button>
                     </li>
                 </ul>
@@ -75,11 +75,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" onclick="removeBackground()">
-                    <i class="material-symbols-rounded">delete</i> Remove Background
+                    Remove Background
                 </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="submitBackground()">
-                    <i class="material-symbols-rounded">save</i> Apply Background
+                    Apply Background
                 </button>
             </div>
         </div>
@@ -96,12 +96,12 @@
             </div>
             <div class="modal-body text-center">
                 <img src="" id="previewImageLarge" class="img-fluid" style="max-height: 70vh;">
-                <div class="mt-3">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                        onclick="submitBackground()">
-                        Use This Background
-                    </button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                    onclick="submitBackground()">
+                    Use This Background
+                </button>
             </div>
         </div>
     </div>

@@ -24,7 +24,7 @@
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 @foreach ($projects as $project)
                     @if ($project->user_id == auth()->id() || $project->sharedUsers->contains(auth()->id()))
-                        <div class="col" data-aos="fade-up" data-aos-duration="600">
+                        <div class="col">
                             <div class="card h-100 shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -61,7 +61,7 @@
                                             @endif
                                         </div>
 
-                                        <a href="{{ route('projects.show', $project->id) }}"
+                                        <a href="{{ route('projects.show', $project->slug) }}"
                                             class="btn btn-sm btn-outline-primary">
                                             View <i class="fas fa-arrow-right ms-1"></i>
                                         </a>

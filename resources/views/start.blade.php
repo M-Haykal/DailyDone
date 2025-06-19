@@ -63,14 +63,17 @@
             <p>The best place to plan your ideas.</p>
         </div>
         <div class="action animsition-overlay" data-animsition-overlay="true">
-            @auth
+            @if (auth()->check() && auth()->user()->role == 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-custom animsition-link"
+                    data-animsition-out-class="overlay-slide-out-top">Start Now</a>
+            @elseif (auth()->check() && auth()->user()->role == 'user')
                 <a href="{{ route('user.dashboard') }}" class="btn btn-custom animsition-link"
                     data-animsition-out-class="overlay-slide-out-top">Start Now</a>
             @else
                 <a href="{{ route('login') }}" class="btn btn-custom animsition-link"
                     data-animsition-out-class="overlay-slide-out-top" data-animsition-out-duration="200">Log In
                     Now</a>
-            @endauth
+            @endif
         </div>
     </div>
 

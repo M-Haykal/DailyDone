@@ -64,8 +64,24 @@ class Project extends Model
     protected static function boot()
     {
         parent::boot();
+
         static::creating(function ($project) {
             $project->slug = Str::slug($project->name) . '-' . Str::random(6);
+        });
+
+        // Ketika project di-soft delete, soft delete juga tasklist-nya
+        static::deleting(function ($project) {
+            if ($project->isForceDeleting()) {
+                // Jika hard delete, lakukan sesuatu (opsional)
+            } else {
+                // Jika soft delete, soft delete juga tasklist-nya
+                $project->taskLists()->delete();
+            }
+        });
+
+        // Ketika project di-restore, restore juga tasklist-nya
+        static::restored(function ($project) {
+            $project->taskLists()->withTrashed()->restore();
         });
     }
 

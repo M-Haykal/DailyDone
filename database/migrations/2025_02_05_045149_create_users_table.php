@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('image_profile')->nullable();
             $table->string('name');
+            $table->json('social_media')->nullable();
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->string('google_id')->nullable();
             $table->timestamps();

@@ -15,20 +15,20 @@ use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
-    public function show($id) {
+    public function show($slug) {
         $userId = Auth::id();
         $userEmail = Auth::user()->email;
-    
-        $project = Project::where('id', $id)
+
+        $project = Project::where('slug', $slug)
             ->where(function ($query) use ($userId, $userEmail) {
                 $query->where('user_id', $userId)
                     ->orWhereHas('sharedUsers', function ($subQuery) use ($userId, $userEmail) {
                         $subQuery->where('shared_projects.user_id', $userId)
-                            ->orWhere('shared_projects.email', $userEmail); // Tambahkan alias 'shared_projects.email'
+                            ->orWhere('shared_projects.email', $userEmail);
                     });
             })
             ->firstOrFail();
-    
+
         return view('user.pages.list-page', compact('project'));
     }
     
@@ -252,7 +252,7 @@ class ProjectController extends Controller
             return abort(403, 'Anda tidak memiliki izin untuk menghapus proyek ini secara permanen.');
         }
 
-        $project->forceDelete(); // Hapus permanen dari database
+        $project->forceDelete();
 
         return redirect()->route('user.dashboard')->with('success', 'Proyek berhasil dihapus secara permanen.');
     }
@@ -269,7 +269,6 @@ class ProjectController extends Controller
             return abort(403, 'Anda tidak memiliki izin untuk membagikan proyek ini.');
         }
     
-        // Generate token berdasarkan permission
         $tokenType = $request->permissions . '_token';
         $expiresType = $request->permissions . '_expires_at';
         
@@ -284,7 +283,6 @@ class ProjectController extends Controller
             [
                 'token' => $token,
                 'expires_at' => $expiresAt,
-                // Simpan juga di field khusus jika diperlukan
                 $tokenType => $token,
                 $expiresType => $expiresAt
             ]
@@ -293,7 +291,7 @@ class ProjectController extends Controller
         $shareUrl = route('projects.access', [
             'slug' => $project->slug,
             'token' => $token,
-            'permission' => $request->permissions // Tambahkan parameter permission
+            'permission' => $request->permissions
         ]);
     
         session()->flash('share_url', $shareUrl);
@@ -328,7 +326,7 @@ class ProjectController extends Controller
             $sharedProject->save();
         }
     
-        return redirect()->route('projects.show', ['id' => $project->id])
+        return redirect()->route('projects.show', ['slug' => $project->slug])
             ->with('success', 'Anda berhasil mengakses proyek ini dengan izin ' . $sharedProject->permissions);
     }
 
@@ -346,7 +344,6 @@ class ProjectController extends Controller
             ->with('success', 'Project berhasil diaktifkan kembali');
     }
 
-        // Untuk apply template
     public function applyTemplate(Request $request, $id)
     {
         $project = Project::findOrFail($id);
@@ -359,7 +356,6 @@ class ProjectController extends Controller
             'template' => 'required|string'
         ]);
 
-        // Verifikasi file template ada
         $templatePath = public_path('img/bgImg/'.$request->template);
         if (!Storage::exists($templatePath)) {
             return response()->json([
@@ -368,7 +364,6 @@ class ProjectController extends Controller
             ], 404);
         }
 
-        // Reset custom background jika menggunakan template
         if ($project->background_project) {
             Storage::delete('public/bgProject/'.$project->background_project);
         }
@@ -379,7 +374,6 @@ class ProjectController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // Untuk upload custom background
     public function updateBackground(Request $request, $id)
     {
         $project = Project::findOrFail($id);
@@ -391,7 +385,6 @@ class ProjectController extends Controller
     
             $project->background_project = $filename;
         } elseif ($request->background_project) {
-            // Menyimpan pilihan template (anggap saja file template juga dianggap sebagai bgProject)
             $project->background_project = $request->background_project;
         }
     
@@ -401,7 +394,6 @@ class ProjectController extends Controller
     }
     
 
-    // Untuk remove background
     public function removeBackground($id)
     {
         $project = Project::findOrFail($id);

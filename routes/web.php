@@ -7,19 +7,25 @@ use App\Http\Controllers\User\ProjectController;
 use App\Http\Controllers\User\TaskController;
 use App\Http\Controllers\User\CommentController;
 use App\Http\Controllers\User\NoteController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Middleware\UserMiddleware;
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('start');
 })->name('home');
 
+Route::get('/projects', function () {
+    return view('tes.projects');
+})->name('projects');
+
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'viewLogin'])->name('login');
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:3,1');
     Route::get('register', [AuthController::class, 'viewRegister'])->name('register');
     Route::post('register', [AuthController::class, 'register']);
 });
@@ -42,7 +48,7 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user/edit-profile', [UsersController::class, 'editProfile'])->name('user.profile.edit');
     Route::post('user/update-profile', [UsersController::class, 'updateProfile'])->name('user.profile.update');    
     Route::post('user/create-project', [ProjectController::class, 'store'])->name('user.project.store');
-    Route::get('user/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('user/projects/{slug}', [ProjectController::class, 'show'])->name('projects.show');
     Route::get('user/tasklist', [TaskController::class, 'index'])->name('user.tasklist.index');
     Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
     Route::post('user/tasklist/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasklist.updateStatus');
@@ -50,9 +56,9 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::get('user/detailList/{id}', [TaskController::class, 'detailList'])->name('user.detailList');
     Route::post('user/projects/{id}/delete', [ProjectController::class, 'deleteProject'])->name('projects.delete');
     Route::delete('/user/tasklist/{id}', [TaskController::class, 'destroy'])->name('user.tasklist.destroy');
-    Route::put('user/project/{idProject}/tasklist/{idTaskList}/edit', [TaskController::class, 'edit'])->name('user.tasklist.edit');
-    Route::get('user/project/{idProject}/tasklist/{idTaskList}/edit', [TaskController::class, 'viewEdit'])->name('user.tasklist.viewEdit');
-    Route::get('user/project/{idProject}/tasklist/{idTaskList}', [TaskController::class, 'detailList'])->name('user.detailList');
+    Route::put('user/project/{slug}/tasklist/{idTaskList}/edit', [TaskController::class, 'edit'])->name('user.tasklist.edit');
+    Route::get('user/project/{slug}/tasklist/{idTaskList}/edit', [TaskController::class, 'viewEdit'])->name('user.tasklist.viewEdit');
+    Route::get('user/project/{slug}/tasklist/{idTaskList}', [TaskController::class, 'detailList'])->name('user.detailList');
     Route::get('user/comments', [CommentController::class, 'index'])->name('user.comments.index');
     Route::post('user/comments/store', [CommentController::class, 'store'])->name('user.comments.store');
     Route::get('user/comments/{comment}', [CommentController::class, 'show'])->name('user.comments.show');
@@ -80,5 +86,10 @@ Route::middleware(['auth', UserMiddleware::class])->group(function () {
     Route::post('/user/notes/store', [NoteController::class, 'store']);
     Route::put('/user/notes/{id}/update', [NoteController::class, 'update']);
     Route::delete('/user/notes/{id}/destroy', [NoteController::class, 'destroy']);
+});
+
+Route::middleware(['auth', AdminMiddleware::class])->group(function () {
+    Route::get('admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('admin/users', [AdminController::class, 'users'])->name('admin.users');
 });
 

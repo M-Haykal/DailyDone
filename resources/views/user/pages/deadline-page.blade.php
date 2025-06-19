@@ -39,7 +39,7 @@
                     start: project.start_date,
                     end: project.end_date,
                     color: '#28a745',
-                    url: "{{ route('projects.show', ':id') }}".replace(':id', project.id),
+                    url: "{{ route('projects.show', ':slug') }}".replace(':slug', project.slug),
                     extendedProps: {
                         type: 'project'
                     }

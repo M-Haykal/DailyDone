@@ -3,70 +3,92 @@
 @section('title', 'Detail Task Page')
 
 @section('content')
-    <div class="row">
-        <div class="col-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <a href="{{ url()->previous() }}" class="text-decoration-none me-3">
-                            <i class="material-symbols-rounded fs-4">arrow_back</i>
-                        </a>
-                        <h5 class="card-title flex-grow-1">{{ $taskList->list_items }}</h5>
-                    </div>
-                    <p class="card-text">{!! htmlspecialchars_decode($taskList->detail_list) !!}</p>
-                    <div class="row">
-                        <div class="col-6">
-                            <strong>Status:</strong>
-                            <span
-                                class="badge rounded-pill bg-{{ $taskList->status === 'pending' ? 'danger' : ($taskList->status === 'in_progress' ? 'warning' : 'success') }}">{{ $taskList->status }}</span>
+    <div class="container py-5">
+        <div class="row g-4">
+            <!-- Task Details Card -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-3" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <a href="{{ url()->previous() }}" class="text-decoration-none text-muted">
+                                <i class="fas fa-arrow-left fs-4"></i>
+                            </a>
+                            <h2 class="card-title fw-bold text-dark mb-0">{{ $taskList->list_items }}</h2>
                         </div>
-                        <div class="col-6">
-                            <strong>Priority:</strong>
-                            <span
-                                class="badge rounded-pill bg-{{ $taskList->priority === 'high' ? 'danger' : ($taskList->priority === 'medium' ? 'warning' : 'success') }}">{{ $taskList->priority }}</span>
+                        <p class="card-text text-muted mb-4">{!! htmlspecialchars_decode($taskList->detail_list) !!}</p>
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <strong class="text-dark">Status:</strong>
+                                <span
+                                    class="badge rounded-pill text-white fw-semibold
+                                        {{ $taskList->status === 'pending' ? 'bg-danger' : ($taskList->status === 'in_progress' ? 'bg-warning' : 'bg-success') }}">
+                                    {{ $taskList->status }}
+                                </span>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-dark">Priority:</strong>
+                                <span
+                                    class="badge rounded-pill text-white fw-semibold
+                                        {{ $taskList->priority === 'high' ? 'bg-danger' : ($taskList->priority === 'medium' ? 'bg-warning' : 'bg-success') }}">
+                                    {{ $taskList->priority }}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-6">
-                            <strong>Tag:</strong>
-                            @foreach (explode(',', $taskList->tag) as $userId)
-                                @if ($user = $users->find($userId))
-                                    {{ $user->name }},
-                                @endif
-                            @endforeach
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <strong class="text-dark">Tag:</strong>
+                                <div class="d-inline">
+                                    @foreach (explode(',', $taskList->tag) as $userId)
+                                        @if ($user = $users->find($userId))
+                                            <span class="badge bg-secondary text-white me-1">{{ $user->name }}</span>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-dark">Note:</strong>
+                                <span class="text-muted">{{ $taskList->note ?? 'No note' }}</span>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <strong>Note:</strong> {{ $taskList->note }}
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-6">
-                            <strong>Start Date:</strong> {{ $taskList->start_date }}
-                        </div>
-                        <div class="col-6">
-                            <strong>End Date:</strong> {{ $taskList->end_date }}
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <strong class="text-dark">Start Date:</strong>
+                                <span class="text-muted">{{ $taskList->start_date ?? 'Not set' }}</span>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-dark">End Date:</strong>
+                                <span class="text-muted">{{ $taskList->end_date ?? 'Not set' }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title">Comments</h5>
-                    </div>
-                    <ul class="list-group list-group-flush" id="comment-list">
-                    </ul>
-                    <input type="hidden" id="reply-comment-id">
-                    <div id="reply-container" class="mt-3 d-none">
-                        <strong>Replying to <span id="replying-to"></span></strong>
-                        <button type="button" class="btn btn-sm btn-danger" id="cancel-reply"><i
-                                class="material-symbols-rounded">close</i></button>
-                    </div>
-                    <div class="input-group input-group-outline mt-3">
-                        <input type="text" class="form-control" id="comment-content" placeholder="Enter text here">
-                        <button type="button" class="btn btn-success mb-0" id="btn-comment">Comment</button>
+
+            <!-- Comments Card -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-3"
+                    style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="card-title fw-bold text-dark mb-0">Comments</h2>
+                        </div>
+                        <ul class="list-group list-group-flush" id="comment-list">
+                        </ul>
+                        <div id="reply-container" class="mt-3 d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="text-dark">Replying to <span id="replying-to"
+                                        class="text-primary"></span></strong>
+                                <button type="button" class="btn btn-sm btn-danger" id="cancel-reply">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-group mt-3">
+                            <input type="text" class="form-control" id="comment-content"
+                                placeholder="Enter your comment...">
+                            <button type="button" class="btn btn-success" id="btn-comment">Comment</button>
+                        </div>
+                        <input type="hidden" id="reply-comment-id">
                     </div>
                 </div>
             </div>
@@ -93,27 +115,27 @@
                         response.forEach(comment => {
                             let repliesHtml = "";
                             if (comment.replies.length > 0) {
-                                repliesHtml += '<ul class="list-group mt-2">';
+                                repliesHtml += '<ul class="list-group list-group-flush mt-2">';
                                 comment.replies.forEach(reply => {
                                     repliesHtml += `
-                                <li class="list-group-item border-0 ps-4">
-                                    <strong>${reply.user.name}:</strong> ${reply.content}
-                                </li>`;
+                                    <li class="list-group-item bg-light border-0 ps-4">
+                                        <strong class="text-dark">${reply.user.name}:</strong> <span class="text-muted">${reply.content}</span>
+                                    </li>`;
                                 });
                                 repliesHtml += '</ul>';
                             }
 
                             commentList.append(`
-                        <li class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>${comment.user.name}:</strong> ${comment.content}
+                            <li class="list-group-item bg-white border-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="text-dark">${comment.user.name}:</strong> <span class="text-muted">${comment.content}</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-link text-primary reply-btn" data-comment-id="${comment.id}" data-user="${comment.user.name}">Reply</button>
                                 </div>
-                                <button class="btn btn-sm btn-link text-primary reply-btn" data-comment-id="${comment.id}" data-user="${comment.user.name}">Reply</button>
-                            </div>
-                            ${repliesHtml}
-                        </li>
-                    `);
+                                ${repliesHtml}
+                            </li>
+                        `);
                         });
                     },
                     error: function(xhr, ajaxOptions, thrownError) {

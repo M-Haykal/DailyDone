@@ -19,17 +19,17 @@
                     <p>{{ $project->owner->bio }}</p>
                 @endif --}}
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
-                    <!-- Tombol Chat menggunakan Chatify -->
+                <div class="d-flex justify-content-center">
                     <a href="{{ route('user', ['id' => $project->owner->id]) }}" class="btn btn-primary">
                         <i class="fas fa-comment-dots me-2"></i> Chat
                     </a>
-
-                    <!-- Tombol Close -->
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        Close
-                    </button>
                 </div>
+            </div>
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
             </div>
         </div>
     </div>
