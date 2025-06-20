@@ -147,7 +147,8 @@
                     toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
                         'undo', 'redo'
                     ],
-                    placeholder: 'Start typing your note here...'
+                    placeholder: 'Start typing your note here...',
+                    height: '100%',
                 })
                 .then(instance => {
                     editor = instance;
