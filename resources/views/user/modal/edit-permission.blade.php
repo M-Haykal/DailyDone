@@ -31,10 +31,10 @@
                             aria-labelledby="profile-tab-{{ $shared->id }}">
                             <div class="row g-4">
                                 <div class="col-md-4 text-center">
-                                    <img src="{{ $shared->user->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->user->name)->toBase64() }}"
-                                        alt="{{ $shared->user?->name ?? ($shared->email ?? 'Unknown') }}"
+                                    <img src="{{ optional($shared->user)->image_profile ? url('storage/images/' . $shared->user->image_profile) : Avatar::create($shared->email ?? 'Unknown')->toBase64() }}"
+                                        alt="{{ $shared->user?->name ?? $shared->email ?? 'Unknown' }}"
                                         class="img-fluid rounded-circle mb-3 shadow-sm" style="width: 120px;">
-                                    <h5 class="fw-bold">{{ $shared->user?->name ?? $shared->email }}</h5>
+                                    <h5 class="fw-bold">{{ $shared->user?->name ?? $shared->email ?? 'Unknown' }}</h5>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="mb-3">

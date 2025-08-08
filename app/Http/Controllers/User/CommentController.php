@@ -57,7 +57,7 @@ class CommentController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $comment->update(['content' => $request->content]);
+        $comment->update(['content' => $request->input('content')]);
 
         return response()->json($comment);
     }

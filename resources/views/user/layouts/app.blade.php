@@ -7,15 +7,13 @@
     <link rel="icon" type="image/jpg" href="{{ asset('img/logo_hayproject.jpeg') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
-    <link href="https://cdn.jsdelivr.net/npm/fastbootstrap@2.2.0/dist/css/fastbootstrap.min.css" rel="stylesheet"
-        integrity="sha256-V6lu+OdYNKTKTsVFBuQsyIlDiRWiOmtC8VQ8Lzdm2i4=" crossorigin="anonymous">
+    <link href="{{ asset('css/fastbootstrap.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css" rel="stylesheet" />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 </head>
 
 <body class="vh-100 overflow-hidden">
@@ -28,7 +26,6 @@
             <a class="navbar-brand ms-2 text-black" href="#">Dailydone</a>
         </div>
     </nav>
-
     <div class="d-flex vh-100">
         <aside id="sidebar"
             class="d-flex flex-column flex-shrink-0 p-3 bg-dark vh-100 overflow-auto offcanvas-lg offcanvas-start"
@@ -68,6 +65,14 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('user.deadline') }}"
+                        class="nav-link fs-5 {{ request()->routeIs('user.deadline') ? 'active text-black' : 'text-white' }}"
+                        aria-current="page">
+                        <i class="fa-solid fa-calendar"></i>
+                        Deadlines
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('user.projects.trashed') }}"
                         class="nav-link fs-5 {{ request()->routeIs('user.projects.trashed') ? 'active text-black' : 'text-white' }}"
                         aria-current="page">
@@ -99,20 +104,16 @@
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    <li><a class="dropdown-item" href="#" id="sign-out">Sign out</a></li>
                 </ul>
             </div>
         </aside>
-
         <!-- Konten utama -->
         <article class="vh-100 overflow-auto flex-grow-1 overflow-x-hidden">
             @yield('content')
         </article>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-    </script>
+    <script src="{{ asset('js/fastbootstrap.js') }}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tiny.cloud/1/qmsq1hga0tygul287yejg9t6gpfa5npa36c0ezchh4zom7x1/tinymce/5/tinymce.min.js"
@@ -125,6 +126,62 @@
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @yield('script')
+    <script>
+        document.getElementById('sign-out').addEventListener('click', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will be logged out of your account.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, sign out',
+                cancelButtonText: 'Cancel',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-secondary'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("{{ route('logout') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .content,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    }).then(response => {
+                        if (response.ok) {
+                            window.location.href = '/';
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to log out. Please try again.',
+                                icon: 'error',
+                                confirmButtonText: 'OK',
+                                buttonsStyling: false,
+                                customClass: {
+                                    confirmButton: 'btn btn-primary'
+                                }
+                            });
+                        }
+                    }).catch(error => {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                            buttonsStyling: false,
+                            customClass: {
+                                confirmButton: 'btn btn-primary'
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

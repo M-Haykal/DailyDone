@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\TaskList;
 use App\Models\Project;
 use App\Models\User;
+use App\Models\Task;
 
 class TaskController extends Controller
 {
@@ -23,6 +24,51 @@ class TaskController extends Controller
         }
         $users = User::all();
         return view('user.pages.create-list-page', ['project' => $project, 'users' => $users]);        
+    }
+
+    public function createTask(Request $request)
+    {
+        $projects = Project::with('úser')->findOrFail($request->project_id);
+
+        $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'name' => 'required|string|max:255',
+        ]);
+
+        $task = Task::create([
+            'name' => $request->name,
+            'project_id' => $request->project_id,
+            'user_id' => Auth::id(),
+        ]);
+        
+        return redirect()->back()->with('success', 'Task created successfully!');
+    }
+
+    public function updateTask(Request $request, $id)
+    {
+        $task = Task::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $task->update([
+            'name' => $request->name,
+        ]);
+        return redirect()->back()->with('success', 'Task updated successfully!');
+    }
+
+    public function destroyTemporary($id)
+    {
+        $task = Task::findOrFail($id);
+        $task->delete();
+        return redirect()->back()->with('success', 'Task deleted temporarily!');
+    }
+
+    public function destroyPermanent($id)
+    {
+        $task = Task::withTrashed()->findOrFail($id);
+        $task->forceDelete();
+        return redirect()->back()->with('success', 'Task deleted permanently!');
     }
     
     public function store(Request $request)
@@ -48,6 +94,7 @@ class TaskController extends Controller
                 'before_or_equal:' . $project->end_date,
             ],
             'project_id' => 'required|exists:projects,id',
+            // 'task_id' => 'nullable|exists:tasks,id',
         ]);
     
         $taskList = TaskList::create([
@@ -61,6 +108,7 @@ class TaskController extends Controller
             'end_date' => $request->end_date,
             'project_id' => $request->project_id,
             'user_id' => Auth::id(),
+            // 'task_id' => $request->task_id,
         ]);
     
         // Simpan user yang dipilih

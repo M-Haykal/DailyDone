@@ -4,8 +4,8 @@
 
 @section('content')
     <div class="row">
-        <div class="col-xl-12 my-2">
-            <div class="card p-3">
+        <div class="col-xl-12 m-3">
+            <div class="card p-2">
                 <div id="calendar"></div>
             </div>
         </div>
@@ -28,6 +28,7 @@
                     title: `${task.title} - ${task.project}`,
                     start: task.start,
                     end: task.end,
+                    url: "{{ route('user.detailList', [':slug', ':idTaskList']) }}".replace(':slug', task.project_slug).replace(':idTaskList', task.id),
                     color: '#007bff',
                 };
             }));
@@ -50,7 +51,7 @@
                 initialView: 'dayGridMonth',
                 events: events,
                 eventClick: function(info) {
-                    info.jsEvent.preventDefault(); // don't let the browser navigate
+                    info.jsEvent.preventDefault();
 
                     if (info.event.url) {
                         window.location.href = info.event.url;

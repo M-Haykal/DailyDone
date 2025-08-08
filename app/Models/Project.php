@@ -69,7 +69,6 @@ class Project extends Model
             $project->slug = Str::slug($project->name) . '-' . Str::random(6);
         });
 
-        // Ketika project di-soft delete, soft delete juga tasklist-nya
         static::deleting(function ($project) {
             if ($project->isForceDeleting()) {
                 // Jika hard delete, lakukan sesuatu (opsional)

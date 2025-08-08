@@ -4,15 +4,15 @@
 
 @section('content')
     <div class="container py-4">
-        <!-- Header Section -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold mb-0">Archive Projects</h2>
-            <span class="badge bg-light text-dark fs-6">
-                <i class="fas fa-archive me-1"></i>{{ $projects->count() }} archive
-            </span>
+        <div class="main-header bg-gradient-primary p-4 rounded-3 mb-5 shadow-sm">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+                <h2 class="fw-bold mb-0">Archive Projects</h2>
+                <span class="badge bg-light text-dark fs-6">
+                    <i class="fas fa-archive me-1"></i>{{ $projects->count() }} archive
+                </span>
+            </div>
         </div>
 
-        <!-- Projects Grid -->
         @if ($projects->isEmpty())
             <div class="col-12 text-center py-5 no-projects">
                 <img src="{{ asset('img/data-empety.png') }}" alt="No projects in archive" class="img-fluid"
@@ -33,9 +33,7 @@
                                             <i class="fas fa-archive me-1"></i>Archived
                                         </span>
                                     </div>
-
                                     <p class="card-text text-muted mb-3">{{ Str::limit($project->description, 100) }}</p>
-
                                     <!-- Members Avatars -->
                                     <div class="d-flex align-items-center justify-content-between mt-auto">
                                         <div class="d-flex">

@@ -24,7 +24,7 @@ class NoteController extends Controller
     
         $note = Notes::create([
             'title' => $request->title,
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'user_id' => Auth::id(),
         ]);
     
@@ -41,7 +41,7 @@ class NoteController extends Controller
         $note = Notes::where('user_id', Auth::id())->findOrFail($id);
         $note->update([
             'title' => $request->title,
-            'content' => $request->content,
+            'content' => $request->input('content'),
         ]);
     
         return response()->json(['message' => 'Note updated successfully!', 'note' => $note]);

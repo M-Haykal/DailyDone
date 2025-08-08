@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/jpg" href="{{ asset('img/logo_hayproject.jpeg') }}">
     <title>DailyDone</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('css/fastbootstrap.css') }}" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/animsition.min.css') }}">
     <style>
@@ -64,20 +64,20 @@
         </div>
         <div class="action animsition-overlay" data-animsition-overlay="true">
             @if (auth()->check() && auth()->user()->role == 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-custom animsition-link"
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-success btn-lg animsition-link"
                     data-animsition-out-class="overlay-slide-out-top">Start Now</a>
             @elseif (auth()->check() && auth()->user()->role == 'user')
-                <a href="{{ route('user.dashboard') }}" class="btn btn-custom animsition-link"
+                <a href="{{ route('user.dashboard') }}" class="btn btn-success btn-lg animsition-link"
                     data-animsition-out-class="overlay-slide-out-top">Start Now</a>
             @else
-                <a href="{{ route('login') }}" class="btn btn-custom animsition-link"
+                <a href="{{ route('login') }}" class="btn btn-success btn-lg animsition-link "
                     data-animsition-out-class="overlay-slide-out-top" data-animsition-out-duration="200">Log In
                     Now</a>
             @endif
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/fastbootstrap.js') }}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="{{ asset('js/animsition.min.js') }}"></script>

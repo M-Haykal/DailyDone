@@ -22,6 +22,7 @@ class TaskList extends Model
         'start_date',
         'end_date',
         'project_id',
+        'task_id',
         'user_id',
     ];
 
@@ -36,5 +37,10 @@ class TaskList extends Model
     {
         return $this->belongsToMany(User::class, 'tasklist_user', 'tasklist_id', 'user_id');
     }    
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
 }
 

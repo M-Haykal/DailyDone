@@ -1,6 +1,6 @@
 @extends('user.layouts.app')
 
-@section('title', 'List Notes')
+@section('title', 'Notes')
 
 @section('content')
     <div class="container py-4">

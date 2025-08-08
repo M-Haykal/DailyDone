@@ -1,6 +1,6 @@
 @extends('user.layouts.app')
 
-@section('title', 'Trash Project')
+@section('title', 'Trashs')
 
 @section('content')
     <div class="main-header bg-gradient-primary p-4 rounded-3 mb-5 shadow-sm">

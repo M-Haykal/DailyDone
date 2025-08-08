@@ -1,6 +1,6 @@
 @extends('user.layouts.app')
 
-@section('title', 'List Project')
+@section('title', 'Projects')
 
 @section('content')
     <div class="container p-2">
@@ -120,7 +120,7 @@
                 @endif
             @empty
                 <div class="col-12 text-center py-5 no-projects">
-                    <img src="{{ asset('img/data-empty.png') }}" alt="No projects found" class="img-fluid mb-3"
+                    <img src="{{ asset('img/data-empety.png') }}" alt="No projects found" class="img-fluid mb-3"
                         style="max-width: 250px;">
                     <h4 class="text-muted mb-2">No Projects Found</h4>
                     <p class="text-muted">Create your first project to get started!</p>

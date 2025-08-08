@@ -104,7 +104,8 @@ class UsersController extends Controller
                 'title' => $task->list_items,
                 'start' => $task->start_date,
                 'end' => $task->end_date,
-                'project' => $task->project->name
+                'project' => $task->project->name,
+                'project_slug' => $task->project->slug,
             ];
         })->toArray();
 
@@ -140,7 +141,6 @@ class UsersController extends Controller
             }
         }
     
-        // Filter project yang belum berakhir (end_date >= sekarang)
         $projects = $projectsQuery->whereDate('end_date', '>=', now())->paginate(12);
     
         return view('user.pages.list-project-page', compact('projects'));
