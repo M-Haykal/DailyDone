@@ -13,7 +13,7 @@ class Project extends Model
     use SoftDeletes;
 
     protected $table = 'projects';
-    
+
     protected $fillable = [
         'name',
         'description',
@@ -26,12 +26,17 @@ class Project extends Model
         'end_date',
         'user_id',
     ];
-    
+
     protected $dates = ['deleted_at'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function statusTask()
+    {
+        return $this->hasMany(StatusTask::class);
     }
 
     public function taskLists()
@@ -46,21 +51,23 @@ class Project extends Model
 
     public function sharedProjects()
     {
-        return $this->hasMany(SharedProject::class);
+        return $this->belongsToMany(User::class)
+            ->withPivot(['role', 'token', 'expires_at'])
+            ->withTimestamps();
     }
 
     public function sharedUsers()
     {
         return $this->belongsToMany(User::class, 'shared_projects', 'project_id', 'user_id')
-                    ->withPivot('id', 'permissions', 'token', 'email')
-                    ->withTimestamps();
+            ->withPivot('id', 'permissions', 'token', 'email')
+            ->withTimestamps();
     }
-    
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'project_user', 'project_id', 'user_id');
-    }     
-    
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -88,11 +95,12 @@ class Project extends Model
     {
         return $query->where('status', 'active');
     }
-    
-    public function scopeArchived($query) {
+
+    public function scopeArchived($query)
+    {
         return $query->where('status', 'archived');
     }
-    
+
     public function archive()
     {
         $this->update([
@@ -101,7 +109,7 @@ class Project extends Model
             'archived_by' => Auth::id()
         ]);
     }
-    
+
     public function activate()
     {
         $this->update([
@@ -114,8 +122,9 @@ class Project extends Model
     public function progress()
     {
         $total = $this->taskLists()->count();
-        if ($total == 0) return 0;
-        
+        if ($total == 0)
+            return 0;
+
         return round(($this->taskLists()->where('status', 'completed')->count() / $total) * 100);
     }
 }

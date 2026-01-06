@@ -82,6 +82,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Project::class, 'project_user', 'user_id', 'project_id');
     }
 
+    public function statusTasks()
+    {
+        return $this->hasMany(StatusTask::class);
+    }
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *

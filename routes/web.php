@@ -33,59 +33,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->post('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', UserMiddleware::class])->group(function () {
-    Route::get('user', [UsersController::class, 'index'])->name('user.dashboard');
-    Route::post('/projects/{id}/share', [ProjectController::class, 'share'])->middleware('auth');
-    Route::get('/projects/join/{token}', [ProjectController::class, 'joinProject'])->name('projects.join');
-    Route::get('/projects/access/{token}', [ProjectController::class, 'accessProject'])->name('projects.access');
-    Route::post('/projects/{project}/save-note', [ProjectController::class, 'saveNote'])
-        ->name('projects.saveNote');
-    Route::get('user/profile', [UsersController::class, 'profile'])->name('user.profile');
-    Route::get('user/deadline', [UsersController::class, 'deadline'])->name('user.deadline');
-    Route::get('user/projects', [UsersController::class, 'project'])->name('user.project');
-    Route::get('user/archive', [UsersController::class, 'archive'])->name('user.archive');
-    Route::get('user/notes', [UsersController::class, 'notes'])->name('user.notes');
-    Route::get('user/trash', [ProjectController::class, 'trashedProjects'])->name('user.projects.trashed');
-    Route::get('user/edit-profile', [UsersController::class, 'editProfile'])->name('user.profile.edit');
-    Route::post('user/update-profile', [UsersController::class, 'updateProfile'])->name('user.profile.update');    
-    Route::post('user/create-project', [ProjectController::class, 'store'])->name('user.project.store');
-    Route::get('user/projects/{slug}', [ProjectController::class, 'show'])->name('projects.show');
-    Route::get('user/tasklist', [TaskController::class, 'index'])->name('user.tasklist.index');
-    Route::post('user/tasklist/store', [TaskController::class, 'store'])->name('user.tasklist.store');
-    Route::post('user/tasklist/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasklist.updateStatus');
-    Route::delete('/user/tasklist/{id}', [TaskController::class, 'destroy'])->name('user.tasklist.destroy');
-    Route::get('user/detailList/{id}', [TaskController::class, 'detailList'])->name('user.detailList');
-    Route::post('user/projects/{id}/delete', [ProjectController::class, 'deleteProject'])->name('projects.delete');
-    Route::delete('/user/tasklist/{id}', [TaskController::class, 'destroy'])->name('user.tasklist.destroy');
-    Route::put('user/project/{slug}/tasklist/{idTaskList}/edit', [TaskController::class, 'edit'])->name('user.tasklist.edit');
-    Route::get('user/project/{slug}/tasklist/{idTaskList}/edit', [TaskController::class, 'viewEdit'])->name('user.tasklist.viewEdit');
-    Route::get('user/project/{slug}/tasklist/{idTaskList}', [TaskController::class, 'detailList'])->name('user.detailList');
-    Route::get('user/comments', [CommentController::class, 'index'])->name('user.comments.index');
-    Route::post('user/comments/store', [CommentController::class, 'store'])->name('user.comments.store');
-    Route::get('user/comments/{comment}', [CommentController::class, 'show'])->name('user.comments.show');
-    Route::put('user/comments/{comment}/edit', [CommentController::class, 'update'])->name('user.comments.update');
-    Route::delete('user/comments/{comment}', [CommentController::class, 'destroy'])->name('user.comments.destroy');
-    Route::put('user/project/{id}/edit', [ProjectController::class, 'edit'])->name('user.project.edit');
-    Route::put('/projects/{project}/permissions/{sharedProject}', [ProjectController::class, 'editPermission'])
-        ->name('user.project.editPermission');
-    Route::delete('/projects/{project}/permissions/{sharedProject}', [ProjectController::class, 'deleteAccess'])
-        ->name('user.project.deleteAccess');
-    Route::post('user/projects/{id}/restore', [ProjectController::class, 'restoreProject'])->name('user.projects.restore');
-    Route::delete('user/projects/{id}/force-delete', [ProjectController::class, 'forceDeleteProject'])->name('user.projects.forceDelete');
-    Route::get('projects/access/{slug}/{token}', [ProjectController::class, 'accessBySlug'])->name('projects.access');
-    Route::post('projects/share/{slug}', [ProjectController::class, 'shareBySlug'])->name('projects.shareBySlug');
-    Route::patch('/projects/{project}/archive', [ProjectController::class, 'archive'])->name('projects.archive');
-    Route::patch('/projects/{project}/activate', [ProjectController::class, 'activate'])->name('projects.activate');
-    Route::post('/projects/{id}/apply-template', [ProjectController::class, 'applyTemplate'])
-        ->name('projects.applyTemplate');
-    Route::put('/projects/{id}/background', [ProjectController::class, 'updateBackground'])
-        ->name('user.project.updateBackground');
-    Route::delete('/projects/{id}/background', [ProjectController::class, 'removeBackground'])
-        ->name('user.project.removeBackground');
-    Route::get('user/note/detail/{id?}', [NoteController::class, 'index'])
-        ->name('user.note.index');
-    Route::post('/user/notes/store', [NoteController::class, 'store']);
-    Route::put('/user/notes/{id}/update', [NoteController::class, 'update']);
-    Route::delete('/user/notes/{id}/destroy', [NoteController::class, 'destroy']);
+    
 });
 
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {
