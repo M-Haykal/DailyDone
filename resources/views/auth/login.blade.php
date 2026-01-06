@@ -14,7 +14,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <!-- CSS Files -->
-    <link href="{{ asset('css/fastbootstrap.css') }}" rel="stylesheet">
+    @vite('resources/css/app.css')
     <style>
         .bg-image {
             background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');
@@ -74,7 +74,7 @@
         </div>
     </main>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script src="{{ asset('js/fastbootstrap.js') }}"></script>
+    @vite('resources/js/app.js')
 </body>
 
 </html>

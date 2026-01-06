@@ -17,7 +17,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <!-- CSS Files -->
-    <link href="{{ asset('css/fastbootstrap.css') }}" rel="stylesheet">
+    @vite('resources/css/app.css')
 </head>
 
 <body class="">
