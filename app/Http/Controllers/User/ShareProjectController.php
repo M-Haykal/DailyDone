@@ -82,5 +82,20 @@ class ShareProjectController extends Controller
 
         return redirect()->route('projects.show', $project);
     }
+
+    public function revokeAccess(Request $request, Project $project)
+    {
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+
+        $user = User::findOrFail($request->input('user_id'));
+
+        $this->shareProjectService->revokeAccess($project, $user);
+
+        return response()->json([
+            'message' => 'Akses proyek berhasil dicabut.',
+        ]);
+    }
 }
 

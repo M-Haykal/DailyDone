@@ -29,7 +29,7 @@ class AuthController extends Controller
             if ($user->role == 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
             } else {
-                return redirect()->intended(route('user.dashboard'));
+                return redirect()->intended(route('home'));
             }
         }
     
@@ -51,8 +51,8 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        SharedProject::where('email', $user->email)
-        ->update(['user_id' => $user->id, 'email' => null]);
+        // SharedProject::where('email', $user->email)
+        // ->update(['user_id' => $user->id, 'email' => null]);
 
         Mail::to($user->email)->send(new WelcomeEmail($user));
 

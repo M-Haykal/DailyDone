@@ -68,4 +68,15 @@ class ShareProjectService
             })
             ->first();
     }
+
+    public function revokeAccess(Project $project, User $user)
+    {
+        DB::table('project_user')
+            ->where('project_id', $project->id)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        $user->removeRole('editor');
+        $user->removeRole('viewer');
+    }
 }

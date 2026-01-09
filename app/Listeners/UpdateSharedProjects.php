@@ -24,9 +24,9 @@ class UpdateSharedProjects
     {
         $user = $event->user;
 
-        SharedProject::where('email', $user->email)
-            ->whereNull('user_id')
-            ->update(['user_id' => $user->id]);
+        // SharedProject::where('email', $user->email)
+        //     ->whereNull('user_id')
+        //     ->update(['user_id' => $user->id]);
     }
 }
 

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->json('social_media')->nullable();
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->string('google_id')->nullable();
+            $table->string('github_id')->nullable();
             $table->timestamps();
         });
     }
