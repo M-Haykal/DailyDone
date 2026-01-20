@@ -16,6 +16,7 @@
 </head>
 
 <body class="bg-base-100">
+    <x-loading-page />
     <!-- Navbar dengan toggle button -->
     <div class="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
@@ -57,7 +58,9 @@
                 </div>
             </nav>
             <!-- Page content here -->
-            <div class="p-4">@yield('content')</div>
+            <div class="p-4">
+                @yield('content')
+            </div>
         </div>
 
         <div class="drawer-side is-drawer-close:overflow-visible">
@@ -103,9 +106,9 @@
             </div>
         </div>
     </div>
+    <x-alerts />
     @Vite('resources/js/app.js')
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tiny.cloud/1/qmsq1hga0tygul287yejg9t6gpfa5npa36c0ezchh4zom7x1/tinymce/5/tinymce.min.js"
         referrerpolicy="origin"></script>
     <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
