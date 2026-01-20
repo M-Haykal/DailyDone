@@ -45,8 +45,7 @@
                     </div>
                 </div>
                 <!-- Progress Bar Component -->
-                <div
-                    class="w-full md:w-80 bg-base-300 p-6 rounded-xl">
+                <div class="w-full md:w-80 bg-base-300 p-6 rounded-xl">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-sm font-bold">Daily Goal Progress</span>
                         <span class="text-sm font-bold text-success">65%</span>
@@ -69,8 +68,7 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Board Card 1 -->
-                <div
-                    class="group bg-base-200 p-5 rounded-xl hover:shadow-md transition-all cursor-pointer">
+                <div class="group bg-base-200 p-5 rounded-xl hover:shadow-md transition-all cursor-pointer">
                     <div
                         class="h-24 w-full rounded-lg mb-4 bg-gradient-to-br from-[#007b80] to-[#00a3a8] p-4 flex items-end">
                         <span class="text-white font-bold text-lg opacity-90">Marketing Q4</span>
@@ -86,13 +84,11 @@
                                 class="size-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-500 ring-2 ring-white dark:ring-gray-800">
                                 +3</div>
                         </div>
-                        <span
-                            class="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">arrow_forward</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </div>
                 </div>
                 <!-- Board Card 2 -->
-                <div
-                    class="group bg-base-200 p-5 rounded-xl hover:shadow-md transition-all cursor-pointer">
+                <div class="group bg-base-200 p-5 rounded-xl hover:shadow-md transition-all cursor-pointer">
                     <div
                         class="h-24 w-full rounded-lg mb-4 bg-gradient-to-br from-[#3b82f6] to-[#60a5fa] p-4 flex items-end">
                         <span class="text-white font-bold text-lg opacity-90">App Development</span>
@@ -105,13 +101,11 @@
                             <img class="size-6 rounded-full ring-2 ring-white dark:ring-gray-800" data-alt="Team member 4"
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8ixyy1HGeudgKo6bB8S-1aDpS4tlYHq5XdrgMJ3SmPrxbWlNe9m9a70yl8rxNRFNNRB3huegx95zciRim5g71cwghsieaPPb-Y-ILoOpXLzYyHIXg4ajUFJjK2s_zBLvwelcaOqc_ge81PGYdUvKLfVKCwdk67jptIMT4OYcfY7gwr8yj2uMB_VH3PEZ0Q7XgEfnxxB0SuACzfPsxI_w7zdvDn_0HyciEK6Vd77D_HBhBmDVvI8OL3S6WIgmcvjnxJyNpZsvspfpc" />
                         </div>
-                        <span
-                            class="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">arrow_forward</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </div>
                 </div>
                 <!-- Board Card 3 -->
-                <div
-                    class="group bg-base-200 p-5 rounded-xl hover:shadow-md transition-all cursor-pointer">
+                <div class="group bg-base-200 p-5 rounded-xl hover:shadow-md transition-all cursor-pointer">
                     <div
                         class="h-24 w-full rounded-lg mb-4 bg-gradient-to-br from-[#f59e0b] to-[#fbbf24] p-4 flex items-end">
                         <span class="text-white font-bold text-lg opacity-90">Design System</span>
@@ -122,16 +116,15 @@
                             <img class="size-6 rounded-full ring-2 ring-white dark:ring-gray-800" data-alt="Team member 5"
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqVG4_Bs-KD4nKos3x9E1rUPc6PiRLsiA_O1o7D6ZuhJWhjx-H1pMLU5Id9wyg3BptBAI9WWKZrTCDKf9Vbx6q3Rxwdi88Z_QkeiD6ld-DwCnMN_5M4ETZd8BK_yW9X2QJ8nSJI27g9EG94Kfd_0k_m0W3qwFDEEqBKdbQTyat8owfBfPwU2jw3Sa4iJK4tMq-9Drq63k8q3hjcMWm3JmDVLv-AVb0mr8McFD0huhoX-cTX-1Le3IuxL-bIkl4XLkXWSPvEdpJYaj6" />
                         </div>
-                        <span
-                            class="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">arrow_forward</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </div>
                 </div>
                 <!-- Board Card 4 (Add New) -->
                 <div
                     class="group bg-dashed bg-base-200 p-5 rounded-xl border-2 border-dashed hover:bg-base-300 transition-all cursor-pointer flex flex-col items-center justify-center text-center">
                     <div
-                        class="size-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 mb-2 group-hover:bg-primary group-hover:text-white transition-all">
-                        <span class="material-symbols-outlined">add</span>
+                        class="size-10 rounded-full bg-base-100 flex items-center justify-center text-secondary mb-2 group-hover:bg-base-200 group-hover:text-neutral transition-all">
+                        <i class="fa-solid fa-plus"></i>
                     </div>
                     <span class="text-sm font-bold">Browse All Boards</span>
                 </div>
@@ -144,16 +137,14 @@
                     <h2 class="text-xl font-extrabold tracking-tight">Up Next</h2>
                     <button
                         class="flex items-center gap-1 text-sm font-bold text-gray-500 hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        <i class="fa-solid fa-arrow-down-1-9 text-[18px]"></i>
                         Filter
                     </button>
                 </div>
                 <div class="space-y-4">
                     <!-- Task Item 1 -->
-                    <div
-                        class="group flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-all shadow-sm">
-                        <div
-                            class="size-12 rounded-lg bg-red-50 dark:bg-red-900/20 flex flex-col items-center justify-center text-red-600 dark:text-red-400">
+                    <div class="group flex items-center gap-4 bg-base-200 p-4 rounded-xl transition-all shadow-sm">
+                        <div class="size-12 rounded-lg bg-base-300 flex flex-col items-center justify-center text-accent">
                             <span class="text-[10px] font-bold uppercase">Oct</span>
                             <span class="text-lg font-extrabold leading-none">24</span>
                         </div>
@@ -163,7 +154,7 @@
                                     class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase">Marketing</span>
                                 <span class="text-xs text-gray-400 font-medium">Due in 2h</span>
                             </div>
-                            <h3 class="font-bold text-[#101818] dark:text-white group-hover:text-primary transition-colors">
+                            <h3 class="font-bold text-neutral hover:text-primary transition-colors">
                                 Finalize Wireframes for Brand Campaign</h3>
                         </div>
                         <div class="flex items-center gap-3">
@@ -172,15 +163,13 @@
                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMZ0YezYw_zUKwWe-MPCvSvRZstm8lLC_a_yF9MXA7TfmEH7-Zo6df4ceH6HWShwqbrwpNi9RpBLC4OvW-ksW-1VNgVOPMH8wvFkETK93O4UFFBc1sV9Ql3Xo_CgXrrbCDvdFfD87obS-ZjlkQXx2brvJwTd2gohTe6yq5qH_h_r6xDvvwCMhblwQDso4zU53fppc07Ug10roO7AnZYA4j5GY5MyqRyPDNuUqgHg9XaZoqZOzU7XUmcCf7wZZneN5QQ_f9bkN-F_w4" />
                             </div>
                             <button class="size-8 flex items-center justify-center text-gray-400 hover:text-primary">
-                                <span class="material-symbols-outlined">more_vert</span>
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
                         </div>
                     </div>
                     <!-- Task Item 2 -->
-                    <div
-                        class="group flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-all shadow-sm">
-                        <div
-                            class="size-12 rounded-lg bg-gray-50 dark:bg-gray-700 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <div class="group flex items-center gap-4 bg-base-200 p-4 rounded-xl transition-all shadow-sm">
+                        <div class="size-12 rounded-lg bg-base-300 flex flex-col items-center justify-center text-accent">
                             <span class="text-[10px] font-bold uppercase">Oct</span>
                             <span class="text-lg font-extrabold leading-none">25</span>
                         </div>
@@ -191,8 +180,7 @@
                                     App</span>
                                 <span class="text-xs text-gray-400 font-medium">Tomorrow</span>
                             </div>
-                            <h3
-                                class="font-bold text-[#101818] dark:text-white group-hover:text-primary transition-colors">
+                            <h3 class="font-bold text-neutral hover:text-primary transition-colors">
                                 API Documentation Review</h3>
                         </div>
                         <div class="flex items-center gap-3">
@@ -201,15 +189,13 @@
                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPUd23HEFIr3eytPRR4FRv_JMC17QOhj6PrflPMsidiFRPW-IiYfWUTDpvBqmvTjrrPGZC45SKJKE1N2K4jr1gP25nAfC8eOXgCimQPZiDBcGwpWAiiE9pSWNIZKYffhoI5cp-MxJWtswLtJZv55C0_yttKReS6pnvj-COhA7hBB6lM7pQ-ENBWbiE0UI87zcSCHwLOrrRYcDnk2Znu7q1a4G1MriJC4t3fxXLdHJ0JFXuGrE1dcQpbU9ho3WdEwFR1IoR9Mqf0Qmh" />
                             </div>
                             <button class="size-8 flex items-center justify-center text-gray-400 hover:text-primary">
-                                <span class="material-symbols-outlined">more_vert</span>
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
                         </div>
                     </div>
                     <!-- Task Item 3 -->
-                    <div
-                        class="group flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-all shadow-sm">
-                        <div
-                            class="size-12 rounded-lg bg-gray-50 dark:bg-gray-700 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <div class="group flex items-center gap-4 bg-base-200 p-4 rounded-xl transition-all shadow-sm">
+                        <div class="size-12 rounded-lg bg-base-300 flex flex-col items-center justify-center text-accent">
                             <span class="text-[10px] font-bold uppercase">Oct</span>
                             <span class="text-lg font-extrabold leading-none">27</span>
                         </div>
@@ -220,8 +206,7 @@
                                     System</span>
                                 <span class="text-xs text-gray-400 font-medium">In 3 days</span>
                             </div>
-                            <h3
-                                class="font-bold text-[#101818] dark:text-white group-hover:text-primary transition-colors">
+                            <h3 class="font-bold text-neutral hover:text-primary transition-colors">
                                 Submit Icon Set for Approval</h3>
                         </div>
                         <div class="flex items-center gap-3">
@@ -230,14 +215,14 @@
                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhMxPX0bruiN2O6POAyyxWEvkYkHfM9J4bEmJiPPul9tPhqMgb7u4sHchHDBGS3F-frRHHTqdAZ5Ct4OWlI9uCUzetvoz0RQGFmjq_9jYP7mwbFh1UojXtC_lwRkyydOTUYwEofnjOmgGii2KSOBU54bE34STDDOOyn-3zIVWHrvvdvthjyBxZ-VfIoOTxmBAzw65jvBJ4RaiQEMQlMW56S1wEd2QgIHp5fqMCfL0rwW1YR1ouZRyOC_5ZE15qjfsee0qrkphIsvgz" />
                             </div>
                             <button class="size-8 flex items-center justify-center text-gray-400 hover:text-primary">
-                                <span class="material-symbols-outlined">more_vert</span>
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
                         </div>
                     </div>
                 </div>
                 <button
-                    class="w-full mt-6 py-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined">add_task</span>
+                    class="w-full mt-6 py-4 bg-base-200 text-primary hover:bg-base-300 hover:text-neutral border-2 border-dashed rounded-xl font-bold  transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus"></i>
                     Quick Add Task
                 </button>
             </div>
@@ -245,85 +230,83 @@
             <div class="lg:col-span-1">
                 <div class="flex items-center justify-between mb-6 px-1">
                     <h2 class="text-xl font-extrabold tracking-tight">Activity</h2>
-                    <button class="text-gray-400 hover:text-primary">
-                        <span class="material-symbols-outlined">more_horiz</span>
+                    <button class="text-accent hover:text-primary">
+                        <i class="fa-solid fa-ellipsis"></i>
                     </button>
                 </div>
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm overflow-hidden">
+                <div class="bg-base-200 rounded-xl p-6 shadow-sm overflow-hidden">
                     <div class="relative flex flex-col gap-6">
                         <!-- Vertical Timeline Line -->
-                        <div class="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gray-100 dark:bg-gray-700"></div>
+                        <div class="absolute left-[11px] top-2 bottom-2 w-0.5 bg-accent"></div>
                         <!-- Activity Item 1 -->
                         <div class="relative flex items-start gap-4">
                             <div
-                                class="relative z-10 size-6 rounded-full ring-4 ring-white dark:ring-gray-800 bg-primary/20 flex items-center justify-center">
+                                class="relative z-10 size-6 rounded-full ring-4 ring-black bg-primary/20 flex items-center justify-center">
                                 <div class="size-2 rounded-full bg-primary"></div>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm text-gray-600 dark:text-gray-300">
-                                    <span class="font-bold text-[#101818] dark:text-white">Sarah Chen</span> commented on
+                                <p class="text-sm text-accent">
+                                    <span class="font-bold">Sarah Chen</span> commented on
                                     <span class="text-primary font-medium hover:underline cursor-pointer">Homepage
                                         Redesign</span>
                                 </p>
                                 <div
-                                    class="mt-2 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-xs text-gray-500 italic">
+                                    class="mt-2 bg-base-300 p-3 rounded-lg text-xs text-neutral italic">
                                     "Looks great! Can we try a darker teal for the header?"
                                 </div>
-                                <p class="mt-1 text-[10px] text-gray-400 uppercase font-bold tracking-wider">24m ago</p>
+                                <p class="mt-1 text-[10px] text-accent uppercase font-bold tracking-wider">24m ago</p>
                             </div>
                         </div>
                         <!-- Activity Item 2 -->
                         <div class="relative flex items-start gap-4">
                             <div
-                                class="relative z-10 size-6 rounded-full ring-4 ring-white dark:ring-gray-800 bg-green-500/20 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-green-600 text-[14px] font-bold">check</span>
+                                class="relative z-10 size-6 rounded-full ring-4 ring-black bg-success/20 flex items-center justify-center">
+                                <i class="fa-solid fa-check text-success text-[14px] font-bold"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm text-gray-600 dark:text-gray-300">
-                                    <span class="font-bold text-[#101818] dark:text-white">Marcus Wu</span> completed <span
+                                <p class="text-sm text-accent">
+                                    <span class="font-bold">Marcus Wu</span> completed <span
                                         class="text-primary font-medium hover:underline cursor-pointer">API
                                         Integration</span>
                                 </p>
-                                <p class="mt-1 text-[10px] text-gray-400 uppercase font-bold tracking-wider">1h ago</p>
+                                <p class="mt-1 text-[10px] text-accent uppercase font-bold tracking-wider">1h ago</p>
                             </div>
                         </div>
                         <!-- Activity Item 3 -->
                         <div class="relative flex items-start gap-4">
                             <div
-                                class="relative z-10 size-6 rounded-full ring-4 ring-white dark:ring-gray-800 bg-blue-500/20 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-blue-600 text-[14px]">swap_horiz</span>
+                                class="relative z-10 size-6 rounded-full ring-4 ring-black bg-primary/20 flex items-center justify-center">
+                                <i class="fa-solid fa-arrow-right-arrow-left text-primary text-[14px] font-bold"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm text-gray-600 dark:text-gray-300">
-                                    <span class="font-bold text-[#101818] dark:text-white">You</span> moved <span
-                                        class="font-medium text-gray-700 dark:text-gray-200">User Research</span> to <span
-                                        class="px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase">Done</span>
+                                <p class="text-sm text-accent">
+                                    <span class="font-bold">You</span> moved <span
+                                        class="font-medium text-primary hover:underline cursor-pointer">User Research</span> to <span
+                                        class="px-1.5 py-0.5 rounded bg-success text-[10px] font-bold uppercase">Done</span>
                                 </p>
-                                <p class="mt-1 text-[10px] text-gray-400 uppercase font-bold tracking-wider">3h ago</p>
+                                <p class="mt-1 text-[10px] text-accent uppercase font-bold tracking-wider">3h ago</p>
                             </div>
                         </div>
                         <!-- Activity Item 4 -->
                         <div class="relative flex items-start gap-4">
                             <div
-                                class="relative z-10 size-6 rounded-full ring-4 ring-white dark:ring-gray-800 bg-amber-500/20 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-amber-600 text-[14px]">person_add</span>
+                                class="relative z-10 size-6 rounded-full ring-4 ring-black bg-warning/20 flex items-center justify-center">
+                                <i class="fa-solid fa-user-plus text-warning text-[14px] font-bold"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm text-gray-600 dark:text-gray-300">
-                                    <span class="font-bold text-[#101818] dark:text-white">Julia Smith</span> joined the
+                                <p class="text-sm text-accent">
+                                    <span class="font-bold">Julia Smith</span> joined the
                                     <span class="text-primary font-medium hover:underline cursor-pointer">Product
                                         Team</span>
                                 </p>
-                                <p class="mt-1 text-[10px] text-gray-400 uppercase font-bold tracking-wider">5h ago</p>
+                                <p class="mt-1 text-[10px] text-accent uppercase font-bold tracking-wider">5h ago</p>
                             </div>
                         </div>
                     </div>
                     <button
-                        class="w-full mt-8 py-2 text-sm font-bold text-gray-500 hover:text-primary transition-all flex items-center justify-center gap-1 group">
+                        class="w-full mt-8 py-2 text-sm font-bold text-accent hover:text-primary transition-all flex items-center justify-center gap-1 group">
                         View Full Activity
-                        <span
-                            class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+                        <i class="fa-solid fa-arrow-right text-[18px] group-hover:translate-x-1 transition-transform"></i>
                     </button>
                 </div>
             </div>

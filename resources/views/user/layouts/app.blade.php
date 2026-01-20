@@ -84,7 +84,7 @@
                 <!-- Sidebar Menu -->
                 <ul class="menu w-full grow px-2 pb-4 py-2">
                     <!-- List item -->
-                    <li>
+                    <li class="bg-base-100 mb-1 rounded shadow-sm">
                         <a href="#" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                             data-tip="Homepage">
                             <!-- Home icon -->
@@ -94,15 +94,44 @@
                     </li>
 
                     <!-- List item -->
-                    <li>
+                    <li class="bg-base-100 my-1 rounded shadow-sm">
+                        <a href="#" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                            data-tip="myTasks">
+                            <!-- myTasks icon -->
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span class="is-drawer-close:hidden">myTasks</span>
+                        </a>
+                    </li>
+
+                    <!-- List item -->
+                    <li class="bg-base-100 my-1 rounded shadow-sm">
+                        <a href="#" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                            data-tip="Notifications">
+                            <!-- Notification icon -->
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="is-drawer-close:hidden">Notifications</span>
+                        </a>
+                    </li>
+
+                    <!-- List item -->
+                    <li class="bg-base-100 my-1 rounded shadow-sm">
                         <a href="#" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                             data-tip="Projects">
-                            <!-- Settings icon -->
+                            <!-- Projects icon -->
                             <i class="fa-solid fa-folder"></i>
                             <span class="is-drawer-close:hidden">Projects</span>
                         </a>
                     </li>
-                </ul>
+
+                    <!-- List item -->
+                    <li class="bg-base-100 my-1 rounded shadow-sm">
+                        <a href="#" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                            data-tip="Teams">
+                            <!-- Teams icon -->
+                            <i class="fa-solid fa-users"></i>
+                            <span class="is-drawer-close:hidden">Teams</span>
+                        </a>
+                    </li>
             </div>
         </div>
     </div>

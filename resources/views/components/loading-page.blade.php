@@ -1,5 +1,5 @@
 {{-- Global Page Loading --}}
-<div id="page-loading" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+<div id="page-loading" class="fixed inset-0 z-[9999] flex items-center justify-center bg-base-100/40 backdrop-blur-sm">
     <span class="loading loading-spinner loading-xl text-primary"></span>
 </div>
 
