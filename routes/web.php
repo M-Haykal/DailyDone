@@ -14,7 +14,7 @@ use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('user.dashboard');
+    return view('user.pages.projects');
 })->name('home');
 
 Route::get('/projects', function () {
